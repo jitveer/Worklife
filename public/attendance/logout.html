@@ -1,0 +1,208 @@
+ok
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Logout Confirmation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #141e30, #243b55);
+        }
+
+        /* Card */
+
+        .logout-card {
+            background: #fff;
+            width: 420px;
+            max-width: 90%;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* Animation */
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Icon */
+
+        .icon {
+            font-size: 70px;
+            margin-bottom: 15px;
+        }
+
+        /* Heading */
+
+        h2 {
+            font-weight: 600;
+            font-size: 26px;
+            margin-bottom: 15px;
+        }
+
+        /* Working Time Highlight */
+
+        .work-duration {
+            background: #f2f5ff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #2848c1;
+        }
+
+        /* Question text */
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        /* Buttons */
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        /* Button style */
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        /* Logout button */
+
+        .logout-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .logout-btn:hover {
+            background: #1f8a39;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Cancel button */
+
+        .cancel-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mobile */
+
+        @media(max-width:420px) {
+
+            .logout-card {
+                padding: 30px 25px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+    <div class="logout-card">
+
+        <div class="icon">🚪</div>
+
+        <h2>Confirm Logout</h2>
+
+        <div class="work-duration">
+            Today's Work Duration <br>
+            <span id="workingTimeText">Calculating...</span>
+        </div>
+
+        <p class="subtitle">
+            Do you want to logout now?
+        </p>
+
+        <div class="buttons">
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+            <button class="cancel-btn" id="cancelBtn">Cancel</button>
+        </div>
+
+    </div>
+
+    <script>
+
+        function logout() {
+            window.location.href = "/attendance/logout";
+        }
+
+        function cancel() {
+            window.location.href = "/attendance/passcode.html"
+        }
+
+
+        fetch("/attendance/today-working-time")
+            .then(res => res.json())
+            .then(data => {
+
+                document.getElementById("workingTimeText").innerText =
+                    data.workingTime;
+
+            });
+
+
+        // onclick
+        document.getElementById("logoutBtn")?.addEventListener("click", logout);
+        document.getElementById("cancelBtn")?.addEventListener("click", cancel);
+
+    </script>
+
+</body>
+
+</html>

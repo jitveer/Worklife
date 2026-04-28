@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Employee Leave Request</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #c3e2d1;
+    }
+
+    .header {
+      margin-bottom: 20px;
+      /*  ADDED SPACING BELOW HEADER */
+    }
+
+    .header {
+      background-color: #4aa382;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      height: 60px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-box {
+      background-color: white;
+      color: black;
+      font-weight: bold;
+      font-size: 18px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .worklife-text {
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header select {
+      background-color: white;
+      border: 1px solid white;
+      color: black;
+      padding: 4px 6px;
+      border-radius: 4px;
+    }
+
+    .username {
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      color: white;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .main-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 20px;
+      gap: 30px;
+    }
+
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    .left-panel button {
+      width: 110px;
+      height: 100px;
+      padding: 10px;
+      font-weight: bold;
+      border: none;
+      color: white;
+      border-radius: 0px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .left-panel button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    }
+
+
+    .left-panel .btn-hr {
+      background-color: #a493b9;
+    }
+
+    .left-panel .btn-finance {
+      background-color: #c78864;
+    }
+
+    .left-panel .btn-it {
+      background-color: #863f33;
+    }
+
+    .left-panel .btn-pm {
+      background-color: #15ac7f;
+    }
+
+    .left-panel .btn-reports {
+      background-color: #82b435;
+    }
+
+    .btn-employee {
+      background: #2e26c0;
+      color: white;
+    }
+
+
+    .leave-form-section {
+      flex: 3;
+      background: white;
+      padding: 20px;
+      border-radius: 0px;
+      box-shadow: 0 0 5px rgba(14, 12, 12, 0.2);
+    }
+
+    .form-section h5 {
+      font-weight: bold;
+      color: #165c42;
+      margin-bottom: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px 20px;
+    }
+
+    .employee-task {
+      margin-top: 25px;
+    }
+
+    .employee-task select {
+      width: 100%;
+      padding: 6px;
+    }
+
+    .employee-task table {
+      background-color: #3bc290;
+      border: 1px solid #389e7e;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .employee-task th:first-child,
+    .employee-task th:last-child {
+      background-color: #55aa90;
+      color: white;
+    }
+
+    .employee-task th,
+    .employee-task td {
+      padding: 10px;
+      border: 1px solid #85b8a7;
+    }
+
+    .employee-task tbody td {
+      background-color: #c6e6d9;
+    }
+
+    .employee-task select,
+    .employee-task input {
+      background-color: #f4fcf9;
+      border: 1px solid #0e1110;
+      padding: 6px;
+      border-radius: 4px;
+      width: 100%;
+    }
+
+    .employee-task table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .employee-task table thead th:first-child {
+      border-top-left-radius: 8px;
+    }
+
+    .employee-task table thead th:last-child {
+      border-top-right-radius: 8px;
+    }
+
+    .form-control {
+      border: 1px solid #797979;
+    }
+
+    .personal-info {
+      flex: 1;
+      background: white;
+      padding: 16px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      min-width: 150px;
+    }
+
+    .info-heading {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #2db381;
+    }
+
+    .info-block {
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin: 4px 0;
+      background-color: #e3f9f3;
+    }
+
+    .info-block:nth-child(odd) {
+      background-color: #c7ece3;
+    }
+
+    .info-block:nth-child(even) {
+      background-color: #acf1d5;
+    }
+
+    .label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+
+
+
+    /* 📱 MOBILE RESPONSIVE LAYOUT */
+    @media(max-width: 768px) {
+
+      /* 🟢 Header compact */
+      .header {
+        max-width: 400px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 6px 10px;
+        height: auto;
+      }
+
+      .logo-box {
+        font-size: 12px;
+        padding: 3px 6px;
+      }
+
+      .worklife-text {
+        font-size: 14px;
+      }
+
+      .header-right {
+        gap: 4px;
+        font-size: 11px;
+      }
+
+      /* ⭐ GRID: Left Panel → Top Horizontal */
+      .main-container {
+        display: grid;
+        grid-template-columns: 1.9fr 0.5fr !important;
+        gap: 10px;
+        padding: 10px;
+        width: 100%;
+        align-items: flex-start;
+      }
+
+      .left-panel {
+        grid-column: 1 / span 2;
+        order: -1;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 0px;
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      /* Smaller icons */
+      .left-panel button {
+        width: 55px;
+        height: 55px;
+        font-size: 9px;
+        padding: 0;
+        border-radius: 0px;
+      }
+
+      .left-panel i {
+        font-size: 14px !important;
+      }
+
+      .left-panel span {
+        font-size: 8px !important;
+      }
+
+      /* ⭐ Center Form takes left side */
+      .leave-form-section {
+        width: 100%;
+        grid-column: 1 / 2;
+        padding: 12px;
+        border-radius: 6px;
+        background: white;
+      }
+
+      /* Make form SINGLE COLUMN */
+      .form-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .small-label {
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .leave-form-section h5 {
+        font-size: 12px !important;
+      }
+
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        font-size: 11px !important;
+      }
+
+      .radio-options {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+
+      .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 1px;
+      }
+
+      .leave-form-section input,
+      .leave-form-section select {
+        font-size: 12px;
+        width: 100%;
+      }
+
+      /* ⭐ Personal Info next to form */
+      .personal-info {
+        grid-column: 2 / 3;
+        width: 100%;
+        padding: 10px;
+        background: white;
+        border-radius: 6px;
+        font-size: 11px;
+      }
+
+      .info-heading {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+
+      .info-block {
+        font-size: 9px;
+        padding: 6px 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header">
+      <div class="header-left">
+        <a href="#" id="headerLogo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+          <div class="logo-box">WL</div>
+          <div class="worklife-text">Worklife</div>
+        </a>
+      </div>
+
+      <div class="header-right">
+        <select>
+          <option>Eastern</option>
+          <option>Western</option>
+          <option>Northern</option>
+          <option>Southern</option>
+        </select>
+        <span>English</span>
+        <div class="profile">
+          <i class="fa-solid fa-circle-user"></i>
+          <span id="userName" style="text-transform: capitalize;">Loading...</span>
+        </div>
+        <div class="logout" id="logoutBtn">
+          <i class="fas fa-power-off"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY -->
+  <div class="main-container">
+    <!-- Left Buttons -->
+    <div class="left-panel">
+      <button class="btn-hr" id="hrBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-regular fa-user" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">HR</span>
+        </div>
+      </button>
+      <button class="btn-finance" id="financeBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-regular fa-folder" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">Finance</span>
+        </div>
+      </button>
+      <button class="btn-it" id="itBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-solid fa-desktop" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">IT</span>
+        </div>
+      </button>
+      <button class="btn-pm" id="performanceBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-solid fa-clock" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">performance</span>
+        </div>
+      </button>
+      <button class="btn-reports" id="reportsBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-solid fa-chart-bar" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">Reports</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Center Section -->
+    <div class="leave-form-section">
+      <form id="leaveForm" class="form-section">
+        <h5><i class="fa-solid fa-pen-to-square"></i> Employee Leave Request</h5>
+        <div class="form-grid">
+          <div><label class="small-label">Leave Type:</label>
+            <select id="leave_type" name="leave_type" class="form-control">
+              <option selected disabled value="javascript:void(0)">Please Select</option>
+              <option value="Sick Leave">Sick Leave</option>
+              <option value="Paid Leave">Unpaid Leave</option>
+              <option value="Privilege Leave">Privilege Leave</option>
+              <option value="Privilege Leave">Compassionate leave</option>
+            </select>
+          </div>
+          <div><label class="small-label">Total Available Leaves:</label><input type="text" id="total_available_leaves"
+              name="total_available_leaves" class="form-control"></div>
+          <div><label class="small-label">Last Year Carried Forward Days:</label><input type="text"
+              id="last_year_carried_forward_days" name="last_year_carried_forward_days" class="form-control"></div>
+          <div><label class="small-label">Carried Forward Lapse Date:</label><input type="date"
+              id="carried_forward_lapse_date" name="carried_forward_lapse_date" class="form-control"></div>
+          <div><label class="small-label">Extended Lapsed Days:</label><input type="text" id="extended_lapsed_days"
+              name="extended_lapsed_days" class="form-control"></div>
+          <div><label class="small-label">Extended Lapse Date:</label><input type="date" id="extended_lapsed_date"
+              name="extended_lapsed_date" class="form-control"></div>
+          <div><label class="small-label">From Date:</label><input type="date" id="from_date" name="from_date"
+              class="form-control"></div>
+          <div><label class="small-label">To Date:</label><input type="date" id="to_date" name="to_date"
+              class="form-control"></div>
+          <div><label class="small-label">Requested Days:</label><input type="number" id="requested_days"
+              name="requested_days" class="form-control"></div>
+          <div><label class="small-label">Remaining Days:</label><input type="number" id="remaining_days"
+              name="remaining_days" class="form-control"></div>
+          <div class="radio-group">
+            <label class="small-label">Location:</label>
+
+            <div class="radio-options">
+              <label class="radio-option">
+                <input type="radio" name="location" value="in_country" checked>
+                In Country
+              </label>
+
+              <label class="radio-option">
+                <input type="radio" name="location" value="out_of_country">
+                Out Of Country
+              </label>
+            </div>
+          </div>
+
+          <div><label class="small-label">Destination:</label><input type="text" id="destination" name="destination"
+              class="form-control">
+          </div>
+          <div><label class="small-label">Contact Info 1:</label><input type="text" id="contact_info_1"
+              name="contact_info_1" class="form-control"></div>
+          <div><label class="small-label">Contact Info 2:</label><input type="text" id="contact_info_2"
+              name="contact_info_2" class="form-control"></div>
+          <div><label class="small-label">Contact Info 3:</label><input type="text" id="contact_info_3"
+              name="contact_info_3" class="form-control"></div>
+          <div><label class="small-label">Medical Certificate:</label><input type="file" id="medical_certificates"
+              name="medical_certificates" class="form-control"></div>
+        </div>
+
+        <div class="employee-task mt-4">
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Employee</th>
+                <th>Task Delegation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><select class="employee-select">
+                    <option>Select</option>
+                  </select></td>
+                <td><input type="text" class="form-control"></td>
+              </tr>
+              <tr>
+                <td><select class="employee-select">
+                    <option>Select</option>
+                  </select></td>
+                <td><input type="text" class="form-control"></td>
+              </tr>
+              <!-- <tr>
+                <td><select class="employee-select">
+                    <option>Select</option>
+                  </select></td>
+                <td><input type="text" class="form-control"></td>
+              </tr>
+              <tr>
+                <td><select class="employee-select">
+                    <option>Select</option>
+                  </select></td>
+                <td><input type="text" class="form-control"></td>
+              </tr> -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-3">
+          <label class="small-label" for="requester_comments"><strong>Requester Comments:</strong></label>
+          <textarea id="requester_comments" name="requester_comments" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mt-3">
+          <button type="submit" class="btn btn-success">Submit</button>
+          <button class="btn btn-danger">Close</button>
+        </div>
+      </form>
+    </div>
+
+    <!--  Moved inside main-container -->
+    <div class="personal-info">
+      <h6 class="info-heading">Personal Information:</h6>
+      <div class="info-block"><span class="label">Employee Id:</span>
+        <div id="info-employee-id">Loading...</div>
+      </div>
+      <div class="info-block"><span class="label">Name:</span>
+        <div id="info-name">Loading...</div>
+      </div>
+      <div class="info-block"><span class="label">My Email:</span>
+        <div id="info-email">Loading...</div>
+      </div>
+      <div class="info-block"><span class="label">Company:</span>
+        <div id="info-company">Loading...</div>
+      </div>
+      <div class="info-block"><span class="label">Department:</span>
+        <div id="info-department">Loading...</div>
+      </div>
+      <div class="info-block"><span class="label">Designation:</span>
+        <div id="info-designation">Loading...</div>
+      </div>
+      <div class="info-block"><span class="label">Line Manager:</span>
+        <div id="info-line-manager">Loading...</div>
+      </div>
+      <div class="info-block"><span class="label">Joining Date:</span>
+        <div id="info-joining-date">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    document.getElementById("leaveForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const form = document.getElementById("leaveForm");
+      const formData = new FormData(form);
+
+      const rows = document.querySelectorAll(".employee-task tbody tr");
+      const assignments = [];
+
+      rows.forEach(row => {
+        const empSelect = row.querySelector("select.employee-select");
+        const taskInput = row.querySelector("input");
+
+        const empId = empSelect.value;
+        const task = taskInput.value;
+
+        if (empId && task) {
+          assignments.push({
+            assigned_employee_id: empId,
+            task_description: task
+          });
+        }
+      });
+
+      formData.append("assignments", JSON.stringify(assignments));
+
+      fetch("/api/leave/submit", {
+        method: "POST",
+        body: formData,
+        credentials: "include"
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire({
+              title: 'Success!',
+              text: 'Leave request submitted!',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              form.reset(); // clear form after user clicks OK
+            });
+          } else {
+            Swal.fire({
+              title: 'Error!',
+              text: data.message,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
+          }
+        })
+        .catch(err => {
+          console.error(" Fetch error:", err);
+          Swal.fire({
+            title: 'Oops!',
+            text: 'Something went wrong.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+          });
+        });
+    });
+
+    // employee dropdown based on department
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("/api/leave/by-department")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const dropdowns = document.querySelectorAll(".employee-select");
+            const options = data.employees.map(emp =>
+              `<option value="${emp.employee_id}">${emp.name}</option>`
+            ).join("");
+
+            dropdowns.forEach(select => {
+              select.innerHTML += options;
+            });
+          } else {
+            console.warn(data.message || "Employee list fetch failed");
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load employees:", err);
+        });
+    });
+
+
+
+
+
+    // onclick buttons
+    document.addEventListener("DOMContentLoaded", () => {
+
+      // LOGOUT
+      document.getElementById("logoutBtn")
+        ?.addEventListener("click", logoutUser);
+
+      // LEFT PANEL
+      document.getElementById("hrBtn")
+        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=hr-logo");
+
+      document.getElementById("financeBtn")
+        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=finance-logo");
+
+      document.getElementById("itBtn")
+        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=it-logo");
+
+      document.getElementById("performanceBtn")
+        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=performance-logo");
+
+      document.getElementById("reportsBtn")
+        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=reports-logo");
+
+    });
+  </script>
+
+
+  <script>
+    // First: Check session
+    fetch("/api/auth/session-check", {
+      credentials: "include"
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.loggedIn) {
+          window.location.href = "index.html";
+        } else {
+          // Fill user name
+          document.getElementById("userName").textContent = data.user.name;
+
+          // ===============================
+          // ✅ ADD HEADER CODE HERE 👇
+          // ===============================
+          const header = document.getElementById("headerLogo");
+
+          if (header) {
+            header.addEventListener("click", () => {
+              if (data.user.roleId === 4) {
+                window.location.href = "employee-dashboard.html";
+              } else {
+                window.location.href = "dashboard.html";
+              }
+            });
+          }
+
+          // employee diffrent left pannel 
+          if (data.user.roleId === 4) {
+
+            const panel = document.querySelector(".left-panel");
+
+            if (panel) {
+              panel.innerHTML = `
+
+    <button class="btn-hr" id="leaveBtn">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Leave</span>
+      </div>
+    </button>
+
+    <button class="btn-finance" id="expenseBtn">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-money-bill"></i>
+        <span>Expense</span>
+      </div>
+    </button>
+
+        <button class="btn-pm" id="salesBtn">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Incentive</span>
+      </div>
+    </button>
+
+    <button class="btn-it" id="petrolBtn">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-gas-pump"></i>
+        <span>Petrol</span>
+      </div>
+    </button>
+
+        <button class="btn-employee" id="certificateBtn">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-certificate"></i>
+        <span>Certificate</span>
+      </div>
+    </button>
+
+    <button class="btn-reports" id="performanceBtn2">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-chart-column"></i>
+        <span>Performance</span>
+      </div>
+    </button>
+    `;
+
+
+
+              // onclick buttons
+              document.getElementById("leaveBtn")
+                ?.addEventListener("click", () => {
+                  window.location.href = "LeaveRequest.html";
+                });
+
+              document.getElementById("expenseBtn")
+                ?.addEventListener("click", () => {
+                  window.location.href = "expense-claim.html";
+                });
+
+              document.getElementById("salesBtn")
+                ?.addEventListener("click", () => {
+                  window.location.href = "sales.html";
+                });
+
+              document.getElementById("petrolBtn")
+                ?.addEventListener("click", () => {
+                  window.location.href = "petrol-conveyance.html";
+                });
+
+              document.getElementById("certificateBtn")
+                ?.addEventListener("click", () => {
+                  window.location.href = "certificate.html";
+                });
+
+              document.getElementById("performanceBtn2")
+                ?.addEventListener("click", () => {
+                  window.location.href = "performance.html";
+                });
+
+
+
+            }
+          }
+
+          //  Now load personal info ONLY if logged in
+          loadPersonalInfo();
+        }
+      })
+      .catch(error => {
+        console.error("Session check failed:", error);
+        window.location.href = "index.html";
+      });
+
+
+
+    //  Function to load personal info dynamically into your .personal-info box
+    function loadPersonalInfo() {
+      fetch("/api/leave/personalinfo", { credentials: "include" })
+        .then(res => res.json())
+        .then(info => {
+          console.log("info", info)
+          if (info.error) {
+            console.error("No personal info:", info.error);
+            return;
+          }
+
+          // Prepare your blocks
+          const infoBlocks = [
+            { label: "Employee Id:", value: info.employee_id },
+            { label: "Name:", value: info.requester_name },
+            { label: "My Email:", value: info.email_id },
+            { label: "Company:", value: info.company },
+            { label: "Department:", value: info.department },
+            { label: "Designation:", value: info.designation },
+            { label: "Line Manager:", value: info.line_manager },
+            { label: "Joining Date:", value: info.joining_date ? new Date(info.joining_date).toLocaleDateString() : "-" },
+          ];
+
+          // Inject into container
+          const container = document.querySelector(".personal-info");
+          container.innerHTML = `
+          <h6 class="info-heading">Personal Information:</h6>
+          ${infoBlocks.map(block => `
+            <div class="info-block">
+              <span class="label">${block.label}</span>
+              <div>${block.value || "-"}</div>
+            </div>
+          `).join("")}
+        `;
+        })
+        .catch(err => console.error("Fetch error:", err));
+    }
+
+
+
+    // logout
+    function logoutUser() {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You will be logged out from your session.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, logout",
+        cancelButtonText: "Cancel"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch("/api/auth/logout")
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  title: "Logged Out!",
+                  text: "You have been successfully logged out.",
+                  icon: "success",
+                  showConfirmButton: false,
+                  timer: 2000
+                });
+
+                setTimeout(() => {
+                  window.location.href = "index.html";
+                }, 2000);
+              } else {
+                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+              }
+            })
+            .catch(err => {
+              console.error("Logout error:", err);
+              Swal.fire("Error", "Something went wrong. Try again.", "error");
+            });
+        }
+      });
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+
+</html>

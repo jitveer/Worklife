@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <title>Insentive Request List</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- SweetAlert2 for logout -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(120deg, #dff5e4, #f8fffb, #e0f2df);
+            background-attachment: fixed;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* -----------------------------------
+   HEADER
+----------------------------------- */
+        .header {
+            background: linear-gradient(90deg, #3a9d79, #52af8d);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            height: 56px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-box {
+            background-color: #ffffff;
+            color: #333;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            margin-right: 12px;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .worklife-text {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .header select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: none;
+            background-color: white;
+            color: #444;
+            font-weight: 600;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+        }
+
+        /* -----------------------------------
+   LAYOUT
+----------------------------------- */
+        .main {
+            display: flex;
+            padding-top: 10px;
+        }
+
+        /* -----------------------------------
+   LEFT SIDEBAR
+----------------------------------- */
+        .left-panel {
+            width: 95px;
+            padding: 10px 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left-panel button {
+            width: 85px;
+            /* reduced width */
+            height: 85px;
+            /* reduced height */
+            border: none;
+            border-radius: 0;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+            /* slightly smaller text */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+
+            margin-bottom: 0px;
+            /* ❌ No gap between buttons */
+            padding: 0;
+        }
+
+        .left-panel button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        .left-panel i {
+            font-size: 22px;
+            /* reduced icon size */
+            margin-bottom: 4px;
+        }
+
+        /* Button colors */
+        .btn-hr {
+            background-color: #7f6aa8;
+        }
+
+        .btn-finance {
+            background-color: #cb7e56;
+        }
+
+        .btn-it {
+            background-color: #773631;
+        }
+
+        .btn-pm {
+            background-color: #138f6c;
+        }
+
+        .btn-reports {
+            background-color: #71a92c;
+        }
+
+        /* -----------------------------------
+   CONTENT AREA
+----------------------------------- */
+        .content {
+            flex: 1;
+            padding: 30px;
+            background-color: #ffffff;
+            margin: 10px 10px 10px 0px;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .content h1 {
+            font-size: 26px;
+            margin-bottom: 25px;
+            color: #52af8d;
+            font-weight: bold;
+        }
+
+
+        /* -----------------------------------
+   TABLE
+----------------------------------- */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        th {
+            background-color: #3a9d79;
+            color: white;
+            padding: 12px;
+            font-size: 15px;
+        }
+
+        td {
+            background-color: #ffffff;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            border-right: 1px solid #5dbd98;
+        }
+
+        tr:hover td {
+            background-color: #e4f3eb;
+        }
+
+        /* -----------------------------------
+   ACTION ICONS
+----------------------------------- */
+        .action-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .icon-box {
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f1f1f1;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .icon-box:hover {
+            transform: scale(1.1);
+        }
+
+        .icon-box.view:hover {
+            background-color: #3a9d79;
+            color: white;
+        }
+
+        .icon-box.delete:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* -----------------------------------
+   STATUS BADGES
+----------------------------------- */
+        .status-box {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .status-box.small {
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .status-box.small.approved,
+        .status-box.approved {
+            background-color: #28a745;
+        }
+
+        .status-box.small.pending,
+        .status-box.pending {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .status-box.small.rejected,
+        .status-box.rejected {
+            background-color: #dc3545;
+        }
+
+
+
+        /* Main container for filters */
+        .filter-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            /* mobile responsive */
+        }
+
+        .left-filters {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .left-filters button {
+            padding: 8px 18px;
+            border-radius: 12px;
+            border: 1px solid #173E9A;
+            background: white;
+            color: #173E9A;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        /* Hover Effect */
+        .left-filters button:hover {
+            background: #173E9A;
+            color: white;
+        }
+
+        /* Active Button */
+        .left-filters button.active {
+            background: #173E9A;
+            color: white;
+        }
+
+        /* Right side: date, search, report */
+        .right-filters {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Fix width of date + search box */
+        #dateRange,
+        #searchName {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        /* Date range input special width */
+        #dateRange {
+            width: 200px;
+            /* adjust as needed */
+        }
+
+        /* Search input */
+        #searchName {
+            width: 180px;
+        }
+
+        .report-btn {
+            background: white;
+            border: 1px solid #173E9A;
+            color: #173E9A;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* -----------------------------------
+         Status Box
+        ----------------------------------- */
+        .status-box {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .status-box.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-box.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-box.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- === HEADER === -->
+    <header>
+        <div class="header">
+            <!-- Left -->
+            <div class="header-left" id="headerLogo">
+                <div class="logo-box">WL</div>
+                <div class="worklife-text">Worklife</div>
+            </div>
+            <!-- Right -->
+            <div class="header-right">
+                <select>
+                    <option>Eastern</option>
+                    <option>Western</option>
+                    <option>Northern</option>
+                    <option>Southern</option>
+                </select>
+                <span>English</span>
+                <div class="profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userName" style="text-transform: capitalize;">Loading...</span>
+                </div>
+                <div class="logout" id="logoutBtn">
+                    <i class="fas fa-power-off"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- === MAIN === -->
+    <div class="main">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <button class="btn-hr" id="hrBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-user"></i>
+                    <span>HR</span>
+                </div>
+            </button>
+            <button class="btn-finance" id="financeBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-folder"></i>
+                    <span>Finance</span>
+                </div>
+            </button>
+            <button class="btn-it" id="itBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-desktop"></i>
+                    <span>IT</span>
+                </div>
+            </button>
+            <button class="btn-pm" id="performanceBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Performance</span>
+                </div>
+            </button>
+            <button class="btn-reports" id="reportBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-chart-bar"></i>
+                    <span>Reports</span>
+                </div>
+            </button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <h1>Insentives Request List</h1>
+
+            <div class="filter-row">
+
+                <div class="left-filters">
+                    <button id="allBtn">All</button>
+                    <button id="approvedBtn">Approved</button>
+                    <button id="pendingBtn">Pending</button>
+                    <button id="rejectedBtn">Rejected</button>
+                </div>
+
+                <div class="right-filters">
+                    <label for="dateRange">Date:</label>
+                    <input type="text" id="dateRange" placeholder="Select date range" readonly>
+
+                    <input type="text" id="searchName" placeholder="Search by name">
+
+                    <button id="generateReportBtn" class="report-btn">Generate Report</button>
+                </div>
+
+            </div>
+
+            <table id="salesTable">
+                <thead>
+                    <tr>
+                        <th>Sl-no</th>
+                        <th>Name</th>
+                        <th>My Status</th>
+                        <th>Final Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data rows will be injected here -->
+                </tbody>
+            </table>
+        </div>
+
+        <script>
+            /* ----------------------------------------
+     GLOBAL FILTER STATE
+ ---------------------------------------- */
+            let filterStatus = "all";
+            let filterName = "";
+            let filterFromDate = "";
+            let filterToDate = "";
+
+            /* ----------------------------------------
+               LOAD REQUESTS FROM BACKEND
+            ---------------------------------------- */
+            function loadRequests(status = "all") {
+                filterStatus = status;
+
+                let url = "/api/sales/sales-list?";
+                const params = new URLSearchParams();
+
+                if (filterFromDate) params.append("start", filterFromDate);
+                if (filterToDate) params.append("end", filterToDate);
+                if (filterName) params.append("name", filterName);
+                if (filterStatus !== "all") params.append("status", filterStatus);
+
+                url += params.toString();
+
+                fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) return;
+
+                        const tbody = document.querySelector("#salesTable tbody");
+                        tbody.innerHTML = "";
+
+                        if (data.data.length === 0) {
+                            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No records found</td></tr>`;
+                            return;
+                        }
+
+                        data.data.forEach((row, index) => {
+                            const tr = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${row.requester_name || "-"}</td>
+                        <td>
+                            <span class="status-box ${row.approver_status ? row.approver_status.toLowerCase() : ''}">
+                                ${row.approver_status || "-"}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-box ${row.final_status ? row.final_status.toLowerCase() : ''}">
+                                ${row.final_status || "-"}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-icons">
+            <div class="icon-box view" data-req="${row.req_no}">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+            <div class="icon-box delete" data-id="${row.sale_id}">
+                <i class="fa-solid fa-trash"></i>
+            </div>
+        </div>
+                        </td>
+                    </tr>
+                `;
+                            tbody.insertAdjacentHTML("beforeend", tr);
+                        });
+                    })
+                    .catch(err => console.error("Fetch error:", err));
+            }
+
+
+
+
+
+            //---------------------------
+            // actions icons 
+            //---------------------------
+            document.querySelector("#salesTable tbody").addEventListener("click", function (e) {
+
+                const viewBtn = e.target.closest(".icon-box.view");
+                const deleteBtn = e.target.closest(".icon-box.delete");
+
+                // VIEW
+                if (viewBtn) {
+                    const reqNo = viewBtn.dataset.req;
+                    console.log("View clicked:", reqNo);
+                    viewSale(reqNo);
+                }
+
+                // DELETE
+                if (deleteBtn) {
+                    const saleId = deleteBtn.dataset.id;
+                    console.log("Delete clicked:", saleId);
+
+                    if (!saleId) {
+                        console.error("sale_id missing");
+                        return;
+                    }
+
+                    deleteSale(saleId);
+                }
+
+            });
+
+
+
+            //--------------------------------
+            // onclick
+            //----------------------------------
+            document.addEventListener("DOMContentLoaded", () => {
+
+                console.log("Page ready ✅");
+
+                // HEADER
+                document.getElementById("headerLogo")?.addEventListener("click", () => {
+                    location.href = "dashboard.html";
+                });
+
+                // LOGOUT
+                document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+
+                // SIDEBAR
+                document.getElementById("hrBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=hr-logo");
+                document.getElementById("financeBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=finance-logo");
+                document.getElementById("itBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=it-logo");
+                document.getElementById("performanceBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=performance-logo");
+                document.getElementById("reportsBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=reports-logo");
+
+                // FILTER BUTTONS
+                document.getElementById("allBtn")?.addEventListener("click", () => loadRequests("all"));
+                document.getElementById("approvedBtn")?.addEventListener("click", () => loadRequests("approved"));
+                document.getElementById("pendingBtn")?.addEventListener("click", () => loadRequests("pending"));
+                document.getElementById("rejectedBtn")?.addEventListener("click", () => loadRequests("rejected"));
+
+            });
+
+
+
+            /* ----------------------------------------
+               STATUS BUTTONS
+            ---------------------------------------- */
+            function setStatus(status) {
+                loadRequests(status);
+            }
+
+            /* ----------------------------------------
+               LIVE SEARCH (NO GO BUTTON)
+            ---------------------------------------- */
+            document.getElementById("searchName").addEventListener("input", () => {
+                filterName = document.getElementById("searchName").value.trim();
+                loadRequests(filterStatus);
+            });
+
+            /* ----------------------------------------
+               DATE RANGE USING FLATPICKR
+               (Your calendar configuration stays exact)
+            ---------------------------------------- */
+            flatpickr("#dateRange", {
+                mode: "range",
+                dateFormat: "Y-m-d",
+                onClose: function (selectedDates, dateStr) {
+                    if (!dateStr) {
+                        filterFromDate = "";
+                        filterToDate = "";
+                        return loadRequests(filterStatus);
+                    }
+
+                    const parts = dateStr.split(" to ");
+                    filterFromDate = parts[0] || "";
+                    filterToDate = parts[1] || parts[0] || "";
+
+                    loadRequests(filterStatus);
+                }
+            });
+
+            /* ----------------------------------------
+               GENERATE REPORT (CSV DOWNLOAD)
+            ---------------------------------------- */
+            document.getElementById("generateReportBtn").addEventListener("click", () => {
+                const params = new URLSearchParams({
+                    report: 1,
+                    status: filterStatus,
+                    name: filterName,
+                    start: filterFromDate,
+                    end: filterToDate
+                });
+
+                window.location.href = `/api/sales/sales-list?${params.toString()}`;
+            });
+
+            /* ----------------------------------------
+               VIEW FUNCTION
+            ---------------------------------------- */
+            function viewSale(reqNo) {
+                window.location.href = `/sales-approver.html?reqNo=${reqNo}`;
+            }
+
+            /* ----------------------------------------
+               INITIAL LOAD
+            ---------------------------------------- */
+            loadRequests();
+
+
+
+
+
+            function deleteSale(saleId) {
+                console.log("Deleting sale:", saleId);
+
+                fetch(`/api/sales/delete/${saleId}`, {
+                    method: "DELETE"
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Deleted successfully");
+                            loadRequests(); // reload table
+                        } else {
+                            alert("Delete failed");
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Delete error:", err);
+                    });
+            }
+
+        </script>
+
+
+
+        <script>
+            // session check
+            fetch("/api/auth/session-check")
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        // Not logged in → go to login
+                        window.location.href = "index.html";
+                    } else {
+                        sessionStorage.setItem("user_id", data.user.user_id);
+                        document.getElementById("userName").textContent = data.user.name;
+                        console.log("✅ Session loaded. user_id:", data.user.user_id);
+
+                    }
+                })
+                .catch(error => {
+                    console.error("Session check failed:", error);
+                    window.location.href = "index.html";
+                });
+
+
+            const params = new URLSearchParams(window.location.search);
+            const sectionParam = params.get('section');
+            if (sectionParam) {
+                const menuTile = document.getElementById(sectionParam);
+                if (menuTile) {
+                    menuTile.click();
+                }
+            }
+
+            // logout
+            function logoutUser() {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You will be logged out from your session.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, logout",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Call logout API
+                        fetch("/api/auth/logout")
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: "Logged Out!",
+                                        text: "You have been successfully logged out.",
+                                        icon: "success",
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    });
+
+                                    setTimeout(() => {
+                                        window.location.href = "index.html"; // Redirect to login
+                                    }, 2000);
+                                } else {
+                                    Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                                }
+                            })
+                            .catch(err => {
+                                console.error("Logout error:", err);
+                                Swal.fire("Error", "Something went wrong. Try again.", "error");
+                            });
+                    }
+                });
+            }
+
+        </script>
+</body>
+
+</html>

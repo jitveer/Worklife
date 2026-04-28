@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Users</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* === HEADER === */
+        .header {
+            background-color: #52af8d;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            height: 50px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo-box {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .worklife-text {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header select {
+            background-color: white;
+            border: 1px solid white;
+            color: rgb(10, 10, 10);
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logout {
+            cursor: pointer;
+        }
+
+        /* === MAIN === */
+        .main {
+            display: flex;
+        }
+
+        /* === LEFT PANEL === */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+        }
+
+        .left-panel button {
+            width: 110px;
+            height: 100px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 0px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .left-panel button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-hr {
+            background-color: #a493b9;
+        }
+
+        .btn-finance {
+            background-color: #c78864;
+        }
+
+        .btn-it {
+            background-color: #863f33;
+        }
+
+        .btn-pm {
+            background-color: #15ac7f;
+        }
+
+        .btn-reports {
+            background-color: #82b435;
+        }
+
+        .btn-employee {
+            background-color: #0f739b;
+        }
+
+        /* .btn-users {
+      background-color: #bd47a3;
+    } */
+
+        .left-panel i {
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+
+        /* === CONTENT === */
+        .content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .content-box {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.4s ease;
+            width: 100%;
+        }
+
+        /* HEADER INSIDE CONTENT */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .add-btn {
+            background: #6b5dc5;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #584bb0;
+            transform: translateY(-2px);
+        }
+
+        .search-input {
+            padding: 10px;
+            width: 250px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        /* MODERN TABLE */
+        .table-container {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            font-size: 15px;
+        }
+
+        table thead {
+            background: #52af8d;
+            color: white;
+        }
+
+        table th {
+            padding: 14px;
+            background: #52af8d;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table tbody tr {
+            background: white;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+        }
+
+        table td {
+            padding: 14px;
+        }
+
+        table tbody tr:hover {
+            background: #f0f7ff;
+            transition: 0.2s;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .icon-box {
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            color: rgb(14, 13, 13);
+            background-color: transparent;
+            /* no box by default */
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Hover Effects */
+        .icon-box.view:hover {
+            background-color: #48c6cf;
+            color: rgb(102, 93, 93);
+        }
+
+        .icon-box.edit:hover {
+            background-color: #ffc107;
+            color: rgb(82, 75, 75);
+        }
+
+        .icon-box.delete:hover {
+            background-color: #c75a65;
+            color: rgb(70, 64, 64);
+        }
+
+        .icon-box.send:hover {
+            background-color: #5bda3c;
+            color: rgb(70, 64, 64);
+        }
+
+        /* Optional: pop effect */
+        .icon-box:hover {
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Make modal form more modern */
+        .modal-content {
+            position: relative;
+            background-color: #ffffff;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 0px;
+            width: 95%;
+            max-width: 800px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #333;
+        }
+
+        input[readonly] {
+            cursor: not-allowed;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 14px;
+            border: 1px solid #ccc;
+            border-radius: 0px;
+            font-size: 15px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #52af8d;
+            box-shadow: 0 0 0 2px rgba(82, 175, 141, 0.2);
+            outline: none;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 200px;
+            padding: 12px 0;
+            margin: 20px auto 0;
+            border: none;
+            border-radius: 0px;
+            font-size: 16px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .green-btn {
+            background: #126d30;
+        }
+
+        .blue-btn {
+            background: #4b2394;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 22px;
+        }
+
+        .close-btn i {
+            color: #c75a65;
+            transition: transform 0.2s ease;
+        }
+
+        .close-btn:hover i {
+            transform: rotate(90deg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+
+        @media (max-width: 768px) {
+
+
+            .header {
+                padding: 6px 8px;
+            }
+
+            .logo-box {
+                font-size: 12px;
+                padding: 3px 6px;
+            }
+
+            .worklife-text {
+                font-size: 14px;
+            }
+
+            .header-right {
+                gap: 4px;
+                font-size: 11px;
+            }
+
+            .profile span {
+                font-size: 10px;
+            }
+
+            .header select {
+                font-size: 10px;
+                padding: 3px 4px;
+            }
+
+
+            /* ===========================
+     LEFT PANEL ICON BAR
+    ============================ */
+            .left-panel {
+                width: 45px !important;
+                padding: 5px;
+            }
+
+            .left-panel button {
+                width: 42px !important;
+                height: 42px !important;
+            }
+
+            .left-panel i {
+                font-size: 16px !important;
+            }
+
+            /* remove text below icon entirely */
+            .left-panel button span {
+                display: none !important;
+            }
+
+            .left-panel button:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+            }
+
+            /* MAIN CONTENT BOX */
+            .content-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 10px !important;
+                margin: 0 !important;
+                box-sizing: border-box;
+            }
+
+            /* HEADER TITLE */
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 6px;
+            }
+
+            .content-header h3 {
+                font-size: 14px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* ACTION BAR (SEARCH + BUTTONS) */
+            .content-header>div {
+                display: flex;
+                width: 100%;
+                flex-wrap: nowrap;
+                align-items: center;
+                justify-content: flex-start;
+                gap: 3px;
+            }
+
+            .search-input {
+                flex: 1;
+                min-width: 60px;
+                padding: 4px !important;
+                font-size: 10px !important;
+            }
+
+            .add-btn,
+            .content-header a {
+                flex: 0 0 auto;
+                padding: 4px !important;
+                font-size: 9px !important;
+                height: 24px !important;
+                border-radius: 4px !important;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                white-space: nowrap;
+            }
+
+
+            /* TABLE */
+            table {
+                width: auto !important;
+                max-width: 400px !important;
+                margin: 0 auto !important;
+                border-collapse: collapse;
+                font-size: 11px !important;
+                table-layout: fixed;
+            }
+
+            th,
+            td {
+                padding: 6px 4px !important;
+            }
+
+            /* ACTION COLUMN — VERY NARROW */
+            table th:last-child,
+            table td:last-child {
+                width: 150px !important;
+                max-width: 200px !important;
+                padding: 2px !important;
+                overflow: hidden;
+                text-align: center !important;
+            }
+
+            /* ACTION ICONS SMALL + TIGHT */
+            td .action-icons {
+                display: flex;
+                gap: 2px !important;
+                justify-content: center;
+            }
+
+            td .icon-box {
+                height: 20px !important;
+                width: 20px !important;
+                padding: 2px !important;
+                font-size: 10px !important;
+            }
+
+            /* HIDE DEPARTMENT & COMPANY COLUMNS */
+            table th:nth-child(3),
+            table td:nth-child(3),
+            table th:nth-child(4),
+            table td:nth-child(4),
+            table th:nth-child(5),
+            table td:nth-child(5) {
+                display: none !important;
+            }
+
+
+            /* MODAL RESPONSIVE */
+            .modal-content {
+                width: 80% !important;
+                max-width: 95% !important;
+                padding: 15px !important;
+                margin: 20px auto;
+            }
+
+            .modal-header {
+                font-size: 16px !important;
+                margin-bottom: 10px !important;
+            }
+
+            .form-row {
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+
+            .form-group {
+                width: 100% !important;
+                min-width: auto !important;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 12px !important;
+                padding: 6px !important;
+            }
+
+            .form-group label {
+                margin-bottom: 6px;
+                font-weight: 800;
+                color: #333;
+                font-size: small;
+            }
+
+            .submit-btn {
+                width: 40% !important;
+                font-size: 14px !important;
+                padding: 10px !important;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <!-- === HEADER === -->
+    <header>
+        <div class="header">
+            <div class="header-left" id="goDashboard">
+                <div class="logo-box">WL</div>
+                <div class="worklife-text">Worklife</div>
+            </div>
+            <div class="header-right">
+                <select>
+                    <option>Eastern</option>
+                    <option>Western</option>
+                    <option>Northern</option>
+                    <option>Southern</option>
+                </select>
+                <span>English</span>
+                <div class="profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userName">Loading...</span>
+                </div>
+                <div class="logout" id="logoutBtn">
+                    <i class="fas fa-power-off"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- === MAIN === -->
+    <div class="main">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <button class="btn-hr" id="hrBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-user"></i><span>HR</span>
+                </div>
+            </button>
+            <button class="btn-finance" id="financeBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-folder"></i><span>Finance</span>
+                </div>
+            </button>
+            <button class="btn-it" id="itBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-desktop"></i><span>IT</span>
+                </div>
+            </button>
+            <button class="btn-pm" id="performanceBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-clock"></i><span>Performance</span>
+                </div>
+            </button>
+            <button class="btn-reports" id="reportsBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-chart-bar"></i><span>Reports</span>
+                </div>
+            </button>
+            <button class="btn-employee" id="employeeBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fas fa-users"></i><span>Employee</span>
+                </div>
+            </button>
+        </div>
+
+        <div class="content-box">
+            <!-- Now this wraps everything as a block -->
+            <div class="content-header">
+                <h3 id="tableTitle">Create Users</h3>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="userSearch" class="search-input" placeholder="🔍 Search user...">
+                    <button id="searchBtn" class="add-btn">Search</button>
+                </div>
+            </div>
+            <div id="users-table-section" class="table-container">
+                <table id="userTable" border="2" width="100%">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Company</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- View/Edit User Modal -->
+        <div class="modal" id="userViewEditModal">
+            <div class="modal-content">
+                <span class="close-btn" id="closeUserModalBtn">
+                    <i class="fa-solid fa-rectangle-xmark"></i>
+                </span>
+                <div class="modal-header" id="userModalTitle">User Details</div>
+                <form id="userViewEditForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="modalName" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Employee ID</label>
+                            <input type="text" id="modalEmpId" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Company ID</label>
+                            <input type="text" id="modalCompany" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Role ID</label>
+                            <input type="text" id="modalRole" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" id="modalDept" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="modalEmail" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="modalPassword" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input type="password" id="modalConfirmPassword" readonly>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="modalSubmitBtn" class="submit-btn green-btn" style="display: none;">Save
+                        Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            // Fetch all users
+            function fetchUsers() {
+                fetch("/api/users")
+                    .then(res => res.json())
+                    .then(data => {
+                        const tbody = document.getElementById("userBody");
+                        tbody.innerHTML = "";
+                        data.forEach((user, index) => {
+
+                            const row = document.createElement("tr");
+
+                            row.innerHTML = `
+    <td>${index + 1}</td>
+    <td>${user.username}</td>
+    <td>${user.email}</td>
+    <td>${user.department_name || ''}</td>
+    <td>${user.company_name || ''}</td>
+    <td class="action-icons">
+      <div class="icon-box view"><i class="fa fa-eye"></i></div>
+      <div class="icon-box edit"><i class="fa fa-pen"></i></div>
+      <div class="icon-box delete"><i class="fa fa-trash"></i></div>
+      <div class="icon-box send"><i class="fa fa-envelope"></i></div>
+    </td>
+  `;
+
+                            // ✅ Attach events
+                            row.querySelector(".view").addEventListener("click", () => viewUser(user.id));
+                            row.querySelector(".edit").addEventListener("click", () => editUser(user.id));
+                            row.querySelector(".delete").addEventListener("click", () => deleteUser(user.id));
+                            row.querySelector(".send").addEventListener("click", () => sendPasscode(user.id));
+
+                            tbody.appendChild(row);
+                        });
+                    });
+            }
+
+            function openUserModal(user, mode = "view") {
+                // Set the field values
+                document.getElementById("modalName").value = user.name || "";
+                document.getElementById("modalEmpId").value = user.employee_id || "";
+                document.getElementById("modalCompany").value = user.company_name || "";
+                document.getElementById("modalRole").value = user.role_name || "";
+                document.getElementById("modalDept").value = user.department_name || "";
+                document.getElementById("modalEmail").value = user.email || "";
+                document.getElementById("modalPassword").value = "";
+                document.getElementById("modalConfirmPassword").value = "";
+
+                const isEdit = mode === "edit";
+
+                // Make all fields readonly except password fields in edit
+                const inputs = document.querySelectorAll("#userViewEditForm input");
+                inputs.forEach(input => {
+                    if (isEdit) {
+                        input.readOnly = false;
+                        input.style.cursor = "text";
+                    } else {
+                        input.readOnly = true;
+                        input.style.cursor = "not-allowed";  // 🚫 Cursor
+                    }
+                });
+
+                // Show save button only in edit mode
+                document.getElementById("modalSubmitBtn").style.display = isEdit ? "block" : "none";
+
+                // Set title
+                document.getElementById("userModalTitle").innerText = isEdit ? "Edit User" : "View User";
+
+                // Save ID for update
+                document.getElementById("userViewEditForm").dataset.userId = user.id;
+
+                // Show modal
+                document.getElementById("userViewEditModal").style.display = "block";
+            }
+
+            function viewUser(id) {
+                fetch(`/api/users/${id}`)
+                    .then(res => res.json())
+                    .then(user => openUserModal(user, "view"));
+            }
+
+            function editUser(id) {
+                fetch(`/api/users/${id}`)
+                    .then(res => res.json())
+                    .then(user => openUserModal(user, "edit"));
+            }
+
+            document.getElementById("userViewEditForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const id = this.dataset.userId;
+                const password = document.getElementById("modalPassword").value;
+                const confirmPassword = document.getElementById("modalConfirmPassword").value;
+
+                if (password !== confirmPassword) {
+                    alert("Passwords do not match!");
+                    return;
+                }
+
+                fetch(`/api/users/update/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ password })
+                })
+                    .then(res => res.text())
+                    .then(msg => {
+                        Swal.fire({
+                            title: "Success!",
+                            text: msg,
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then(() => {
+                            closeUserModal();
+                            fetchUsers(); // refresh table
+                        });
+                    });
+            });
+            // close popup form
+            function closeUserModal() {
+                document.getElementById("userViewEditModal").style.display = "none";
+            }
+
+
+            // working without sweet alert using normal alert
+            // function deleteUser(id) {
+            //     if (!confirm("Are you sure to delete this user?")) return;
+
+            //     fetch(`/api/users/delete/${id}`, { method: 'DELETE' })
+            //         .then(res => res.text())
+            //         .then(msg => {
+            //             alert(msg);
+            //             fetchUsers();
+            //         });
+            // }
+
+
+
+            // delete using sweet alert
+            function deleteUser(id) {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This user will be permanently deleted.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete!",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/api/users/delete/${id}`, { method: "DELETE" })
+                            .then(res => res.text())
+                            .then(msg => {
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: msg,
+                                    icon: "success",
+                                    confirmButtonText: "OK"
+                                });
+
+                                fetchUsers(); // Refresh table
+                            });
+                    }
+                });
+            }
+
+
+            // send password through email
+            function sendPasscode(id) {
+                fetch(`/api/users/send-passcode/${id}`, { method: 'POST' })
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message);
+                    });
+            }
+            function searchUsers() {
+                const input = document.getElementById("userSearch").value.toLowerCase();
+                const rows = document.querySelectorAll("#userTable tbody tr");
+
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    row.style.display = text.includes(input) ? "" : "none";
+                });
+            }
+            fetchUsers();
+
+            // Close modal when clicking outside content
+            document.getElementById("userViewEditModal")
+                .addEventListener("click", function (event) {
+                    if (event.target === this) {
+                        this.style.display = "none";
+                    }
+                });
+
+            // Close modal on X
+            document.getElementById("closeModalBtn")
+                ?.addEventListener("click", () => {
+                    document.getElementById("userViewEditModal").style.display = "none";
+                });
+
+
+
+            // onclick buttons
+            document.addEventListener("DOMContentLoaded", () => {
+
+                document.getElementById("goDashboard")?.addEventListener("click", () => {
+                    window.location.href = "dashboard.html";
+                });
+
+                document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+
+                document.getElementById("hrBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=hr-logo";
+                });
+
+                document.getElementById("financeBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=finance-logo";
+                });
+
+                document.getElementById("itBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=it-logo";
+                });
+
+                document.getElementById("performanceBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=performance-logo";
+                });
+
+                document.getElementById("reportsBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=reports-logo";
+                });
+
+                document.getElementById("employeeBtn")?.addEventListener("click", () => {
+                    window.location.href = "employee-list.html";
+                });
+
+                document.getElementById("searchBtn")
+                    ?.addEventListener("click", searchUsers);
+
+                document.getElementById("closeUserModalBtn")
+                    ?.addEventListener("click", closeUserModal);
+
+            });
+
+
+
+
+            // session
+            fetch("/api/auth/session-check")
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        // ❌ Not logged in → redirect
+                        window.location.href = "index.html";
+                    } else {
+                        // ✅ Show username
+                        document.getElementById("userName").textContent = data.user.name;
+                    }
+                })
+                .catch(() => {
+                    window.location.href = "index.html";
+                });
+
+
+
+
+            // logout function
+            function logoutUser() {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You will be logged out from your session.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, logout",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch("/api/auth/logout")
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: "Logged Out!",
+                                        text: "You have been successfully logged out.",
+                                        icon: "success",
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    });
+
+                                    setTimeout(() => {
+                                        window.location.href = "index.html";
+                                    }, 2000);
+                                }
+                            })
+                            .catch(() => {
+                                Swal.fire("Error", "Logout failed", "error");
+                            });
+                    }
+                });
+            }
+        </script>
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+
+</html>

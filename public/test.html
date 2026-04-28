@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Employee Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+
+            /* 🔥 YOUR BACKGROUND IMAGE */
+            background-image: url('./images/emp-bg.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+
+            color: #033;
+            overflow-x: hidden;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: #006b77;
+            color: #fff;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-box {
+            background: #fff;
+            color: #006b77;
+            padding: 6px 10px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-right select {
+            padding: 5px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logout {
+            cursor: pointer;
+        }
+
+        /* ===== TITLE ===== */
+        .page-title {
+            padding: 20px;
+        }
+
+        .page-title h1 {
+            display: inline-block;
+            background: #e9f1f1;
+            padding: 10px 20px;
+            font-size: 24px;
+            color: #045;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .dashboard {
+            display: flex;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        /* ===== LEFT TILES ===== */
+        .tiles {
+            display: grid;
+            grid-template-columns: repeat(3, 230px);
+            gap: 20px;
+        }
+
+        .tile {
+            background: #fff;
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+            min-height: 120px;
+            position: relative;
+        }
+
+        .tile-header {
+            background: #8bbbc2;
+            color: #fff;
+            padding: 5px 10px;
+            font-weight: bold;
+            margin: -15px -15px 15px;
+        }
+
+        .tile a {
+            display: block;
+            text-decoration: none;
+            color: #055;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        .tile a:hover {
+            text-decoration: underline;
+        }
+
+        .tall {
+            grid-row: span 2;
+        }
+
+        .wide {
+            grid-column: span 2;
+        }
+
+        /* ===== NOTIFICATIONS ===== */
+        .notifications {
+            background: #fff;
+            width: 330px;
+            height: 520px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notifications h2 {
+            margin: 0 0 10px;
+        }
+
+        #notificationList {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* ===== WHATSAPP ===== */
+        .whatsapp {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 55px;
+            height: 55px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 28px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, .3);
+        }
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .tiles {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .notifications {
+                width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">
+            <span class="logo-box">WL</span>
+            <span>Worklife</span>
+        </div>
+
+        <div class="header-right">
+            <select>
+                <option>East</option>
+                <option>West</option>
+                <option>North</option>
+                <option>South</option>
+            </select>
+
+            <div class="profile">
+                <i class="fa-solid fa-user-circle"></i>
+                <span id="userName">Loading...</span>
+            </div>
+
+            <i class="fa-solid fa-power-off logout" onclick="logoutUser()"></i>
+        </div>
+    </header>
+
+    <!-- TITLE -->
+    <div class="page-title">
+        <h1>Employee Dashboard</h1>
+    </div>
+
+    <!-- MAIN -->
+    <div class="dashboard">
+
+        <!-- LEFT -->
+        <div class="tiles">
+
+            <div class="tile">
+                <div class="tile-header">Certificate</div>
+                <a href="certificate-request.html">Request Certificate</a>
+                <a href="my-certificates.html">My Certificate</a>
+            </div>
+
+            <div class="tile">
+                <div class="tile-header">Leave</div>
+                <a href="leave-request.html">Request Leave</a>
+                <a href="my-request.html">My Request</a>
+            </div>
+
+            <div class="tile tall">
+                <div class="tile-header">Incentive</div>
+                <a href="incentive-request.html">Incentive Request</a>
+                <a href="my-incentive.html">My Incentive</a>
+            </div>
+
+            <div class="tile">
+                <div class="tile-header">Petrol</div>
+                <a href="petrol-claim.html">Petrol Claims</a>
+                <a href="my-petrol.html">My Petrol</a>
+            </div>
+
+            <div class="tile">
+                <div class="tile-header">Expense</div>
+                <a href="expense-claim.html">Expense Claims</a>
+                <a href="myexpense.html">My Expenses</a>
+            </div>
+
+            <div class="tile wide">
+                <div class="tile-header">Performance</div>
+                <a href="performance.html">Performance Management</a>
+                <a href="my-performance.html">My Performance</a>
+            </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="notifications">
+            <h2><i class="fa-regular fa-bell"></i> Notification</h2>
+            <div id="notificationList"></div>
+        </div>
+
+    </div>
+
+    <!-- WhatsApp -->
+    <a href="https://wa.me/918495974929" class="whatsapp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- SAME NOTIFICATION JS -->
+    <script src="js/notifications.js"></script>
+    <script src="js/employee-dashboard.js"></script>
+
+</body>
+
+</html>

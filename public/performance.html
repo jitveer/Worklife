@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Performance management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: white;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            /*  ADDED SPACING BELOW HEADER */
+        }
+
+        .header {
+            background-color: #4aa382;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            height: 60px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-box {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .worklife-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header select {
+            background-color: white;
+            border: 1px solid white;
+            color: black;
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #userName {
+            font-weight: 500;
+            width: 5rem;
+        }
+
+        .logout-btn {
+            color: white;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+
+        /* MAIN CONTAINER */
+        .main-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            align-items: flex-start;
+            /* ensures panels align at top */
+        }
+
+        /* LEFT PANEL */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            width: 120px;
+        }
+
+        .left-panel button {
+            width: 110px;
+            height: 100px;
+            padding: 10px;
+            font-weight: bold;
+            border: none;
+            color: white;
+            border-radius: 0px;
+        }
+
+        .left-panel button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-hr {
+            background-color: #a493b9;
+        }
+
+        .btn-finance {
+            background-color: #c78864;
+        }
+
+        .btn-it {
+            background-color: #863f33;
+        }
+
+        .btn-pm {
+            background-color: #15ac7f;
+        }
+
+        .btn-reports {
+            background-color: #82b435;
+        }
+
+        /* CENTER PANEL */
+        .evaluation-form {
+            flex: 1;
+            min-width: 600px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            overflow-x: auto;
+
+        }
+
+
+        .form-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #15ac7f;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        textarea,
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 6px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .add-row-btn {
+            background-color: #15ac7f;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .evaluation-summary {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .summary-row.total {
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+            font-weight: normal;
+        }
+
+
+
+        /* RIGHT PANEL */
+        .personal-info {
+            flex: 0 0 250px;
+            background: white;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-heading {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2db381;
+            margin-bottom: 10px;
+        }
+
+        .info-block {
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            background-color: #e3f9f3;
+        }
+
+        .info-block:nth-child(even) {
+            background-color: #c7ece3;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        button:disabled,
+        input:disabled,
+        select:disabled,
+        textarea:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            background-color: #ddd;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header">
+            <div class="header-left">
+                <a href="#" id="headerLogo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    <div class="logo-box">WL</div>
+                    <div class="worklife-text">Worklife</div>
+                </a>
+            </div>
+            <div class="header-right">
+                <select>
+                    <option>Eastern</option>
+                    <option>Western</option>
+                    <option>Northern</option>
+                    <option>Southern</option>
+                </select>
+                <span>English</span>
+                <div class="profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userName" style="text-transform: capitalize;">Loading...</span>
+                </div>
+                <div class="logout" id="logoutBtn">
+                    <i class="fas fa-power-off"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container" style="display: flex; gap: 20px; padding: 20px;">
+
+        <!-- LEFT NAVIGATION -->
+        <div id="sidePanel" class="left-panel" style="width: 120px;">
+            <button class="btn-hr" id="hrBtn">
+                <i class="fa-regular fa-user" style="font-size: 24px;"></i><br>HR
+            </button>
+            <button class="btn-finance" id="financeBtn">
+                <i class="fa-regular fa-folder" style="font-size: 24px;"></i><br>Finance
+            </button>
+            <button class="btn-it" id="itBtn">
+                <i class="fa-solid fa-desktop" style="font-size: 24px;"></i><br>IT
+            </button>
+            <button class="btn-pm" id="performanceBtn">
+                <i class="fa-solid fa-clock" style="font-size: 24px;"></i><br>Performance
+            </button>
+            <button class="btn-reports" id="reportsBtn">
+                <i class="fa-solid fa-chart-bar" style="font-size: 24px;"></i><br>Reports
+            </button>
+        </div>
+
+        <!-- CENTER CONTENT -->
+        <div class="evaluation-form" style="flex: 1;">
+
+            <!-- Section 1: Overall Rating Scales -->
+            <div id="sectionRating">
+                <h2 class="form-title"><i class="fa-solid fa-clipboard-list"></i> Performance Evaluation Form</h2>
+                <h4 class="section-title">Section 1: Overall Rating Scales</h4>
+                <table class="rating-table">
+                    <thead>
+                        <tr>
+                            <th>Rating</th>
+                            <th>Score Slab</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>5</td>
+                            <td>4.50 - 5.00</td>
+                            <td>Consistently exceeds all expectations</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>3.50 - 4.49</td>
+                            <td>Meets all expectations and occasionally exceeds some</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>2.50 - 3.49</td>
+                            <td>Meets all expectations</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>1.50 - 2.49</td>
+                            <td>Does not meet all expectations</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0.00 - 1.49</td>
+                            <td>Does not meet any expectations</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 2: Business Targets -->
+            <div id="sectionTargets">
+                <h4 class="section-title">Section 2: Business Targets</h4>
+                <table class="targets-table">
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Business Targets</th>
+                            <th>Line Manager Comments</th>
+                            <th>Accomplishments</th>
+                            <th>Weight %</th>
+                            <th>Rating</th>
+                            <th>Score</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="targetsBody">
+                        <tr>
+                            <td>1</td>
+                            <td data-field="target"><textarea placeholder="Enter target"></textarea></td>
+                            <td data-field="managerComments"><textarea placeholder="Manager comments"></textarea></td>
+                            <td data-field="accomplishments"><textarea placeholder="Accomplishments"></textarea></td>
+                            <td data-field="weight"><input type="number" class="weight-input" value="0"></td>
+                            <td data-field="rating">
+                                <select>
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                            <td data-field="score"><input type="text"></td>
+                            <td><button class="btn btn-sm btn-danger delete-row">X</button></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td data-field="target"><textarea placeholder="Enter target"></textarea></td>
+                            <td data-field="managerComments"><textarea placeholder="Manager comments"></textarea></td>
+                            <td data-field="accomplishments"><textarea placeholder="Accomplishments"></textarea></td>
+                            <td data-field="weight"><input type="number" class="weight-input" value="0"></td>
+                            <td data-field="rating">
+                                <select>
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                            <td data-field="score"><input type="text"></td>
+                            <td><button class="btn btn-sm btn-danger delete-row">X</button></td>
+                        </tr>
+
+                        <tr>
+                            <td>3</td>
+                            <td data-field="target"><textarea placeholder="Enter target"></textarea></td>
+                            <td data-field="managerComments"><textarea placeholder="Manager comments"></textarea></td>
+                            <td data-field="accomplishments"><textarea placeholder="Accomplishments"></textarea></td>
+                            <td data-field="weight"><input type="number" class="weight-input" value="0"></td>
+                            <td data-field="rating">
+                                <select>
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                            <td data-field="score"><input type="text"></td>
+                            <td><button class="btn btn-sm btn-danger delete-row">X</button></td>
+                        </tr>
+
+                        <tr>
+                            <td>4</td>
+                            <td data-field="target"><textarea placeholder="Enter target"></textarea></td>
+                            <td data-field="managerComments"><textarea placeholder="Manager comments"></textarea></td>
+                            <td data-field="accomplishments"><textarea placeholder="Accomplishments"></textarea></td>
+                            <td data-field="weight"><input type="number" class="weight-input" value="0"></td>
+                            <td data-field="rating">
+                                <select>
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                            <td data-field="score"><input type="text"></td>
+                            <td><button class="btn btn-sm btn-danger delete-row">X</button></td>
+                        </tr>
+                        <tr id="totalRow" data-total-row="true">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><strong>Total</strong></td>
+                            <td data-field="weight" id="weight"><strong>0%</strong></td>
+                            <td></td>
+                            <td data-field="score" id="score"><strong>0</strong></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="add-row-btn" id="addRowBtn">Add Row <i
+                        class="fa-solid fa-square-plus"></i></button>
+
+                <div class="mb-3">
+                    <label><strong>Comments if applicable :</strong></label>
+                    <textarea class="form-control" id="Comments"></textarea>
+                </div>
+            </div>
+
+            <!-- Section 3: Core Competencies -->
+            <div id="sectionCompetencies">
+                <h4 class="section-title">Section 3: Core Competencies</h4>
+                <table class="targets-table">
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Professional Competencies</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                <strong>Communication</strong><br>
+                                Communication demonstrates an understanding of the views of others.
+                                Communicates in a clear and logical manner using appropriate language.
+                                Listens attentively to views and issues of others. Adapts appropriate
+                                methods of communication for each situation. Conveys and receives
+                                information effectively and builds positive working relationships.
+                                Body language is positive and open. Written communication is professional
+                                and business appropriate.
+                            </td>
+                            <td>
+                                <select class="tech-rating" data-type="professional" data-name="Communication">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>2</td>
+                            <td>
+                                <strong>Decision Making</strong><br>
+                                Is able to analyze situations, diagnose problems, identify the key issues,
+                                establish and evaluate alternative courses of action and produce a logical,
+                                practical and acceptable solution. Is able to make effective decisions on
+                                a day-to-day basis, taking ownership of decisions, demonstrating sound
+                                judgement in escalating issues where necessary.
+                            </td>
+                            <td>
+                                <select class="tech-rating" data-type="professional" data-name="Decision Making">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>3</td>
+                            <td>
+                                <strong>Quality Orientation And Accuracy</strong><br>
+                                Diligently attends to details and pursues quality in accomplishing tasks.
+                                Performs tasks with care and is thorough. Makes few errors. Checks work to
+                                ensure accuracy and completeness. Reviews work before submitting. Is alert
+                                and takes care of details that are easy to overlook or dismiss as unimportant.
+                            </td>
+                            <td>
+                                <select class="tech-rating" data-type="professional"
+                                    data-name="Quality Orientation And Accuracy">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>4</td>
+                            <td>
+                                <strong>Initiative</strong><br>
+                                Identifies what needs to be done and does it before being asked or before the
+                                situation requires it. Does more than what is normally required in a situation.
+                                Seeks out others involved in a situation to learn their perspectives. Takes
+                                independent action to change the direction of events. Comes up with new ideas
+                                to alter current operational processes that may be old or ineffective. Goes the
+                                extra mile and is keen to be part of projects within the Company that may be
+                                beyond expectations from him/her.
+                            </td>
+                            <td>
+                                <select class="tech-rating" data-type="professional" data-name="Initiative">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>5</td>
+                            <td>
+                                <strong>Technical Skills</strong><br>
+                                Demonstrates depth of knowledge and skill in a technical area. Effectively
+                                applies technical knowledge to solve a range of problems. Possesses strong
+                                knowledge and skill in their technical area. Develops technical solutions
+                                to new or highly complex problems that cannot be solved using existing
+                                methods or approaches. Stays informed about changes in their area of
+                                expertise/knowledge.
+                            </td>
+                            <td>
+                                <select class="tech-rating" data-type="professional" data-name="Technical Skills">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><strong>Total</strong></td>
+                            <td><span id="coreTotal"></span></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 4: Behavioral Competencies -->
+            <div id="sectionBehavioral">
+                <h4 class="section-title">Section 4: Behavioral Competencies</h4>
+                <table class="targets-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Competency</th>
+                            <th>Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>
+                                <strong>Team Work</strong>
+                                Works cooperatively and flexibly with other members
+                                of the team with a full understanding of the role to be played as a
+                                team member to achieve a common goal. Acts in a supportive
+                                manner to the team. Encourages team unity through sharing
+                                information or expertise, working together to solve problems, and
+                                putting team success first.
+                            </td>
+                            <td>
+                                <select class="beh-rating" data-type="behavioral" data-name="Team Work">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>
+                                <strong>Planning and Organizing</strong>
+                                Plans and organizes their own work
+                                through a clear understanding of their objectives and targets.
+                                Planning, organizing and/or monitoring one’s own work and
+                                ensures achievement of desired results. Requires little follow up
+                                and keeps manager informed of progress. Identifies what
+                                resources and people are required to get the work done and plans
+                                these well in advance – not last minute.
+                            </td>
+                            <td>
+                                <select class="beh-rating" data-type="behavioral" data-name="Planning and Organizing">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>
+                                <strong>Adaptability / Flexibility</strong>
+                                Is open to different and new ways of
+                                doing things and is willing to modify their preferred way of doing
+                                things. Demonstrates openness to new organizational structures,
+                                procedures, and technology. Switches to a different strategy when
+                                an initially selected one is unsuccessful. Is open to other people’s
+                                point of view – adapts easily to organizational changes.
+                            </td>
+                            <td>
+                                <select class="beh-rating" data-type="behavioral"
+                                    data-name="Adaptability / Flexibility">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>
+                                <strong>Self Confidence</strong>
+                                Has faith in one’s own ideas and capability to be
+                                successful and is willing to stand by their point of view if it is
+                                logical. Is confident of own ability to accomplish goals. Presents
+                                themselves crisply and impressively. Is willing to speak up to the
+                                right person or group at the right time, when he/she disagrees
+                                with a decision or strategy. Approaches challenging tasks with a
+                                “can-do” attitude.
+                            </td>
+                            <td>
+                                <select class="beh-rating" data-type="behavioral" data-name="Self Confidence">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>
+                                <strong>Creativity and Innovation</strong>
+                                Develops fresh ideas that provide
+                                solutions to all types of workplace challenges. Sees old problems
+                                in new ways and has new approaches to solving those problems.
+                                Contributes original ideas in brainstorming sessions. Finds ways to
+                                turn the idea into reality. Experiments with new ideas,
+                                methodologies, and procedures. Is willing to try new ways of
+                                doing things.
+                            </td>
+                            <td>
+                                <select class="beh-rating" data-type="behavioral" data-name="Creativity and Innovation">
+                                    <option value="0" selected>0</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td><strong>Total</strong></td>
+                            <td><span id="behavioralTotal"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Section 5: Comments -->
+                <div class="mb-3">
+                    <label><strong>Comments if applicable :</strong></label>
+                    <textarea class="form-control" id="midComments"></textarea>
+                </div>
+            </div>
+
+            <!-- Section 6: Mid-Year Appraisal -->
+            <div id="sectionMidYear">
+                <h4 class="section-title">Section 6: Mid-Year Appraisal</h4>
+                <p class="section-heading"><strong>Line Manager Evaluation and Comments</strong></p>
+                <div class="mb-3"><label>Strengths</label><textarea class="form-control" id="midStrengths"></textarea>
+                </div>
+                <div class="mb-3"><label>Training Needs</label><textarea class="form-control"
+                        id="midTraining"></textarea></div>
+                <div class="mb-3"><label>Line Manager Comments</label><textarea class="form-control"
+                        id="midLMComments"></textarea></div>
+                <div class="mb-3"><label>Employee Comments</label><textarea class="form-control"
+                        id="midEmpComments"></textarea></div>
+            </div>
+
+            <!-- Section 7: Evaluation Summary -->
+            <div id="sectionEvaluationSummary" class="evaluation-summary">
+                <p class="section-heading1"><strong>Section 5: Evaluation Summary</strong></p>
+                <div class="summary-row">
+                    <span>Business Targets/ Objectives</span>
+                    <span class="score" id="business_score">Loading..</span>
+                </div>
+                <div class="summary-row">
+                    <span>Professional Competencies</span>
+                    <span class="score" id="professional_score">Loading..</span>
+                </div>
+                <div class="summary-row">
+                    <span>Behavioral Competencies</span>
+                    <span class="score" id="behavioral_score">Loading..</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Overall Appraisal Score</span>
+                    <span class="score" id="overall_score">Loading..</span>
+                </div>
+            </div>
+
+            <!-- Section 8: Full-Year Appraisal -->
+            <div id="sectionFullYear">
+                <h4 class="section-title">Section 7: Full-Year Appraisal</h4>
+                <p class="section-heading"><strong>Employee Self Evaluation</strong></p>
+                <div class="mb-3"><label>My Three Key Achievements</label><textarea class="form-control"
+                        id="fullAchievements"></textarea></div>
+                <div class="mb-3"><label>My Two Development Areas</label><textarea class="form-control"
+                        id="fullDevelopment"></textarea></div>
+                <div class="mb-3"><label>Employee Comments</label><textarea class="form-control"
+                        id="fullEmpComments"></textarea></div>
+                <p class="section-heading"><strong>Line Manager Evaluation and Comments</strong></p>
+                <div class="mb-3"><label>Strengths</label><textarea class="form-control" id="fullStrengths"></textarea>
+                </div>
+                <div class="mb-3"><label>Training Needs</label><textarea class="form-control"
+                        id="fullTraining"></textarea></div>
+                <div class="mb-3"><label>Line Manager Comments</label><textarea class="form-control"
+                        id="fullLMComments"></textarea></div>
+            </div>
+
+
+            <!-- Section 9: Approval History -->
+            <div id="sectionApprovalHistory">
+                <h4 class="section-title">Section 8: Approval History</h4>
+
+                <table class="approval-table">
+                    <thead>
+                        <tr>
+                            <th>Approver Group</th>
+                            <th>Approver Name</th>
+                            <th>Approval Date</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Line Manager</td>
+                            <td contenteditable="true"></td>
+                            <td><input type="text" class="approval-date" placeholder="Enter date (e.g. 22/04/2025)">
+                            </td>
+                            <td contenteditable="true"></td>
+                        </tr>
+                        <tr>
+                            <td>HR</td>
+                            <td contenteditable="true">Reena Chinnappa</td>
+                            <td><input type="text" class="approval-date" placeholder="Enter date (e.g. 22/04/2025)">
+                            </td>
+                            <td contenteditable="true" class="c"></td>
+                        </tr>
+                        <tr>
+                            <td>Employee</td>
+                            <td contenteditable="true"></td>
+                            <td><input type="text" class="approval-date" placeholder="Enter date (e.g. 22/04/2025)">
+                            </td>
+                            <td contenteditable="true"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- <div class="mb-3">
+                <label><strong>Approver Comments:</strong></label>
+                <textarea class="form-control" id="f-Comments"></textarea>
+            </div> -->
+
+            <div id="sectionSubmit" class="text-end mt-3">
+                <button id="btnSubmit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="personal-info" style="width: 250px;">
+            <h6 class="info-heading">Personal Information</h6>
+            <div class="info-block"><span class="label">Employee Id:</span>
+                <div id="info-employee-id">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Request Number:</span>
+                <div id="info-request-number">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Name:</span>
+                <div id="info-name">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Email:</span>
+                <div id="info-email">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Company:</span>
+                <div id="info-company">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Department:</span>
+                <div id="info-department">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Designation:</span>
+                <div id="info-designation">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Line Manager:</span>
+                <div id="info-line-manager">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Joining Date:</span>
+                <div id="info-joining-date">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/performance.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Resource</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      background-image: url('./images/HR.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+
+    }
+
+    .left-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      background-color: white;
+      color: rgb(202, 70, 70);
+      padding: 8px 12px;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+
+    .logo-text {
+      padding: 6px 10px;
+      border-radius: 5px;
+      color: white;
+      font-size: 20px;
+      /* 👈 Increase the size as needed */
+      font-weight: bold;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .profile i {
+      margin-right: 5px;
+    }
+
+    .logout i {
+      cursor: pointer;
+    }
+
+    .main-content {
+      display: flex;
+      margin: 0;
+      padding: 25px;
+      /* optional padding */
+      height: calc(100vh - 70px);
+      align-items: flex-start;
+      /* aligns content to top */
+      justify-content: space-between;
+    }
+
+    .left-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .menu-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 0px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+    }
+
+    .menu-icon span {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .hr {
+      background-color: #2db3b3;
+    }
+
+    .finance {
+      background-color: #57098b;
+    }
+
+    .it {
+      background-color: #a03597;
+    }
+
+    .reports {
+      background-color: #55991e;
+    }
+
+    .performance {
+      background-color: #ce5f44;
+    }
+
+    .employee {
+      background-color: #0e7c61;
+    }
+
+    .menu-icon {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .menu-icon:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Subtle icon & label styling for clarity */
+    .menu-icon i {
+      margin-bottom: 5px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+
+    .menu-icon span {
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      font-weight: 600;
+    }
+
+    /* Optional: add a slight border for depth */
+    .menu-icon {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dynamic-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      text-align: center;
+      margin: 0 40px;
+    }
+
+    #section-heading {
+      font-size: 26px;
+      font-weight: bold;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .content-boxes {
+      display: grid;
+      grid-template-columns: repeat(2, 380px);
+      column-gap: 80px;
+      /* horizontal space between boxes */
+      row-gap: 40px;
+      /* vertical space between boxes */
+      justify-content: start;
+      align-items: center;
+      margin-left: 25px;
+    }
+
+    .option-box {
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 20px;
+      border-radius: 0px;
+      color: white;
+      font-weight: bold;
+      text-align: left;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .option-box ul {
+      list-style-type: square;
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    /* LI spacing */
+    .option-box ul li {
+      margin-bottom: 8px;
+      margin-left: 35px;
+
+    }
+
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tile {
+      width: 200px;
+      height: 100px;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .tile {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tile:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .tile i {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-right: 10px;
+      font-size: 20px;
+    }
+
+    .my-task {
+      background-color: #83c4a3;
+    }
+
+    .my-request {
+      background-color: #a474bb;
+    }
+
+    .my-attendance {
+      background-color: #7383a1;
+    }
+
+
+
+    /* ------------------------------------------ */
+    @media screen and (max-width: 768px) {
+
+      header {
+        padding: 5px 10px;
+        gap: 5px;
+      }
+
+      .left-section {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .logo-icon {
+        padding: 2px 6px;
+        font-size: 10px;
+      }
+
+      .logo-text {
+        padding: 3px 5px;
+        font-size: 13px !important;
+      }
+
+      .top-right {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* English text */
+      .top-right span {
+        font-size: 9px !important;
+        white-space: nowrap;
+      }
+
+      /* Profile container */
+      .profile {
+        display: flex;
+        align-items: center !important;
+        gap: 3px;
+        min-width: max-content;
+      }
+
+      /* Profile icon */
+      .profile i {
+        font-size: 13px !important;
+        line-height: 1 !important;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Profile name */
+      .profile span {
+        white-space: nowrap !important;
+        /* No breaking */
+        font-size: 11px !important;
+        line-height: 1 !important;
+      }
+
+      /* Logout icon */
+      .logout i {
+        font-size: 12px !important;
+        line-height: 1;
+      }
+
+      /* Full page layout changes */
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+        /* LEFT | CENTER | RIGHT */
+        gap: 10px;
+        width: 100%;
+        padding: 10px;
+        height: auto;
+        align-items: start;
+        justify-content: center;
+      }
+
+      /* Grid placement — VERY IMPORTANT */
+      .left-menu {
+        grid-column: 1;
+      }
+
+      .dynamic-area {
+        grid-column: 2;
+      }
+
+      .right-panel {
+        grid-column: 3;
+      }
+
+      .left-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0px;
+        width: 100%;
+        padding: 5px 0;
+        margin-top: 5px;
+      }
+
+      .menu-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .menu-icon i {
+        font-size: 18px !important;
+      }
+
+      .menu-icon span {
+        margin-top: 5px;
+        font-size: 10px;
+      }
+
+      /* Fix heading alignment */
+      #section-heading {
+        text-align: left !important;
+        width: 100%;
+        margin-left: 0 !important;
+        align-self: flex-start;
+        font-size: 16px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+      }
+
+      /* Fix dynamic area */
+      .dynamic-area {
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        margin: 0 !important;
+        width: 100%;
+      }
+
+      /* Make center content 1 column and align left */
+      .content-boxes {
+        display: grid;
+        grid-template-columns: 1fr !important;
+        gap: 20px;
+        padding: 0;
+        margin: 0 !important;
+        width: 100%;
+        justify-content: flex-start !important;
+        justify-items: flex-start !important;
+        align-items: flex-start !important;
+      }
+
+      /* Fix option box width and alignment */
+      .option-box {
+        max-width: 160px;
+        width: 160px;
+        padding: 12px;
+        text-align: left !important;
+      }
+
+      /* Fix UL spacing */
+      .option-box ul {
+        padding-left: 10px !important;
+        /* smaller bullet indent */
+      }
+
+      .option-box ul li {
+        margin-left: 0 !important;
+        /* remove huge left space */
+        font-size: 10px;
+      }
+
+      .option-box:not(#hr-logo) .title,
+      .option-box:not(#hr-logo) h2,
+      .option-box:not(#hr-logo) h3,
+      .option-box:not(#hr-logo) h4 {
+        font-size: 11px !important;
+      }
+
+
+
+      /* Right-side tiles */
+      .right-panel {
+        grid-column: 3 !important;
+        width: 65%;
+        padding-right: 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        margin-top: 15px;
+      }
+
+      .tile {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        width: 65px;
+        height: 75px;
+        padding: 4px;
+        font-size: 11px !important;
+        line-height: 1.4;
+        white-space: normal !important;
+        text-align: center;
+        word-break: break-word;
+      }
+
+      .tile i {
+        font-size: 14px !important;
+        /* smaller icon */
+        margin-bottom: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="left-section">
+      <a href="dashboard.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+        <div class="logo-icon">WL</div>
+        <div class="logo-text">Worklife</div>
+      </a>
+    </div>
+
+    <div class="top-right">
+      <select class="dropdown">
+        <option>East</option>
+        <option>West</option>
+        <option>South</option>
+        <option>North</option>
+      </select>
+      <div>English</div>
+      <div class="profile">
+        <i class="fa-solid fa-circle-user"></i>
+        <span id="userName" style="text-transform: capitalize;">Loading...</span>
+      </div>
+      <div class="logout" id="logoutBtn">
+        <i class="fas fa-power-off"></i>
+      </div>
+    </div>
+
+  </header>
+
+  <div class="main-content">
+    <!-- Left vertical menu -->
+    <div class="left-menu">
+      <div class="menu-icon hr" id="hr-logo">
+        <i class="fa-regular fa-user"></i><span>HR</span>
+      </div>
+      <div class="menu-icon finance" id="finance-logo">
+        <i class="fa-regular fa-folder"></i><span>Finance</span>
+      </div>
+      <div class="menu-icon it" id="it-logo">
+        <i class="fa-solid fa-desktop"></i><span>IT</span>
+      </div>
+      <div class="menu-icon reports" id="reports-logo">
+        <i class="fa-solid fa-clock "></i><span>Reports</span>
+      </div>
+      <div class="menu-icon performance" id="performance-logo">
+        <i class="fa-solid fa-chart-bar "></i><span>Performance</span>
+      </div>
+      <a href="employee-list.html">
+        <div class="menu-icon employee" id="employee-logo">
+          <i class="fas fa-users"></i><span>Employee</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Center dynamic content -->
+    <div class="dynamic-area">
+      <h2 id="section-heading"></h2>
+      <div id="content-boxes" class="content-boxes"></div>
+      <div class=" "></div>
+    </div>
+
+    <!-- Right section -->
+    <div class="right-panel">
+      <div class="tile my-task"><i class="fas fa-tasks"></i>My Task</div>
+      <div class="tile my-request" id="myRequestBtn" style="cursor:pointer;">
+        <i class="fas fa-envelope-open-text"></i> My Request
+      </div>
+      <div class="tile my-attendance"><i class="fas fa-calendar-check"></i>My Attendance</div>
+    </div>
+  </div>
+
+  <script>
+    const contentBoxes = document.getElementById('content-boxes');
+    const sectionHeading = document.getElementById('section-heading');
+
+    const sectionContent = {
+      "hr-logo": {
+        title: "Human Resources",
+        items: [
+          {
+            text: "General",
+            color: "#26a69a",
+            links: [
+              "Add Options",
+              "Interview Invites",
+              "Task Delegation",
+              "My Pay-slip",
+              "View Policies",
+              "My Team Leave Planner",
+              "Bank Account Update Request",
+
+            ]
+          },
+          {
+            text: "Leave Management",
+            color: "#ff7043",
+            links: [
+              "Leave Request",
+              "Leave Rejoining Request",
+              "Comp off Re-Approval Request"
+            ]
+          },
+          {
+            text: "Employee Certificate",
+            color: "#006400",
+            links: [
+              "Request Certificate",
+              "Certificate Approvals Page",
+              "Employee Certificate List",
+              "Career Development Plan"
+            ]
+          },
+          { text: "Incentive Request form", color: "#cc007e", linkTo: "sales.html" }
+        ]
+      },
+
+      "finance-logo": {
+        title: "Finance",
+        items: [
+          { text: "Miscellaneous Expense Claim", color: "#4caf50", links: [] },
+          { text: "Petrol Conveyance", color: "#ff9800", linkTo: "petrol-conveyance.html" },
+          { text: "Sale of Assets Request", color: "#03a9f4", links: [] },
+          { text: "Sale of Assets Request", color: "#03a9f4", links: [] },
+          { text: "Sale of Scraps Request", color: "#c62828", links: [] },
+          { text: "OPEX Open Agreement", color: "#8bc34a", links: [] },
+          { text: "Baddebt Writeoff Request", color: "#6a1b9a", links: [] },
+          { text: "Sales Agreement Request", color: "#00897b", links: [] }
+        ]
+      },
+
+      "it-logo": {
+        title: "Information Technology",
+        items: [
+          { text: "IT Asset Request", color: "#3949ab", linkTo: [] },
+          { text: "IT Asset Return", color: "#8e24aa", links: [] }
+        ]
+      },
+
+      "reports-logo": {
+        title: "Reports",
+        items: [
+          { text: "Team Attendance", color: "#6a1b9a", linkTo: "attendance.html" },
+          { text: "Miscellaneous Expense Report", color: "#00897b", linkTo: "expense-approval.html" },
+          { text: "Petrol Conveyance", color: "#ef6c00", linkTo: "petrol-approval.html" },
+          { text: "Leave Report", color: "#004aad", linkTo: "leave-requests-approval.html?type=all" },
+          { text: "Incentive Request", color: "#cc007e", linkTo: "sales-list.html" },
+          { text: "Performance Request", color: "#9440dd", linkTo: "per-ap-list.html" }
+        ]
+      },
+
+      "performance-logo": {
+        title: "Performance Management",
+        items: [
+          {
+            text: "Development Plan",
+            color: "#f06292",
+            linkTo: "performance.html"
+          },
+          { text: "My Development Plans", color: "#7e57c2", linkTo: "per-ap-list.html" }
+        ]
+      }
+    };
+
+    const tiles = document.querySelectorAll('.menu-icon');
+    tiles.forEach(tile => {
+      tile.addEventListener('click', () => {
+        const id = tile.id;
+        const section = sectionContent[id];
+
+        if (!section) return;
+
+        history.pushState(null, '', `?section=${id}`);
+
+        sectionHeading.textContent = section.title;
+        contentBoxes.innerHTML = ''; // Clear previous content
+
+        // If section has raw HTML (like employee section)
+        if (section.html) {
+          contentBoxes.innerHTML = section.html;
+          return;
+        }
+
+        // If section has item boxes
+        if (section.items && Array.isArray(section.items)) {
+          section.items.forEach(item => {
+            const box = document.createElement('div');
+            box.className = 'option-box';
+            box.style.backgroundColor = item.color;
+
+            const heading = document.createElement('h3');
+            heading.textContent = item.text;
+            box.appendChild(heading);
+
+            // Handle special redirects like Expense Claim
+            if (item.text === "Miscellaneous Expense Claim") {
+              box.style.cursor = "pointer";
+              box.addEventListener("click", () => {
+                window.location.href = "expense-claim.html";
+              });
+            }
+
+            if (item.linkTo) {
+              box.style.cursor = "pointer";
+              box.addEventListener("click", () => {
+                window.location.href = item.linkTo;
+              });
+            }
+
+            // If item has links
+            if (item.links && item.links.length > 0) {
+              const ul = document.createElement('ul');
+              ul.style.paddingLeft = "15px";
+              ul.style.textAlign = "left";
+              //ul.style.listStyle = "none";
+              ul.style.margin = "10px 0 0 0";
+
+              item.links.forEach(linkText => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+
+                if (linkText === "Leave Request") {
+                  a.href = "LeaveRequest.html";
+                } else if (linkText === "Leave Rejoining Request") {
+                  a.href = "leave-rejoining.html";
+                } else if (linkText === "Comp off Re-Approval Request") {
+                  a.href = "comp-off-reapproval.html";
+                } else if (linkText === "Leave Report") {
+                  a.href = "leave-requests-approval.html?type=all";
+                } else if (linkText === "Development Plan") {
+                  a.href = "perfomance.html";
+                } else if (linkText === "Request Certificate") {
+                  a.href = "certificate.html";
+                } else if (linkText === "Certificate Approvals Page") {
+                  a.href = "certificate-approval.html";
+                } else if (linkText === "Employee Certificate List") {
+                  a.href = "certificate-list.html";
+                } else if (linkText === "Add Options") {
+                  a.href = "master.html";
+                } else if (linkText === "Interview Invites") {
+                  a.href = "interview.html";
+                } else {
+                  a.href = "#";
+                }
+
+                a.textContent = linkText;
+                a.style.color = "white";
+                a.style.textDecoration = "none";
+                li.appendChild(a);
+                ul.appendChild(li);
+              });
+
+              box.appendChild(ul);
+            }
+
+            contentBoxes.appendChild(box);
+          });
+        }
+      });
+    });
+
+
+
+    //---------------
+    // onclick buttons
+    //----------------
+    document.addEventListener("DOMContentLoaded", () => {
+
+      document.getElementById("logoutBtn")
+        ?.addEventListener("click", logoutUser);
+
+      document.getElementById("myRequestBtn")
+        ?.addEventListener("click", () => {
+          window.location.href = "my-request.html?type=myrequest";
+        });
+
+    });
+
+
+
+    // session-check
+    fetch("/api/auth/session-check")
+      .then(res => res.json())
+      .then(data => {
+        if (!data.loggedIn) {
+          // Not logged in → go to login
+          window.location.href = "index.html";
+        } else {
+          document.getElementById("userName").textContent = data.user.name;
+
+        }
+      })
+      .catch(error => {
+        console.error("Session check failed:", error);
+        window.location.href = "index.html";
+      });
+
+    const params = new URLSearchParams(window.location.search);
+    const sectionParam = params.get('section');
+    if (sectionParam) {
+      const menuTile = document.getElementById(sectionParam);
+      if (menuTile) {
+        menuTile.click();
+      }
+    }
+
+    // logout
+    function logoutUser() {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You will be logged out from your session.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, logout",
+        cancelButtonText: "Cancel"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Call logout API
+          fetch("/api/auth/logout")
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                Swal.fire({
+                  title: "Logged Out!",
+                  text: "You have been successfully logged out.",
+                  icon: "success",
+                  showConfirmButton: false,
+                  timer: 2000
+                });
+
+                setTimeout(() => {
+                  window.location.href = "index.html"; // Redirect to login
+                }, 2000);
+              } else {
+                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+              }
+            })
+            .catch(err => {
+              console.error("Logout error:", err);
+              Swal.fire("Error", "Something went wrong. Try again.", "error");
+            });
+        }
+      });
+    }
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+
+</html>

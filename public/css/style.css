@@ -1,0 +1,273 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: url('../images/bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 900px;
+  height: 510px;
+  display: flex;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.left-box {
+  width: 40%;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+}
+
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.logo-icon {
+  background-color: white;
+  color: #111;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 18px;
+  border-radius: 6px;
+}
+
+.logo-text {
+  font-size: 38px;
+  font-weight: 800;
+  color: white;
+}
+
+/* Left Text "Welcome to HR Portal" */
+.left-box .center-text p {
+  font-size: 35px;
+  line-height: 1.5;
+  text-align: center;
+  margin-top: 70px;
+  margin-bottom: 0;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.left-box .center-text strong {
+  display: block;
+  font-size: 30px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* Styled Support Button */
+.support-link {
+  position: absolute;
+  bottom: 15px;
+  left: 20px;
+  font-size: 14px;
+  text-decoration: none;
+  color: #ccc;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.support-link:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+/* Right Side */
+.right-box {
+  width: 60%;
+  padding: 40px 30px;
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+
+}
+
+/* Labels */
+.right-box form label {
+  font-size: 15px;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Input & Dropdown Styling */
+
+.right-box form input {
+  width: 400px;
+  height: 42px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border: 1.5px solid #555;
+  border-radius: 0px;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+
+.right-box form select {
+  width: 400px;
+  height: 42px;
+  padding: 10px 12px;
+  padding-right: 40px;
+  margin-bottom: 6px;
+  border: 1.5px solid #555;
+  border-radius: 0px;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fff;
+
+  /* Arrow only for select */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='black' viewBox='0 0 24 24' width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 16px;
+
+  box-sizing: border-box;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+/* Button */
+.right-box form button {
+  background-color: #000;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+}
+
+
+/* Error message */
+.error-text {
+  color: red;
+  font-size: 13px;
+  line-height: 1.2;
+  margin: 2px 0 8px 0;
+  /* tighten spacing */
+  padding-left: 4px;
+  display: block;
+}
+
+
+
+
+/* ===========================
+   📱 MOBILE VIEW (≤ 768px)
+   =========================== */
+@media (max-width: 768px) {
+
+  /* Body fix */
+  body {
+    width: 100%;
+    height: auto;
+    padding: 20px 0;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+  }
+
+  /* Main container becomes full width */
+  .container {
+    width: 80% !important;
+    max-width: 95% !important;
+    height: auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0px;
+  }
+
+  /* Left section moves to top */
+  .left-box {
+    width: 100%;
+    padding: 25px;
+    text-align: center;
+  }
+
+  .logo-row {
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .logo-text {
+    font-size: 30px;
+  }
+
+  .left-box .center-text p {
+    display: none;
+  }
+
+  .left-box .center-text strong {
+    display: none;
+  }
+
+  .support-link {
+    display: none;
+  }
+
+  /* Right box (form) */
+  .right-box {
+    width: 85%;
+    padding: 30px 20px;
+  }
+
+  /* Form labels */
+  .right-box form label {
+    font-size: 16px;
+  }
+
+  /* Inputs full width */
+  .right-box form input,
+  .right-box form select {
+    width: 100%;
+    height: 46px;
+    font-size: 15px;
+  }
+
+  /* Button full width */
+  .right-box form button {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 16px;
+  }
+
+  .login-btn {
+    width: 35% !important;
+    display: flex;
+    justify-content: center;
+    gap: 10px !important;
+  }
+
+}

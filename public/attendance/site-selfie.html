@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Site Selfie</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: #fff;
+      width: 100%;
+      max-width: 420px;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    video,
+    canvas {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .capture-btn {
+      background: #007bff;
+      color: white;
+    }
+
+    .submit-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>Capture Site Selfie</h2>
+
+    <video id="video" autoplay></video>
+    <canvas id="canvas" class="hidden"></canvas>
+
+    <button class="capture-btn" id="captureBtn">📸 Capture Selfie</button>
+    <button class="submit-btn" id="submitAttendanceBtn">✅ Submit Attendance</button>
+  </div>
+
+  <script>
+
+    let latitude = null;
+    let longitude = null;
+
+    window.onload = () => {
+
+      const lat = localStorage.getItem("site_lat");
+      const lng = localStorage.getItem("site_lng");
+
+      if (!lat || !lng) {
+        alert("Location not available. Please allow location first.");
+        window.location.href = "/attendance/site-login";
+        return;
+      }
+
+      latitude = parseFloat(lat);
+      longitude = parseFloat(lng);
+
+      console.log("Loaded location:", latitude, longitude);
+    };
+
+
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    let selfieBlob = null;
+    let stream = null;
+
+    // Start camera ONLY when user clicks
+    function startCamera() {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+        .then(s => {
+          stream = s;
+          video.srcObject = stream;
+          video.play();
+        })
+        .catch(err => {
+          alert("Camera permission denied or camera not available");
+          console.error(err);
+        });
+    }
+
+    // Capture selfie
+    function captureSelfie() {
+      if (!stream) {
+        startCamera();
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+
+      // Draw location overlay
+      ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+      ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+
+      ctx.fillStyle = "#fff";
+      ctx.font = "20px Arial";
+
+      canvas.classList.remove("hidden");
+      video.classList.add("hidden");
+
+      canvas.toBlob(blob => {
+        selfieBlob = blob;
+      }, "image/jpeg");
+
+      // stop camera after capture
+      stream.getTracks().forEach(track => track.stop());
+    }
+
+    // Submit attendance
+    function submitAttendance() {
+      if (!selfieBlob) {
+        alert("Selfie is mandatory");
+        return;
+      }
+
+      if (!latitude || !longitude) {
+        alert("Location not available");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("latitude", latitude);
+      formData.append("longitude", longitude);
+      formData.append("selfie", selfieBlob, "selfie.jpg");
+
+      fetch("/attendance/site-login", {
+        method: "POST",
+        body: formData
+      })
+        .then(res => {
+          if (!res.ok) throw new Error();
+          window.location.href = "/attendance/success.html";
+        })
+        .catch(() => alert("Attendance not saved"));
+    }
+
+
+    // onclick buttons
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("captureBtn")?.addEventListener("click", captureSelfie);
+      document.getElementById("submitAttendanceBtn")?.addEventListener("click", submitAttendance);
+    });
+    
+  </script>
+</body>
+
+</html>

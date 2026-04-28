@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Allow Location</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== CARD ===== */
+        .location-card {
+            background: #fff;
+            width: 100%;
+            max-width: 420px;
+            padding: 35px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .location-card h2 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .location-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* ===== BUTTON ===== */
+        .allow-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            background: #007bff;
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        .allow-btn:hover {
+            background: #0056b3;
+        }
+
+        /* ===== STATUS ===== */
+        .status {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 480px) {
+            .allow-btn {
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="location-card">
+        <h2>Allow Location</h2>
+        <p>We need your location to mark site attendance</p>
+
+        <button class="allow-btn" id="allowLocationBtn">📍 Allow Location</button>
+
+        <div id="statusBox" class="status info"></div>
+    </div>
+
+    <script>
+        function requestLocation() {
+            showStatus('Requesting your location...', 'info');
+
+            if (!navigator.geolocation) {
+                showStatus('Geolocation is not supported by your browser.', 'error');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                successLocation,
+                errorLocation,
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        function successLocation(position) {
+
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            console.log("Latitude:", lat);
+            console.log("Longitude:", lng);
+
+            // Save coordinates
+            localStorage.setItem('site_lat', lat);
+            localStorage.setItem('site_lng', lng);
+
+            // Convert to address using OpenStreetMap
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(res => res.json())
+                .then(data => {
+
+                    const address = data.display_name;
+
+                    showStatus(
+                        "Location captured successfully!<br><b>" + address + "</b>",
+                        "success"
+                    );
+
+                    // Save address also
+                    localStorage.setItem("site_address", address);
+
+                    setTimeout(() => {
+                        window.location.href = '/attendance/site-selfie.html';
+                    }, 1500);
+
+                })
+                .catch(() => {
+                    showStatus("Address lookup failed", "error");
+                });
+        }
+
+        function errorLocation(error) {
+            let message = '';
+
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    message = 'Location permission denied. Please allow location to continue.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = 'Location information is unavailable.';
+                    break;
+                case error.TIMEOUT:
+                    message = 'Location request timed out. Try again.';
+                    break;
+                default:
+                    message = 'An unknown error occurred.';
+            }
+
+            showStatus(message, 'error');
+        }
+
+        function showStatus(msg, type) {
+            const box = document.getElementById('statusBox');
+            box.className = 'status ' + type;
+            box.innerHTML = msg;
+            box.style.display = 'block';
+        }
+
+
+        // onclick
+        document.getElementById("allowLocationBtn")?.addEventListener("click", requestLocation);
+    </script>
+
+</body>
+
+</html>

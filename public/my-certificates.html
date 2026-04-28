@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>My Certificate Requests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tailwind -->
+    <link rel="stylesheet" href="/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body
+    class="font-['Segoe_UI',Arial,sans-serif] bg-gradient-to-br from-green-100 via-white to-green-200 min-h-screen text-gray-800">
+
+    <!-- ================= HEADER ================= -->
+    <header
+        class="bg-gradient-to-r from-emerald-700 to-emerald-500 text-white h-14 flex justify-between items-center px-5 shadow-md">
+        <div id="headerLogo" class="flex items-center cursor-pointer">
+            <div class="bg-white text-gray-800 font-bold text-lg px-4 py-1 rounded-lg shadow mr-3">WL</div>
+            <div class="text-xl font-bold tracking-wide">Worklife</div>
+        </div>
+
+        <div class="flex items-center gap-5 text-sm font-semibold">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-user"></i>
+                <span id="userName" class="capitalize">Loading...</span>
+            </div>
+
+            <div class="cursor-pointer hover:text-red-200" id="logoutBtn">
+                <i class="fa-solid fa-power-off"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= MAIN ================= -->
+    <div class="flex pt-3">
+
+        <!-- ========== LEFT PANEL ========== -->
+        <aside id="sidePanel" class="w-[125px] px-3 flex flex-col">
+            <button id="hrBtn"
+                class="h-[100px] bg-[#a493b9] text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-regular fa-user text-2xl mb-1"></i>HR
+            </button>
+
+            <button id="financeBtn"
+                class="h-[100px] bg-[#c78864] text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-regular fa-folder text-2xl mb-1"></i>Finance
+            </button>
+
+            <button id="itBtn"
+                class="h-[100px] bg-red-800 text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-solid fa-desktop text-2xl mb-1"></i>IT
+            </button>
+
+            <button id="performanceBtn"
+                class="h-[100px] bg-emerald-600 text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-solid fa-clock text-2xl mb-1"></i>Performance
+            </button>
+
+            <button id="reportsBtn"
+                class="h-[100px] bg-lime-600 text-sm text-white font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-solid fa-chart-bar text-2xl mb-1"></i>Reports
+            </button>
+        </aside>
+
+        <!-- ========== CONTENT ========== -->
+        <main class="flex-1 bg-white m-3 p-6 rounded-xl shadow-lg">
+
+            <h1 class="text-2xl font-bold text-emerald-600 mb-6">
+                My Certificate Requests
+            </h1>
+
+            <!-- FILTER BAR (ONLY STATUS FILTERS) -->
+            <div class="flex gap-3 mb-6">
+                <button id="allBtn"
+                    class="border-2 px-5 py-2 rounded-lg font-semibold hover:bg-emerald-600 hover:text-white transition">
+                    All
+                </button>
+
+                <button id="approvedBtn"
+                    class="border-2 px-5 py-2 rounded-lg font-semibold hover:bg-green-600 hover:text-white transition">
+                    Approved
+                </button>
+
+                <button id="pendingBtn"
+                    class="border-2 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-500 hover:text-white transition">
+                    Pending
+                </button>
+
+                <button id="rejectedBtn"
+                    class="border-2 px-5 py-2 rounded-lg font-semibold hover:bg-red-600 hover:text-white transition">
+                    Rejected
+                </button>
+            </div>
+
+            <!-- TABLE -->
+            <table id="certificateTable" class="w-full border-separate border-spacing-y-3">
+                <thead>
+                    <tr class="bg-emerald-600 text-white text-sm">
+                        <th class="p-3">ID</th>
+                        <th class="p-3">Name</th>
+                        <th class="p-3">Certificate Type</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows injected by JS -->
+                </tbody>
+            </table>
+
+        </main>
+    </div>
+    <script>
+        // ===============================
+        // Employee - My Certificate Requests JS
+        // ===============================
+
+        // Load requests on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            loadRequests("all");
+        });
+
+        // -------------------------------
+        // Fetch & Load Requests
+        // -------------------------------
+        function loadRequests(statusFilter) {
+            fetch("/api/certificate/my-requests", {
+                credentials: "include"
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to fetch data");
+                    return res.json();
+                })
+                .then(data => {
+                    const tbody = document.querySelector("#certificateTable tbody");
+                    tbody.innerHTML = "";
+
+                    const filteredData =
+                        statusFilter === "all"
+                            ? data
+                            : data.filter(row => row.status === statusFilter);
+
+                    if (filteredData.length === 0) {
+                        tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center p-4 text-gray-500">
+                                No records found
+                                </td>
+                                </tr>
+                                `;
+                        return;
+                    }
+
+                    filteredData.forEach(row => {
+                        tbody.appendChild(createRow(row));
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire("Error", "Unable to load certificate requests", "error");
+                });
+        }
+
+        // -------------------------------
+        // Create Table Row
+        // -------------------------------
+        function createRow(row) {
+            const tr = document.createElement("tr");
+
+            tr.className = "bg-white shadow rounded-lg text-sm";
+
+            tr.innerHTML = `
+        <td class="p-3 text-center">${row.employee_id}</td>
+        <td class="p-3 text-center">${row.name}</td>
+        <td class="p-3 text-center">${row.certificate_type_name}</td>
+        <td class="p-3 text-center">${getStatusBadge(row.status)}</td>
+    `;
+
+            const actionTd = document.createElement("td");
+
+            const viewIcon = document.createElement("i");
+            viewIcon.className = "fa-solid fa-eye text-blue-600 cursor-pointer";
+
+            viewIcon.addEventListener("click", () => {
+                viewTracking(
+                    row.name,
+                    row.req_no,
+                    row.status,
+                    row.rejection_reason || ""
+                );
+            });
+
+            actionTd.appendChild(viewIcon);
+            tr.appendChild(actionTd);
+
+            return tr;
+        }
+
+        // -------------------------------
+        // Status Badge
+        // -------------------------------
+        function getStatusBadge(status) {
+            if (status === "approved") {
+                return `
+                <span class="px-3 py-1 rounded-full text-xs font-bold
+                bg-green-100 text-green-700 capitalize">
+                approved
+                </span>
+                `;
+            }
+
+            if (status === "pending") {
+                return `
+                <span class="px-3 py-1 rounded-full text-xs font-bold
+                bg-yellow-100 text-yellow-700 capitalize">
+                pending
+                </span>
+                `;
+            }
+
+            return `
+            <span class="px-3 py-1 rounded-full text-xs font-bold
+            bg-red-100 text-red-700 capitalize">
+            rejected
+            </span>
+            `;
+        }
+
+        // -------------------------------
+        // View Tracking Popup
+        // -------------------------------
+        function viewTracking(name, reqNo, status, reason) {
+            if (status === "pending") {
+                Swal.fire({
+                    icon: "info",
+                    title: "Pending Approval",
+                    text: `Request ${reqNo} is waiting for approval`
+                });
+            }
+            else if (status === "approved") {
+                Swal.fire({
+                    icon: "success",
+                    title: "Approved",
+                    text: `Request ${reqNo} has been approved`
+                });
+            }
+            else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Request Rejected",
+                    html: `
+            <div style="text-align:left; padding: 8px 4px;">
+
+                <div style="margin-bottom:10px;">
+                    <strong>Name:</strong>
+                    <span style="margin-left:6px;">${name}</span>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <span style="font-weight:600;">Request No:</span>
+                    <span style="margin-left:6px;">${reqNo}</span>
+                </div>
+
+                <div>
+                    <span style="font-weight:600;">Rejection Reason:</span>
+                    <div style="
+                        margin-top:8px;
+                        padding:12px;
+                        background:#FEF2F2;
+                        border-left:4px solid #EF4444;
+                        border-radius:6px;
+                        color:#7F1D1D;
+                        font-size:14px;
+                        line-height:1.5;
+                    ">
+                        ${reason && reason.trim() ? reason : "No reason provided"}
+                    </div>
+                </div>
+
+            </div>
+        `,
+                    confirmButtonText: "OK"
+                });
+            }
+        }
+        // session check remains same
+        fetch("/api/auth/session-check", {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                if (!data.loggedIn) {
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                // ✅ Username
+                document.getElementById("userName").textContent = data.user.name;
+
+                // ===============================
+                // ✅ HEADER CLICK FIX
+                // ===============================
+                const header = document.getElementById("headerLogo");
+
+                if (header) {
+                    header.addEventListener("click", () => {
+                        if (data.user.roleId === 4) {
+                            window.location.href = "employee-dashboard.html";
+                        } else {
+                            window.location.href = "humanresource.html";
+                        }
+                    });
+                }
+
+
+                // =========================
+                // ADMIN SIDEBAR (STATIC)
+                // =========================
+                document.getElementById("hrBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=hr-logo";
+                });
+
+                document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+
+                document.getElementById("financeBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=finance-logo";
+                });
+
+                document.getElementById("itBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=it-logo";
+                });
+
+                document.getElementById("performanceBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=performance-logo";
+                });
+
+                document.getElementById("reportsBtn")?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=reports-logo";
+                });
+
+                document.getElementById("allBtn")?.addEventListener("click", () => {
+                    loadRequests("all");
+                });
+
+                document.getElementById("approvedBtn")?.addEventListener("click", () => {
+                    loadRequests("approved");
+                });
+
+                document.getElementById("pendingBtn")?.addEventListener("click", () => {
+                    loadRequests("pending");
+                });
+
+                document.getElementById("rejectedBtn")?.addEventListener("click", () => {
+                    loadRequests("rejected");
+                });
+
+                // ===============================
+                // ✅ SIDEBAR CHANGE (MAIN FIX)
+                // ===============================
+                if (data.user.roleId === 4) {
+
+                    const panel = document.getElementById("sidePanel");
+
+                    if (panel) {
+                        panel.innerHTML = `
+
+            <button id="leaveBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#a493b9] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>Leave</span>
+            </button>
+
+            <button id="expenseBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#c78864] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
+                <i class="fa-solid fa-money-bill"></i>
+                <span>Expense</span>
+            </button>
+
+            <button id="petrolBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#863f33] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
+                <i class="fa-solid fa-gas-pump"></i>
+                <span>Petrol</span>
+            </button>
+
+            <button id="salesBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#15ac7f] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Incentive</span>
+            </button>
+
+            <button id="performanceBtn2" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#82b435] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
+                <i class="fa-solid fa-chart-column"></i>
+                <span>Performance</span>
+            </button>
+
+            <button id="certificateBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#6c63ff] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
+                <i class="fa-solid fa-certificate"></i>
+                <span>Certificate</span>
+            </button>
+            `;
+
+
+                        // ⭐ ADD HERE EXACTLY
+
+                        document.getElementById("leaveBtn")?.addEventListener("click", () => {
+                            window.location.href = "LeaveRequest.html";
+                        });
+
+                        document.getElementById("expenseBtn")?.addEventListener("click", () => {
+                            window.location.href = "expense-claim.html";
+                        });
+
+                        document.getElementById("petrolBtn")?.addEventListener("click", () => {
+                            window.location.href = "petrol-conveyance.html";
+                        });
+
+                        document.getElementById("salesBtn")?.addEventListener("click", () => {
+                            window.location.href = "sales.html";
+                        });
+
+                        document.getElementById("performanceBtn2")?.addEventListener("click", () => {
+                            window.location.href = "performance.html";
+                        });
+
+                        document.getElementById("certificateBtn")?.addEventListener("click", () => {
+                            window.location.href = "certificate.html";
+                        });
+
+                    }
+                }
+
+            })
+            .catch(error => {
+                console.error("Session check failed:", error);
+                window.location.href = "index.html";
+            });
+
+
+
+        // logout
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out from your session.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Call logout API
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html"; // Redirect to login
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
+
+    </script>
+</body>
+
+</html>

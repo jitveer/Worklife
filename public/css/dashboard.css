@@ -1,0 +1,116 @@
+.top-bar select,
+.top-bar a {
+  background: black; /* Makes dropdown background black */
+  color: white;
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.profile-icon {
+  width: 40px;
+  height:40px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-weight: bold;
+}
+
+.rewards-image-link {
+  grid-column: span 2;
+  display: block;
+}
+
+.rewards-image {
+  width: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.left-panel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 100px;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.tile {
+  background-color: #444;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.hr { background-color: #964c8a; }
+.finance { background-color: #c4807c; }
+.it { background-color: #8b3e2e; }
+.reports { background-color: #8ab769; }
+.performance { background-color: #3f837b; }
+
+.rewards-image-link {
+  grid-column: span 3;
+  display: flex;
+  justify-content: center;
+}
+
+.rewards-image {
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.extra-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 per row */
+  gap: 20px;
+  margin-left: 20px;
+  margin-top: 0; /* aligns with Rewards */
+}
+
+.task-box {
+  width: 180px;
+  height: 180px;
+  background-color: #2f2f5c;
+  border-radius: 10px;
+  color: white;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.task-box i {
+  font-size: 24px;
+  margin-top: 10px;
+}
+
+.task-circle {
+  width: 100px;
+  height: 100px;
+  border: 3px solid rgb(38, 39, 87);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+

@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Expense Claim Request</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #c3e2d1;
+    }
+
+    /* Header */
+    .header {
+      background-color: #52af8d;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      height: 60px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-box {
+      background-color: white;
+      color: black;
+      font-weight: bold;
+      font-size: 18px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .worklife-text {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header select {
+      background-color: white;
+      border: 1px solid white;
+      color: rgb(10, 10, 10);
+      padding: 4px 6px;
+      border-radius: 4px;
+    }
+
+    .username {
+      margin-left: 4px;
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      color: white;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Main layout */
+    .main-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 20px;
+      gap: 30px;
+    }
+
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .left-panel button {
+      width: 110px;
+      height: 100px;
+      padding: 10px;
+      font-weight: bold;
+      border: none;
+      color: white;
+      border-radius: 0px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .left-panel button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .left-panel .btn-hr {
+      background-color: #a493b9;
+    }
+
+    .left-panel .btn-finance {
+      background-color: #c78864;
+    }
+
+    .left-panel .btn-it {
+      background-color: #863f33;
+    }
+
+    .left-panel .btn-travel {
+      background-color: #5e77c8;
+    }
+
+    .left-panel .btn-pm {
+      background-color: #15ac7f;
+    }
+
+    .left-panel .btn-reports {
+      background-color: #82b435;
+    }
+
+    .claim-section {
+      flex: 4;
+      background: white;
+      padding: 20px;
+      border-radius: 0px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+
+    }
+
+    .claim-section table input,
+    .claim-section table select {
+      width: 100%;
+      padding: 4px;
+      color: black;
+    }
+
+    .claim-section textarea {
+      width: 100%;
+      height: 80px;
+      color: black;
+    }
+
+    .header {
+      margin-bottom: 35px;
+    }
+
+
+    .personal-info {
+      flex: 1;
+      background: white;
+      padding: 16px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      min-width: 160px;
+    }
+
+    .info-heading {
+      margin-bottom: 12px;
+      /* Space between heading and the lines below */
+      font-size: 20px;
+      font-weight: bold;
+      color: #2db381
+    }
+
+    .info-block {
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin: 4px 0;
+      background-color: #e3f9f3;
+    }
+
+    .info-block:nth-child(odd) {
+      background-color: #c7ece3;
+    }
+
+    .info-block:nth-child(even) {
+      background-color: #acf1d5;
+    }
+
+    .label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+
+
+    /* 📱 Mobile Layout Styling */
+    @media(max-width: 768px) {
+
+      /* Header compact */
+      .header {
+        max-width: 400px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 6px 10px;
+        height: auto;
+      }
+
+      .logo-box {
+        font-size: 12px;
+        padding: 3px 6px;
+      }
+
+      .worklife-text {
+        font-size: 14px;
+      }
+
+      .header-right {
+        gap: 4px;
+        font-size: 11px;
+      }
+
+      .profile span {
+        font-size: 10px;
+      }
+
+      .header select {
+        font-size: 10px;
+        padding: 3px 4px;
+      }
+
+
+      /* ⭐ MAIN SCREEN BECOMES GRID */
+      .main-container {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 14px;
+        padding: 10px;
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* ⭐ LEFT PANEL — TOP HORIZONTAL + Compact Buttons */
+      .left-panel {
+        grid-column: 1 / span 2;
+        order: -1;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0px;
+        margin-bottom: 10px;
+      }
+
+      /* Smaller button size */
+      .left-panel button {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        border-radius: 0px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Smaller icon size */
+      .left-panel button i {
+        font-size: 14px !important;
+      }
+
+      /* Text label under icons */
+      .left-panel button span {
+        font-size: 7px;
+        margin-top: 2px !important;
+      }
+
+
+      /* ⭐ CLAIM FORM CENTER */
+      .claim-section {
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+      }
+
+      .claim-section h5 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      /* Table → Vertical Card Style */
+      .claim-section table thead {
+        display: none;
+      }
+
+      .claim-section table tbody tr {
+        display: flex;
+        flex-direction: column;
+        background: #eaf7f2;
+        border: 1px solid #ccc;
+        margin-bottom: 12px;
+        padding: 10px;
+        border-radius: 6px;
+      }
+
+      .claim-section table td {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 6px 4px;
+        font-size: 10px;
+        border: none !important;
+      }
+
+      .claim-section table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        width: 55%;
+        color: #165c42;
+      }
+
+      .claim-section table input,
+      .claim-section table select {
+        width: 45%;
+        font-size: 12px;
+        text-align: right;
+      }
+
+      /* Buttons fit side by side */
+      .claim-section .btn {
+        width: 30%;
+        font-size: 10px;
+      }
+
+      .mb-3{
+        font-size: 10px;
+      }
+
+
+      /* ⭐ PERSONAL INFO MOVES BELOW */
+      .personal-info {
+        grid-column: 2;
+        order: 1;
+        width: 100%;
+        max-width: 100%;
+        padding: 12px;
+        font-size: 11px;
+      }
+
+      .info-heading {
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .info-block {
+        padding: 8px 10px;
+        font-size: 9px;
+      }
+    }
+
+
+
+    /* 📱 Mobile Layout Styling */
+    @media (min-width: 768px) and (max-width: 1024px) {
+
+      /* Header compact */
+      .header {
+        width: 100%;
+        margin: 0 auto;
+        padding: 6px 10px;
+        height: auto;
+      }
+
+      .logo-box {
+        font-size: 12px;
+        padding: 3px 6px;
+      }
+
+      .worklife-text {
+        font-size: 14px;
+      }
+
+      .header-right {
+        gap: 4px;
+        font-size: 11px;
+      }
+
+      .profile span {
+        font-size: 10px;
+      }
+
+      .header select {
+        font-size: 10px;
+        padding: 3px 4px;
+      }
+
+
+      /* ⭐ MAIN SCREEN BECOMES GRID */
+      .main-container {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 14px;
+        padding: 10px;
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* ⭐ LEFT PANEL — TOP HORIZONTAL + Compact Buttons */
+      .left-panel {
+        grid-column: 1 / span 2;
+        order: -1;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0px;
+        margin-bottom: 10px;
+      }
+
+      /* Smaller button size */
+      .left-panel button {
+        width: 100px;
+        height: 100px;
+        padding: 0;
+        border-radius: 0px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Smaller icon size */
+      .left-panel button i {
+        font-size: 25px !important;
+      }
+
+      /* Text label under icons */
+      .left-panel button span {
+        font-size: 15px;
+        margin-top: 2px !important;
+      }
+
+
+      /* ⭐ CLAIM FORM CENTER */
+      .claim-section {
+        width: 100%;
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+      }
+
+      .claim-section h5 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      /* Table → Vertical Card Style */
+      .claim-section table thead {
+        display: none;
+      }
+
+      .claim-section table tbody tr {
+        display: flex;
+        flex-direction: column;
+        background: #eaf7f2;
+        border: 1px solid #ccc;
+        margin-bottom: 12px;
+        padding: 10px;
+        border-radius: 6px;
+      }
+
+      .claim-section table td {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 6px 4px;
+        font-size: 16px;
+        border: none !important;
+      }
+
+      .claim-section table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        width: 55%;
+        color: #165c42;
+      }
+
+      .claim-section table input,
+      .claim-section table select {
+        width: 45%;
+        font-size: 12px;
+        text-align: right;
+      }
+
+      /* Buttons fit side by side */
+      .claim-section .btn {
+        width: 30%;
+        font-size: 10px;
+      }
+
+
+      /* ⭐ PERSONAL INFO MOVES BELOW */
+      .personal-info {
+        grid-column: 2;
+        order: 1;
+        width: 100%;
+        max-width: 100%;
+        padding: 12px;
+        font-size: 11px;
+      }
+
+      .info-heading {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .info-block {
+        padding: 8px 10px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header">
+      <!-- Left Section -->
+      <div id="headerLogo" class="header-left" style="cursor: pointer;">
+        <div class="logo-box">WL</div>
+        <div class="worklife-text">Worklife</div>
+      </div>
+
+      <!-- Right Section -->
+      <div class="header-right">
+        <select>
+          <option>Eastern</option>
+          <option>Western</option>
+          <option>Northern</option>
+          <option>Southern</option>
+        </select>
+        <span>English</span>
+
+        <!-- Profile Section -->
+        <div class="profile">
+          <i class="fa-solid fa-circle-user"></i>
+          <span id="userName" style="text-transform: capitalize;">Loading...</span>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="logout" id="logoutBtn">
+          <i class="fas fa-power-off"></i>
+        </div>
+      </div>
+    </div> <!-- This closes the .header div -->
+  </header>
+
+
+  <!-- MAIN BODY -->
+  <div class="main-container">
+    <!-- Left Buttons -->
+    <div id="sidePanel" class="left-panel">
+      <button class="btn-hr" id="hrBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-regular fa-user" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">HR</span>
+        </div>
+      </button>
+
+      <button class="btn-finance" id="financeBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-regular fa-folder" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">Finance</span>
+        </div>
+      </button>
+
+      <button class="btn-it" id="itBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-solid fa-desktop" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">IT</span>
+        </div>
+      </button>
+
+      <button class="btn-pm" id="performanceBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-solid fa-clock" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">Performence</span>
+        </div>
+      </button>
+
+      <button class="btn-reports" id="reportsBtn">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <i class="fa-solid fa-chart-bar" style="font-size: 24px;"></i>
+          <span style="margin-top: 6px;">Reports</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Center Claim Form -->
+    <form id="expenseForm" class="claim-section">
+      <h5><strong><i class="fa-solid fa-pen-to-square me-2"></i>Expense Claim Details</strong></h5>
+      <input type="hidden" id="req_no_input" name="req_no">
+      <table class="table table-bordered mt-3">
+        <thead class="table-light">
+          <tr>
+            <th>*Date</th>
+            <th>*Expense Type</th>
+            <th>*Description</th>
+            <th>*Currency</th>
+            <th>*Each Rate</th>
+            <th>*Amount</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody id="expense-table-body">
+          <tr>
+            <td data-label="*Date"><input type="date"></td>
+            <td data-label="*Expense Type"><input type="text"></td>
+            <td data-label="*Description"><input type="text"></td>
+            <td data-label="*Currency">
+              <select>
+                <option>Rs</option>
+                <option>LMN</option>
+              </select>
+            </td>
+            <td data-label="*Each Rate"><input type="number" value="1"></td>
+            <td data-label="*Amount"><input type="text"></td>
+            <td data-label="Delete">
+              <button class="btn btn-sm btn-danger delete-row">X</button>
+            </td>
+          </tr>
+
+          <tr>
+            <td data-label="*Date"><input type="date"></td>
+            <td data-label="*Expense Type"><input type="text"></td>
+            <td data-label="*Description"><input type="text"></td>
+            <td data-label="*Currency">
+              <select>
+                <option>Rs</option>
+                <option>LMN</option>
+              </select>
+            </td>
+            <td data-label="*Each Rate"><input type="number" value="1"></td>
+            <td data-label="*Amount"><input type="text"></td>
+            <td data-label="Delete">
+              <button class="btn btn-sm btn-danger delete-row">X</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p><a href="#" id="add-row-link">+ Add Row</a></p>
+      <div class="mb-3">
+        <label><strong>Total Expense (Rs):</strong></label>
+        <input type="text" class="form-control" id="totalExpense">
+      </div>
+      <div class="mb-3">
+        <label><strong>Requester Comments:</strong></label>
+        <textarea class="form-control" id="requesterComments"></textarea>
+      </div>
+
+      <button class="btn btn-success">Submit</button>
+      <button class="btn btn-danger">Close</button>
+    </form>
+
+
+
+    <!-- Right Personal Info -->
+    <div class="personal-info">
+      <h6 class="info-heading">Personal Information:</h6>
+
+
+      <div class="info-block">
+        <span class="label">Employee Id:</span>
+        <div id="info-employee-id">Loading...</div>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Request Number:</span>
+        <div id="info-request-number">Loading...</div>
+        <input type="hidden" id="reqNoInput" name="req_no">
+      </div>
+
+
+      <div class="info-block">
+        <span class="label">Request Date:</span>
+        <div id="info-request-date">Loading...</div>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Requester:</span>
+        <div id="info-name">Loading...</div>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Request Email:</span>
+        <div id="info-email">Loading...</div>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Company:</span>
+        <div id="info-company">Loading...</div>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Department:</span>
+        <div id="info-department">Loading...</div>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Designation:</span>
+        <div id="info-designation">Loading...</div>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Line Manager:</span>
+        <div id="info-line-manager">Loading...</div>
+      </div>
+
+      <div class="info-block">
+        <span class="label">Joining Date:</span>
+        <div id="info-joining-date">Loading...</div>
+      </div>
+    </div>
+
+    <script>
+      // Add Row with Delete Button
+      document.getElementById("add-row-link").addEventListener("click", function (e) {
+        e.preventDefault(); // Prevent page jump
+
+        const tbody = document.getElementById("expense-table-body");
+
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+      <td data-label="*Date"><input type="date"></td>
+      <td data-label="*Expense Type"><input type="text"></td>
+      <td data-label="*Description"><input type="text"></td>
+      <td data-label="*Currency">
+        <select>
+          <option>Rs</option>
+          <option>LMN</option>
+        </select>
+      </td>
+      <td data-label="*Each Rate"><input type="number" value="1"></td>
+      <td data-label="*Amount"><input type="text"></td>
+      <td data-label="Delete">
+        <button class="btn btn-sm btn-danger delete-row">X</button>
+      </td>
+    `;
+
+        tbody.appendChild(newRow);
+      });
+
+      // Delete Row (using event delegation)
+      document.getElementById("expense-table-body").addEventListener("click", function (e) {
+        if (e.target && e.target.classList.contains("delete-row")) {
+          const row = e.target.closest("tr");
+          if (document.querySelectorAll("#expense-table-body tr").length > 1) {
+            row.remove();
+          } else {
+            alert("At least one row is required.");
+          }
+        }
+      });
+
+
+      window.onload = () => {
+        fetch('/api/expense/get-new-req-no')
+          .then(res => res.json())
+          .then(data => {
+            console.log("New req_no:", data.req_no);
+            // Set to hidden input
+            document.getElementById('req_no_input').value = data.req_no;
+            // Show in Personal Info box
+            document.getElementById('info-request-number').textContent = data.req_no;
+          })
+          .catch(err => {
+            console.error("Error fetching req_no:", err);
+          });
+      };
+
+
+      //expense claim
+      document.getElementById("expenseForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const rows = document.querySelectorAll("#expense-table-body tr");
+        const expenseRows = [];
+
+        rows.forEach(row => {
+          const expense_date = row.cells[0].querySelector("input")?.value || "";
+          const expense_type = row.cells[1].querySelector("input")?.value || "";
+          const description = row.cells[2].querySelector("input")?.value || "";
+          const currency = row.cells[3].querySelector("select")?.value || "";
+          const each_rate = row.cells[4].querySelector("input")?.value || "0";
+          const amount = row.cells[5].querySelector("input")?.value || "0";
+
+          if (expense_date && expense_type && amount) {
+            expenseRows.push({
+              date: expense_date,
+              expense_type,
+              description,
+              currency,
+              each_rate,
+              amount
+            });
+          }
+        });
+
+
+        const total_expense = document.getElementById('totalExpense')?.value || "0";
+        const requester_comments = document.getElementById('requesterComments')?.value || "";
+
+        if (expenseRows.length === 0) {
+          alert("Please fill at least one expense row");
+          return;
+        }
+
+        const req_no = document.getElementById('req_no_input').value;
+
+        fetch("/api/expense/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            req_no,
+            total_expense,
+            requester_comments,
+            requester_id: window.personalInfo?.requester_id,
+            items: expenseRows
+          })
+        })
+          .then(res => res.json())
+          .then(data => {
+            Swal.fire({
+              title: 'Success!',
+              text: "Expense Submitted: " + data.message,
+              icon: 'success',
+              confirmButtonText: 'OK'
+            });
+          })
+          .catch(err => {
+            console.error(err);
+            Swal.fire({
+              title: 'Error!',
+              text: data.message || "Submission failed",
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
+          });
+      }); 
+    </script>
+
+
+
+    <!-- check session and sweet alert logout -->
+    <script>
+      fetch("/api/auth/session-check", {
+        credentials: "include"   // ⭐ IMPORTANT
+      })
+        .then(res => res.json())
+        .then(data => {
+
+          if (!data.loggedIn) {
+            window.location.href = "index.html";
+            return;
+          }
+
+          // ✅ Username
+          document.getElementById("userName").textContent = data.user.name;
+
+          // ===============================
+          // ✅ HEADER FIX
+          // ===============================
+          const header = document.getElementById("headerLogo");
+
+          if (header) {
+            header.addEventListener("click", () => {
+              window.location.href =
+                data.user.roleId === 4
+                  ? "employee-dashboard.html"
+                  : "humanresource.html";
+            });
+          }
+
+          // ===============================
+          // ✅ SIDEBAR FIX (ONLY ADD THIS)
+          // ===============================
+          if (data.user.roleId === 4) {
+
+            const panel = document.getElementById("sidePanel");
+
+            if (panel) {
+              panel.innerHTML = `
+
+      <button class="btn-hr" id="leaveBtn">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Leave</span>
+        </div>
+      </button>
+
+      <button class="btn-finance" id="expenseBtn">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <i class="fa-solid fa-money-bill"></i>
+          <span>Expense</span>
+        </div>
+      </button>
+
+      
+      <button class="btn-reports" id="performanceBtn2">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <i class="fa-solid fa-chart-column"></i>
+          <span>Performance</span>
+        </div>
+      </button>
+
+      <button class="btn-it" id="petrolBtn">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <i class="fa-solid fa-gas-pump"></i>
+          <span>Petrol</span>
+        </div>
+      </button>
+
+      <button class="btn-pm" id="salesBtn">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Incentive</span>
+        </div>
+      </button>
+
+      <button class="btn-reports" style="background-color:#0d6efd;" id="certificateBtn">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <i class="fa-solid fa-certificate"></i>
+          <span>Certificate</span>
+        </div>
+      </button>
+
+      `;
+
+
+              // onclick buttos
+              // ⭐ ADD THIS BELOW panel.innerHTML
+
+              document.getElementById("leaveBtn")?.addEventListener("click", () => {
+                window.location.href = "LeaveRequest.html";
+              });
+
+              document.getElementById("expenseBtn")?.addEventListener("click", () => {
+                window.location.href = "expense-claim.html";
+              });
+
+              document.getElementById("performanceBtn2")?.addEventListener("click", () => {
+                window.location.href = "performance.html";
+              });
+
+              document.getElementById("petrolBtn")?.addEventListener("click", () => {
+                window.location.href = "petrol-conveyance.html";
+              });
+
+              document.getElementById("salesBtn")?.addEventListener("click", () => {
+                window.location.href = "sales.html";
+              });
+
+              document.getElementById("certificateBtn")?.addEventListener("click", () => {
+                window.location.href = "certificate.html";
+              });
+            }
+          }
+
+        })
+        .catch(error => {
+          console.error("Session check failed:", error);
+          window.location.href = "index.html";
+        });
+
+
+      // personal info
+      fetch("/api/expense/personalinfo", { credentials: "include" })
+        .then(res => res.json())
+        .then(data => {
+          console.log("Fetched personal info:", data);
+          if (data.error) {
+            console.error(data.error);
+            return;
+          }
+
+          document.getElementById("info-employee-id").textContent = data.employee_id || "-";
+          document.getElementById("info-request-number").textContent = data.req_no;
+          document.getElementById("info-request-date").textContent = new Date().toISOString().split("T")[0];
+          document.getElementById("info-name").textContent = data.employee_name || "-";
+          document.getElementById("info-email").textContent = data.requester_email || "-";
+          document.getElementById("info-company").textContent = data.company || "-";
+          document.getElementById("info-department").textContent = data.department || "-";
+          document.getElementById("info-designation").textContent = data.designation || "-";
+          document.getElementById("info-line-manager").textContent = data.line_manager || "-";
+          document.getElementById("info-joining-date").textContent = data.joining_date || "-";
+
+
+
+          const requestDate = data.request_date
+            ? new Date(data.request_date).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric"
+            })
+            : "-";
+
+          const joiningDate = data.joining_date
+            ? new Date(data.joining_date).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric"
+            })
+            : "-";
+
+          document.getElementById("info-request-date").textContent = requestDate;
+          document.getElementById("info-joining-date").textContent = joiningDate;
+
+          // Save for later submit
+          window.personalInfo = data;
+        })
+        .catch(err => console.error(err));
+
+
+
+
+
+
+
+
+
+
+
+
+      document.addEventListener("DOMContentLoaded", () => {
+
+        // LOGOUT
+        document.getElementById("logoutBtn")
+          ?.addEventListener("click", logoutUser);
+
+        // SIDEBAR
+        document.getElementById("hrBtn")
+          ?.addEventListener("click", () => window.location.href = "humanresource.html?section=hr-logo");
+
+        document.getElementById("financeBtn")
+          ?.addEventListener("click", () => window.location.href = "humanresource.html?section=finance-logo");
+
+        document.getElementById("itBtn")
+          ?.addEventListener("click", () => window.location.href = "humanresource.html?section=it-logo");
+
+        document.getElementById("performanceBtn")
+          ?.addEventListener("click", () => window.location.href = "humanresource.html?section=performance-logo");
+
+        document.getElementById("reportsBtn")
+          ?.addEventListener("click", () => window.location.href = "humanresource.html?section=reports-logo");
+
+      });
+
+
+
+      // logout
+      function logoutUser() {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You will be logged out from your session.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, logout",
+          cancelButtonText: "Cancel"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Call logout API
+            fetch("/api/auth/logout")
+              .then(res => res.json())
+              .then(data => {
+                if (data.success) {
+                  Swal.fire({
+                    title: "Logged Out!",
+                    text: "You have been successfully logged out.",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000
+                  });
+
+                  setTimeout(() => {
+                    window.location.href = "index.html"; // Redirect to login
+                  }, 2000);
+                } else {
+                  Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                }
+              })
+              .catch(err => {
+                console.error("Logout error:", err);
+                Swal.fire("Error", "Something went wrong. Try again.", "error");
+              });
+          }
+        });
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Certificate List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body
+    class="font-['Segoe_UI',Arial,sans-serif] bg-gradient-to-br from-green-100 via-white to-green-200 min-h-screen text-gray-800">
+
+    <!-- ================= HEADER ================= -->
+    <header
+        class="bg-gradient-to-r from-emerald-700 to-emerald-500 text-white h-14 flex justify-between items-center px-5 shadow-md">
+        <!-- Left -->
+        <div class="flex items-center cursor-pointer" id="goDashboard">
+            <div class="bg-white text-gray-800 font-bold text-lg px-4 py-1 rounded-lg shadow mr-3">WL</div>
+            <div class="text-xl font-bold tracking-wide">Worklife</div>
+        </div>
+
+        <!-- Right -->
+        <div class="flex items-center gap-5 text-sm font-semibold">
+            <select class="bg-white text-gray-700 px-3 py-1 rounded-md shadow">
+                <option>Eastern</option>
+                <option>Western</option>
+                <option>Northern</option>
+                <option>Southern</option>
+            </select>
+
+            <span>English</span>
+
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-user"></i>
+                <span id="userName" class="capitalize">Loading...</span>
+            </div>
+
+            <div class="cursor-pointer hover:text-red-200" id="logoutBtn">
+                <i class="fa-solid fa-power-off"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= MAIN ================= -->
+    <div class="flex pt-3">
+
+        <!-- ========== LEFT PANEL ========== -->
+        <aside class="w-[125px] px-3 flex flex-col">
+            <button id="hrBtn"
+                class="h-[100px] bg-[#a493b9] text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-regular fa-user text-2xl mb-1"></i>HR
+            </button>
+
+            <button id="financeBtn"
+                class="h-[100px] bg-[#c78864] text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-regular fa-folder text-2xl mb-1"></i>Finance
+            </button>
+
+            <button id="itBtn"
+                class="h-[100px] bg-red-800 text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-solid fa-desktop text-2xl mb-1"></i>IT
+            </button>
+
+            <button id="performanceBtn"
+                class="h-[100px] bg-emerald-600 text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-solid fa-clock text-2xl mb-1"></i>Performance
+            </button>
+
+            <button id="reportsBtn"
+                class="h-[100px] bg-lime-600 text-sm text-white font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
+                <i class="fa-solid fa-chart-bar text-2xl mb-1"></i>Reports
+            </button>
+        </aside>
+
+        <!-- ========== CONTENT ========== -->
+        <main class="flex-1 bg-white m-3 p-6 rounded-xl shadow-lg">
+
+            <h1 class="text-2xl font-bold text-emerald-600 mb-6">Certificate List</h1>
+
+            <!-- FILTER BAR -->
+            <div class="flex justify-between items-center mb-4">
+                <!-- Status Buttons -->
+                <div class="flex gap-2">
+                    <button id="allBtn"
+                        class="border-2 px-5 py-2 rounded-lg font-semibold hover:bg-indigo-600 hover:text-white transition">All</button>
+                    <button id="approvedBtn"
+                        class="border-2 px-5 py-2 rounded-lg font-semibold hover:bg-indigo-600 hover:text-white transition">Approved</button>
+                    <button id="pendingBtn"
+                        class="border-2 px-5 py-2 rounded-lg font-semibold hover:bg-indigo-600 hover:text-white transition">Pending</button>
+                    <button id="rejectedBtn"
+                        class="border-2 px-5 py-2 rounded-lg font-semibold hover:bg-indigo-600 hover:text-white transition">Rejected</button>
+                </div>
+
+                <!-- Right Controls -->
+                <div class="flex items-center gap-3">
+                    <button id="openDatePopup"
+                        class="bg-blue-800 text-white px-4 py-2 rounded-md font-semibold"></button>
+
+                    <button id="generateReport"
+                        class="border border-blue-800 text-blue-800 px-4 py-2 rounded-md font-semibold">
+                        Generate Report
+                    </button>
+
+                    <div class="relative">
+                        <input id="searchName" type="text" placeholder="Search by name…"
+                            class="border rounded-md px-3 py-2 pr-10">
+                        <i class="fa fa-search absolute right-3 top-3 text-gray-400"></i>
+                        <span id="clearSearch" class="absolute right-8 top-1 text-xl cursor-pointer hidden">×</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <table id="certificateTable" class="w-full border-separate border-spacing-y-3">
+                <thead>
+                    <tr class="bg-emerald-600 text-white text-sm">
+                        <th class="p-3">ID</th>
+                        <th class="p-3">Req-no</th>
+                        <th class="p-3">Name</th>
+                        <th class="p-3">Certificate Type</th>
+                        <th class="p-3">Date</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows injected by JS -->
+                </tbody>
+            </table>
+
+        </main>
+    </div>
+
+    <!-- ================= DATE POPUP ================= -->
+    <div id="datePopup" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
+        <div class="bg-white w-80 p-5 rounded-xl shadow-xl">
+            <h3 class="font-bold mb-3">Select Date Range</h3>
+
+            <label class="font-semibold text-blue-800">Start Date</label>
+            <input type="date" id="startDate" class="w-full border p-2 rounded mb-3">
+
+            <label class="font-semibold text-blue-800">End Date</label>
+            <input type="date" id="endDate" class="w-full border p-2 rounded mb-4">
+
+            <div class="flex justify-end gap-2">
+                <button id="applyDate" class="bg-blue-800 text-white px-4 py-2 rounded">Apply</button>
+                <button id="cancelDate" class="bg-red-600 text-white px-4 py-2 rounded">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allCertificates = [];
+
+        let filterState = {
+            status: "all",
+            search: "",
+            start_date: "",
+            end_date: ""
+        };
+
+        /* ===============================
+           1) LOAD CERTIFICATES FROM SERVER
+        =============================== */
+        function loadCertificates() {
+            let url = "/api/certificate/list";
+            const params = new URLSearchParams();
+
+            if (filterState.status !== "all") params.append("status", filterState.status);
+            if (filterState.search) params.append("search", filterState.search);
+            if (filterState.start_date) params.append("start_date", filterState.start_date);
+            if (filterState.end_date) params.append("end_date", filterState.end_date);
+
+            const finalURL = params.toString()
+                ? `${url}?${params.toString()}`
+                : url;
+
+            fetch(finalURL)
+                .then(res => res.json())
+                .then(data => {
+                    allCertificates = Array.isArray(data) ? data : [];
+                    renderCertificates(allCertificates);
+                })
+                .catch(err => {
+                    console.error("Failed to load certificates:", err);
+                });
+        }
+
+        /* ===============================
+           2) RENDER TABLE
+        =============================== */
+        function renderCertificates(list) {
+            const tbody = document.querySelector("#certificateTable tbody");
+            tbody.innerHTML = "";
+
+            if (!list.length) {
+                tbody.innerHTML = `
+        <tr>
+          <td colspan="8" class="text-center py-4 text-gray-500">
+            No records found
+          </td>
+        </tr>`;
+                return;
+            }
+
+            list.forEach((row, index) => {
+                const tr = document.createElement("tr");
+
+                tr.className = "text-center align-middle";
+
+                tr.innerHTML = `
+                <td>${index + 1}</td> 
+                <td>${row.req_no}</td>
+                <td>${row.name}</td>
+                <td>${getCertificateType(row.certificate_type)}</td>
+                <td>${formatDate(row.created_at)}</td>
+                <td>
+                    ${getStatusBadge(row.status)}
+                </td>
+                `;
+
+                // ✅ ACTION COLUMN (FIXED)
+                const actionTd = document.createElement("td");
+
+                const viewBtn = document.createElement("span");
+                viewBtn.className = "icon-box view";
+                viewBtn.innerHTML = `<i class="fas fa-eye"></i>`;
+
+                // ✅ ADD EVENT (THIS IS IMPORTANT)
+                viewBtn.addEventListener("click", () => {
+                    viewCertificate(row.req_no);
+                });
+
+                actionTd.appendChild(viewBtn);
+                tr.appendChild(actionTd);
+
+                // ADD ROW
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* ===============================
+           3) STATUS BUTTON FILTER
+        =============================== */
+        function loadRequests(status) {
+            filterState.status = status.toLowerCase();
+            loadCertificates();
+        }
+
+        /* ===============================
+           4) SEARCH BY NAME (A-Z ONLY)
+        =============================== */
+        const searchInput = document.getElementById("searchName");
+        const clearSearch = document.getElementById("clearSearch");
+
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                if (!/^[A-Za-z\s]*$/.test(this.value)) return;
+
+                filterState.search = this.value.trim();
+                clearSearch.style.display = this.value ? "block" : "none";
+                loadCertificates();
+            });
+
+            clearSearch.addEventListener("click", () => {
+                searchInput.value = "";
+                filterState.search = "";
+                clearSearch.style.display = "none";
+                loadCertificates();
+            });
+        }
+
+        /* ===============================
+           5) DATE FILTER POPUP
+        =============================== */
+        const openDatePopup = document.getElementById("openDatePopup");
+        const datePopup = document.getElementById("datePopup");
+        const applyDate = document.getElementById("applyDate");
+        const cancelDate = document.getElementById("cancelDate");
+
+        openDatePopup.addEventListener("click", () => {
+            datePopup.style.display = "flex";
+        });
+
+        cancelDate.addEventListener("click", () => {
+            datePopup.style.display = "none";
+        });
+
+        applyDate.addEventListener("click", () => {
+
+            filterState.start_date = document.getElementById("startDate").value;
+            filterState.end_date = document.getElementById("endDate").value;
+
+            if (
+                filterState.start_date &&
+                filterState.end_date &&
+                filterState.start_date > filterState.end_date
+            ) {
+                alert("Start date cannot be greater than end date");
+                return;
+            }
+
+            datePopup.style.display = "none";
+            loadCertificates();
+        });
+
+
+
+        /* ===============================
+           6) DOWNLOAD CSV REPORT
+        =============================== */
+        const generateReport = document.getElementById("generateReport");
+
+        if (generateReport) {
+            generateReport.addEventListener("click", () => {
+                let url = "/api/certificate/list?report=1";
+
+                if (filterState.status !== "all") url += `&status=${filterState.status}`;
+                if (filterState.search) url += `&search=${filterState.search}`;
+                if (filterState.start_date) url += `&start_date=${filterState.start_date}`;
+                if (filterState.end_date) url += `&end_date=${filterState.end_date}`;
+
+                window.location.href = url;
+            });
+        }
+
+        /* ===============================
+           7) VIEW CERTIFICATE
+        =============================== */
+        function viewCertificate(reqNo) {
+            window.location.href = `certificate-approval.html?reqNo=${reqNo}`;
+        }
+
+        /* ===============================
+           8) HELPERS
+        =============================== */
+        function formatDate(date) {
+            if (!date) return "-";
+            return new Date(date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            });
+        }
+
+        function getCertificateType(type) {
+            const types = {
+                1: "Internship Certificate",
+                2: "Experience Letter",
+                3: "Offer Letter"
+            };
+            return types[type] || "Other";
+        }
+
+        /* ===============================
+           9) INITIAL LOAD
+        =============================== */
+        window.onload = () => {
+            loadCertificates();
+        };
+
+
+
+        // show current date
+        function setCurrentDateOnButton() {
+            const btn = document.getElementById("openDatePopup");
+            if (!btn) return;
+
+            const today = new Date();
+
+            const formattedDate = today.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            });
+
+            btn.textContent = formattedDate;
+        }
+
+        // call on page load
+        window.addEventListener("load", setCurrentDateOnButton);
+
+
+
+
+        // colorful status tags
+        function getStatusBadge(status) {
+            const normalized = (status || "").toLowerCase();
+
+            const map = {
+                approved: "bg-green-100 text-green-700",
+                pending: "bg-yellow-100 text-yellow-700",
+                rejected: "bg-red-100 text-red-700"
+            };
+
+            return `
+            <span class="
+            inline-flex
+            items-center
+            justify-center
+            px-3
+            py-1
+            rounded-full
+            text-xs
+            font-bold
+            capitalize
+            ${map[normalized] || "bg-gray-100 text-gray-600"}
+            ">
+            ${normalized}
+        </span>
+        `;
+        }
+
+
+
+
+        //-----------------------------------
+        // ALL EVENTS (FINAL CLEAN VERSION)
+        //-----------------------------------
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // HEADER
+            document.getElementById("goDashboard")
+                ?.addEventListener("click", () => {
+                    window.location.href = "dashboard.html";
+                });
+
+            document.getElementById("logoutBtn")
+                ?.addEventListener("click", logoutUser);
+
+            // SIDEBAR
+            document.getElementById("hrBtn")
+                ?.addEventListener("click", () => window.location.href = "humanresource.html?section=hr-logo");
+
+            document.getElementById("financeBtn")
+                ?.addEventListener("click", () => window.location.href = "humanresource.html?section=finance-logo");
+
+            document.getElementById("itBtn")
+                ?.addEventListener("click", () => window.location.href = "humanresource.html?section=it-logo");
+
+            document.getElementById("performanceBtn")
+                ?.addEventListener("click", () => window.location.href = "humanresource.html?section=performance-logo");
+
+            document.getElementById("reportsBtn")
+                ?.addEventListener("click", () => window.location.href = "humanresource.html?section=reports-logo");
+
+            // FILTER BUTTONS
+            document.getElementById("allBtn")
+                ?.addEventListener("click", () => loadRequests("all"));
+
+            document.getElementById("approvedBtn")
+                ?.addEventListener("click", () => loadRequests("approved"));
+
+            document.getElementById("pendingBtn")
+                ?.addEventListener("click", () => loadRequests("pending"));
+
+            document.getElementById("rejectedBtn")
+                ?.addEventListener("click", () => loadRequests("rejected"));
+
+            // DATE POPUP
+            document.getElementById("openDatePopup")
+                ?.addEventListener("click", () => {
+                    document.getElementById("datePopup").style.display = "flex";
+                });
+
+            document.getElementById("cancelDate")
+                ?.addEventListener("click", () => {
+                    document.getElementById("datePopup").style.display = "none";
+                });
+
+            document.getElementById("applyDate")
+                ?.addEventListener("click", () => {
+
+                    filterState.start_date = document.getElementById("startDate").value;
+                    filterState.end_date = document.getElementById("endDate").value;
+
+                    if (
+                        filterState.start_date &&
+                        filterState.end_date &&
+                        filterState.start_date > filterState.end_date
+                    ) {
+                        alert("Start date cannot be greater than end date");
+                        return;
+                    }
+
+                    document.getElementById("datePopup").style.display = "none";
+                    loadCertificates();
+                });
+
+            // SEARCH CLEAR
+            document.getElementById("clearSearch")
+                ?.addEventListener("click", () => {
+                    const searchInput = document.getElementById("searchName");
+                    searchInput.value = "";
+                    filterState.search = "";
+                    document.getElementById("clearSearch").style.display = "none";
+                    loadCertificates();
+                });
+
+            // REPORT
+            document.getElementById("generateReport")
+                ?.addEventListener("click", () => {
+                    let url = "/api/certificate/list?report=1";
+
+                    if (filterState.status !== "all") url += `&status=${filterState.status}`;
+                    if (filterState.search) url += `&search=${filterState.search}`;
+                    if (filterState.start_date) url += `&start_date=${filterState.start_date}`;
+                    if (filterState.end_date) url += `&end_date=${filterState.end_date}`;
+
+                    window.location.href = url;
+                });
+
+        });
+
+
+
+        // session check remains same
+        fetch("/api/auth/session-check", {
+            method: "GET",
+            credentials: "include"   // ⭐ THIS IS MANDATORY
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.loggedIn) {
+                    window.location.href = "index.html";
+                } else {
+                    document.getElementById("userName").textContent = data.user.name;
+                }
+            })
+            .catch(error => {
+                console.error("Session check failed:", error);
+                window.location.href = "index.html";
+            });
+
+
+
+        // logout
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out from your session.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Call logout API
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html"; // Redirect to login
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
+
+    </script>
+</body>
+
+</html>

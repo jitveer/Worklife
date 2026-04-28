@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sale of Assets Request</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #c3e2d1;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            /*  ADDED SPACING BELOW HEADER */
+        }
+
+        .header {
+            background-color: #4aa382;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            height: 60px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-box {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .worklife-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header select {
+            background-color: white;
+            border: 1px solid white;
+            color: black;
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
+
+        .username {
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            color: white;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 20px;
+            gap: 30px;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            margin-top: 0px;
+            font-size: 13px;
+        }
+
+        .left-panel button {
+            width: 88px;
+            height: 88px;
+            padding: 10px;
+            font-weight: bold;
+            border: none;
+            color: white;
+            border-radius: 0px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .left-panel button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+        }
+
+
+        .left-panel .btn-hr {
+            background-color: #a493b9;
+        }
+
+        .left-panel .btn-finance {
+            background-color: #c78864;
+        }
+
+        .left-panel .btn-it {
+            background-color: #863f33;
+        }
+
+        .left-panel .btn-pm {
+            background-color: #15ac7f;
+        }
+
+        .left-panel .btn-reports {
+            background-color: #82b435;
+        }
+
+
+        .sales-form-section {
+            flex: 4;
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .sales-form-section h5 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #165c42;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            margin-bottom: 14px;
+        }
+
+        .sales-form-section table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        .sales-form-section thead th {
+            background: #4aa382;
+            color: white;
+            padding: 8px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #3d8c72;
+        }
+
+        .sales-form-section tbody td {
+            background: #e5f6ef;
+            border: 1px solid #b3ddcc;
+            padding: 6px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* Inputs inside table */
+        .sales-form-section input,
+        .sales-form-section select {
+            width: 100%;
+            padding: 6px;
+            font-size: 13px;
+            border-radius: 4px;
+            border: 1px solid #999;
+        }
+
+        /* Remove dropdown arrow for Sq-ft & Payment if needed */
+        input#dimension_in_sqft,
+        input#payment {
+            appearance: auto;
+            background-image: none !important;
+            padding-right: 8px;
+        }
+
+        .sales-form-section textarea {
+            width: 100%;
+            height: 80px;
+        }
+
+        /* Buttons */
+        .sales-form-section .btn {
+            margin-top: 10px;
+        }
+
+        /* + Add Row link */
+        #addSalesRow {
+            font-weight: 600;
+            color: #002b7b;
+            cursor: pointer;
+        }
+
+
+        /* Custom dropdown arrow ONLY for specific selects */
+        #salesItemsTable select.representative,
+        #salesItemsTable select.project,
+        #salesItemsTable select.typo,
+        #salesItemsTable select.status {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 14px;
+
+            padding-right: 30px;
+            cursor: pointer;
+        }
+
+
+        .personal-info {
+            flex: 1;
+            background: white;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            min-width: 130px;
+        }
+
+        .info-heading {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #2db381;
+        }
+
+        .info-block {
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 4px 0;
+            background-color: #e3f9f3;
+        }
+
+        .info-block:nth-child(odd) {
+            background-color: #c7ece3;
+        }
+
+        .info-block:nth-child(even) {
+            background-color: #acf1d5;
+        }
+
+        .label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .small-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+
+        .sales-actions-top {
+            display: flex;
+            justify-content: space-between;
+            /* Left & Right alignment */
+            align-items: center;
+            margin: 10px 0 15px 0;
+            width: 100%;
+        }
+
+        .attach-files-btn {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .attach-files-btn:hover {
+            background: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+
+
+
+
+
+        /* 📱 Mobile Layout Styling */
+        @media(max-width: 768px) {
+
+            .header {
+                width: 100%;
+                margin: 0 auto;
+                /* centers the header */
+                padding: 6px 10px;
+                height: auto;
+            }
+
+            .logo-box {
+                font-size: 12px;
+                padding: 3px 6px;
+            }
+
+            .worklife-text {
+                font-size: 14px;
+            }
+
+            .header-right {
+                gap: 2px;
+                font-size: 11px;
+            }
+
+            .profile span {
+                font-size: 10px;
+            }
+
+            .header select {
+                font-size: 10px;
+                padding: 3px 4px;
+            }
+
+
+            /* Main container becomes 2 columns only */
+            .main-container {
+                display: grid;
+                grid-template-columns: 1.5fr 1fr;
+                gap: 14px;
+                padding: 15px;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .left-panel {
+                grid-column: 1 / span 2;
+                order: -1;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: 0px;
+                width: 100%;
+                margin-bottom: 12px;
+            }
+
+            .left-panel button {
+                width: 80px;
+                height: 80px;
+                border-radius: 0px;
+                padding: 0;
+                background-size: cover;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            /* Make icon smaller and centered */
+            .left-panel i {
+                font-size: 16px !important;
+                margin: 0 !important;
+            }
+
+            /* Hide text labels in mobile */
+            .left-panel span {
+                font-size: 8px;
+            }
+
+
+            .left-panel button {
+                width: 55px;
+                height: 55px;
+                font-size: 10px;
+                padding: 6px;
+            }
+
+            /* FORM: Full width and centered */
+            .sales-form-section {
+                max-width: 360px;
+                width: 100%;
+                margin: 0 auto;
+                padding: 12px;
+            }
+
+            /* Card-style form title */
+            .sales-form-section h5 {
+                font-size: 16px;
+                text-align: left;
+                margin-bottom: 12px;
+            }
+
+            /* TRANSFORM TABLE TO VERTICAL FORM STYLE */
+            #salesItemsTable {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            #salesItemsTable thead {
+                display: none;
+                /* Hide top row for mobile */
+            }
+
+            #salesItemsTable tr {
+                display: flex;
+                flex-direction: column;
+                border: 1px solid #ccc;
+                margin-bottom: 12px;
+                padding: 8px;
+                background: #eaf7f2;
+            }
+
+            #salesItemsTable td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+                padding: 6px 8px;
+                font-size: 13px;
+                border: none !important;
+                width: 100%;
+            }
+
+            /* Custom labels on left side for each td */
+            #salesItemsTable td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                width: 50%;
+                color: #165c42;
+            }
+
+            /* Inputs inside td */
+            #salesItemsTable input,
+            #salesItemsTable select {
+                width: 45%;
+                font-size: 12px;
+            }
+
+            /* Delete button smaller */
+            .delete-row i {
+                font-size: 14px;
+                color: #b30000;
+            }
+
+
+            #salesItemsTable select.representative,
+            #salesItemsTable select.project,
+            #salesItemsTable select.typo,
+            #salesItemsTable select.status {
+                background-position: right 6px center;
+                background-size: 12px;
+                padding-right: 25px;
+            }
+
+            #salesItemsTable thead th {
+                font-size: 10px !important;
+            }
+
+
+            /* Personal Information box */
+            .personal-info {
+                width: 50%;
+                padding: 9px;
+                font-size: 11px !important;
+                margin: 0 auto;
+            }
+
+            .info-heading {
+                font-size: 12px !important;
+                font-weight: 600;
+                white-space: nowrap;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                margin-bottom: 8px;
+            }
+
+            .attach-files-btn {
+                width: auto;
+                font-size: 10px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+
+            .sales-actions-top {
+                flex-direction: row;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+            #salesItemsTable td,
+            #salesItemsTable td::before {
+                font-size: 9.5px !important;
+                /* 🔥 reduce label text */
+            }
+
+        }
+
+
+
+
+        /* 📱 Mobile Layout Styling */
+        @media(max-width: 1024px) {
+
+            .header {
+                width: 100%;
+                padding: 10px 16px;
+                /* 🔥 more space */
+                height: auto;
+            }
+
+            .logo-box {
+                font-size: 14px;
+                /* 🔥 increase */
+                padding: 4px 8px;
+            }
+
+            .worklife-text {
+                font-size: 16px;
+                /* 🔥 bigger title */
+            }
+
+            .header-right {
+                gap: 8px;
+                /* 🔥 more spacing */
+                font-size: 13px;
+            }
+
+            .profile span {
+                font-size: 12px;
+            }
+
+            .header select {
+                font-size: 12px;
+                padding: 4px 6px;
+            }
+
+
+
+            /* Main container becomes 2 columns only */
+            .main-container {
+                display: grid;
+                grid-template-columns:  2fr 1fr;
+                gap: 14px;
+                padding: 15px;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .left-panel {
+                grid-column: 1 / span 2;
+                order: -1;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: 0px;
+                width: 100%;
+                margin-bottom: 12px;
+            }
+
+
+            /* Make icon smaller and centered */
+            .left-panel i {
+                font-size: 16px !important;
+                margin: 0 !important;
+            }
+
+            /* Hide text labels in mobile */
+            .left-panel span {
+                font-size: 8px;
+            }
+
+
+            .left-panel button {
+                width: 55px;
+                height: 55px;
+                font-size: 10px;
+                padding: 6px;
+            }
+
+            /* FORM: Full width and centered */
+            .sales-form-section {
+                max-width: 100%;
+                width: 100%;
+                margin: 0 auto;
+                padding: 12px;
+            }
+
+            /* Card-style form title */
+            .sales-form-section h5 {
+                font-size: 16px;
+                text-align: left;
+                margin-bottom: 12px;
+            }
+
+            /* TRANSFORM TABLE TO VERTICAL FORM STYLE */
+            #salesItemsTable {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            #salesItemsTable thead {
+                display: none;
+                /* Hide top row for mobile */
+            }
+
+            #salesItemsTable tr {
+                display: flex;
+                flex-direction: column;
+                border: 1px solid #ccc;
+                margin-bottom: 12px;
+                padding: 8px;
+                background: #eaf7f2;
+            }
+
+            #salesItemsTable td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+                padding: 6px 8px;
+                font-size: 13px;
+                border: none !important;
+                width: 100%;
+            }
+
+            /* Custom labels on left side for each td */
+            #salesItemsTable td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                width: 50%;
+                color: #165c42;
+            }
+
+            /* Inputs inside td */
+            #salesItemsTable input,
+            #salesItemsTable select {
+                width: 45%;
+                font-size: 12px;
+            }
+
+            /* Delete button smaller */
+            .delete-row i {
+                font-size: 14px;
+                color: #b30000;
+            }
+
+
+            #salesItemsTable select.representative,
+            #salesItemsTable select.project,
+            #salesItemsTable select.typo,
+            #salesItemsTable select.status {
+                background-position: right 6px center;
+                background-size: 12px;
+                padding-right: 25px;
+            }
+
+
+            /* Personal Information box */
+            .personal-info {
+                width: 100%;
+                padding: 9px;
+                font-size: 11px !important;
+                margin-top: 10px;
+            }
+
+            .info-heading {
+                font-size: 12px !important;
+                font-weight: 600;
+                white-space: nowrap;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                margin-bottom: 8px;
+            }
+
+            .attach-files-btn {
+                width: auto;
+                font-size: 10px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+
+            .sales-actions-top {
+                flex-direction: row;
+                gap: 8px;
+                align-items: flex-start;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header">
+            <div class="header-left">
+                <a href="#" id="headerLogo"
+                    style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    <div class="logo-box">WL</div>
+                    <div class="worklife-text">Worklife</div>
+                </a>
+            </div>
+
+            <div class="header-right">
+                <select>
+                    <option>East</option>
+                    <option>West</option>
+                    <option>North</option>
+                    <option>South</option>
+                </select>
+                <span>English</span>
+
+                <div class="profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userName" style="text-transform: capitalize;">Loading...</span>
+                </div>
+
+                <div class="logout" id="logoutBtn">
+                    <i class="fas fa-power-off"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- ⭐ MAIN CONTAINER (ADDED BACK – REQUIRED!) -->
+    <div class="main-container">
+
+        <!-- ⭐ LEFT PANEL (You forgot this earlier) -->
+        <div id="sidePanel" class="left-panel">
+            <button class="btn-hr" id="hrBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-user" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">HR</span>
+                </div>
+            </button>
+            <button class="btn-finance" id="financeBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-folder" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">Finance</span>
+                </div>
+            </button>
+            <button class="btn-it" id="itBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-desktop" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">IT</span>
+                </div>
+            </button>
+            <button class="btn-pm" id="performanceBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-clock" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">Performance</span>
+                </div>
+            </button>
+            <button class="btn-reports" id="reportBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-chart-bar" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">Reports</span>
+                </div>
+            </button>
+        </div>
+
+        <!-- ⭐ CENTER SALES FORM (TABLE BASED UI) -->
+        <div class="sales-form-section">
+            <h5><i class="fa-solid fa-pen-to-square"></i> Incentives Request Form</h5>
+
+            <table class="table table-bordered" id="salesItemsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>*Applied Date</th>
+                        <th>*Date of Booking</th>
+                        <th>*Representative Name</th>
+                        <th>*Project</th>
+                        <th>*Typo</th>
+                        <th>*Status</th>
+                        <th>*Dimension (Sq-ft)</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+
+                <tbody id="salesItemsBody">
+
+                    <!-- Row 1 -->
+                    <tr data-row-id="row_1">
+                        <td data-label="*Applied Date"><input type="date" class="form-control"></td>
+                        <td data-label="*Date of Booking"><input type="date" class="form-control"></td>
+
+                        <td data-label="*Representative Name">
+                            <select class="form-control representative">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Project">
+                            <select class="form-control project">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Typo">
+                            <select class="form-control typo">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Status">
+                            <select class="form-control status">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Dimension (Sq-ft)"><input type="text" class="form-control dimension"
+                                placeholder="ex: 1500"></td>
+
+                        <td data-label="Delete" class="text-center">
+                            <button class="btn btn-sm btn-danger delete-row">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Row 2 -->
+                    <tr data-row-id="row_2">
+                        <td data-label="*Applied Date"><input type="date" class="form-control"></td>
+                        <td data-label="*Date of Booking"><input type="date" class="form-control"></td>
+
+                        <td data-label="*Representative Name">
+                            <select class="form-control representative">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Project">
+                            <select class="form-control project">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Typo">
+                            <select class="form-control typo">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Status">
+                            <select class="form-control status">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Dimension (Sq-ft)"><input type="text" class="form-control dimension"
+                                placeholder="ex: 1500"></td>
+
+                        <td data-label="Delete" class="text-center">
+                            <button class="btn btn-sm btn-danger delete-row">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Row: Add Row LEFT & Attach Files RIGHT -->
+            <div class="sales-actions-top">
+                <a href="#" id="addSalesRow" class="add-row-link"><strong>+ Add Row</strong></a>
+
+                <button type="button" class="attach-files-btn" id="attachBtn">
+                    Attach Files
+                </button>
+
+                <input type="file" id="incentiveFilesInput" multiple style="display:none">
+            </div>
+
+
+
+            <button type="button" id="submitSalesForm" class="btn btn-success mt-2">
+                Submit
+            </button>
+        </div>
+
+
+        <!-- ⭐ RIGHT PANEL -->
+        <div class="personal-info">
+            <h6 class="info-heading">Personal Information:</h6>
+
+            <div class="info-block"><span class="label">Employee Id:</span>
+                <div id="info-employee-id">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Name:</span>
+                <div id="info-name">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Department:</span>
+                <div id="info-department">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Designation:</span>
+                <div id="info-designation">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Line Manager:</span>
+                <div id="info-line-manager">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Joining Date:</span>
+                <div id="info-joining-date">Loading...</div>
+            </div>
+
+        </div>
+
+    </div> <!-- END MAIN CONTAINER -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        let uploadedIncentiveFiles = [];
+
+        document.getElementById("submitSalesForm").addEventListener("click", function (e) {
+            e.preventDefault();
+
+            const rows = document.querySelectorAll("#salesItemsBody tr");
+            const saleRows = [];
+
+            rows.forEach(row => {
+                saleRows.push({
+                    applied_date: row.querySelector('input[type="date"]').value,
+                    date_of_booking: row.querySelectorAll('input[type="date"]')[1].value,
+                    representative_id: row.querySelector('.representative').value,
+                    project_id: row.querySelector('.project').value,
+                    typo_id: row.querySelector('.typo').value,
+                    status_id: row.querySelector('.status').value,
+                    dimension_sqft: row.querySelector('.dimension').value
+                });
+            });
+
+            fetch("/api/sales/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    req_no: window.salesPersonalInfo.request_number,
+                    remarks: document.getElementById("remarks")?.value || "",
+                    items: saleRows,
+                    file_paths: uploadedIncentiveFiles
+                })
+            })
+                .then(res => res.json())
+                .then(data => Swal.fire("Success", data.message, "success"))
+                .catch(err => Swal.fire("Error", "Submit failed", "error"));
+        });
+
+
+
+
+        // add files while submit
+        function openIncentiveFileUpload() {
+            document.getElementById("incentiveFilesInput").click();
+        }
+
+
+        document.getElementById("incentiveFilesInput").addEventListener("change", async function () {
+            const files = this.files;
+            if (!files.length) return;
+
+            for (let f of files) {
+                const fd = new FormData();
+                fd.append("incentive_file", f);
+
+                const res = await fetch("/api/sales/incentive/upload", {
+                    method: "POST",
+                    body: fd
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    uploadedIncentiveFiles.push(data.filePath);
+                }
+            }
+
+            console.log("Uploaded incentive files:", uploadedIncentiveFiles);
+        });
+
+
+
+        // dropdown boxes of all
+        function loadDropdownData() {
+            fetch("/api/sales/dropdown-data")
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Dropdown Data:", data);
+
+                    window.dropdownData = data; // ⭐ STORE HERE
+
+                    populateDropdown(".representative", data.representatives);
+                    populateDropdown(".project", data.projects);
+                    populateDropdown(".typo", data.typos);
+                    populateDropdown(".status", data.statuses);
+                })
+                .catch(err => console.error("Dropdown Load Error:", err));
+        }
+
+        function populateDropdown(selector, list) {
+            document.querySelectorAll(selector).forEach(select => {
+
+                // ⭐ If dropdown already has options (old row), do NOT reset it
+                if (select.options.length > 1) return;
+
+                // ⭐ Populate only empty dropdowns (new rows)
+                select.innerHTML = `<option value="">Select</option>`;
+                list.forEach(item => {
+                    select.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                });
+            });
+        }
+        // Call function on page load
+        loadDropdownData();
+
+
+
+        // Add Row 
+        document.getElementById("addSalesRow").addEventListener("click", function (e) {
+            e.preventDefault(); // stop page jump
+
+            const tbody = document.getElementById("salesItemsBody");
+
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+        <td data-label="*Applied Date"><input type="date" class="form-control"></td>
+        <td data-label="*Date of Booking"><input type="date" class="form-control"></td>
+
+        <td data-label="*Representative Name">
+            <select class="form-control representative">
+                <option disabled selected>Select</option>
+            </select>
+        </td>
+
+        <td data-label="*Project">
+            <select class="form-control project">
+                <option disabled selected>Select</option>
+            </select>
+        </td>
+
+        <td data-label="*Typo">
+            <select class="form-control typo">
+                <option disabled selected>Select</option>
+            </select>
+        </td>
+
+        <td data-label="*Status">
+            <select class="form-control status">
+                <option disabled selected>Select</option>
+            </select>
+        </td>
+
+        <td data-label="*Dimension (Sq-ft)">
+            <input type="text" class="form-control dimension" placeholder="ex: 1500">
+        </td>
+
+        <td data-label="Delete" class="text-center">
+            <button class="btn btn-sm btn-danger delete-row"> <i class="fa-solid fa-trash"></i></button>
+        </td>
+    `;
+
+            tbody.appendChild(newRow);
+
+            // ⭐ SOLVE YOUR PROBLEM HERE (LOAD OPTIONS FOR NEW ROW)
+            populateDropdown(".representative", window.dropdownData.representatives);
+            populateDropdown(".project", window.dropdownData.projects);
+            populateDropdown(".typo", window.dropdownData.typos);
+            populateDropdown(".status", window.dropdownData.statuses);
+        });
+
+
+
+
+        // delete row in frontend 
+        document.addEventListener("click", async (e) => {
+            if (e.target.closest(".delete-row")) {
+                const row = e.target.closest("tr");
+                const item_id = row.getAttribute("data-item-id");
+
+                if (!item_id) {
+                    row.remove();
+                    return;
+                }
+
+                const res = await fetch(`/api/sales/delete-item/${item_id}`, {
+                    method: "DELETE"
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    row.remove();
+                } else {
+                    alert("Delete failed");
+                }
+            }
+        });
+
+
+
+        // onclick
+        document.addEventListener("DOMContentLoaded", () => {
+
+            console.log("Page ready ✅");
+
+            // HEADER
+            document.getElementById("headerLogo")?.addEventListener("click", () => {
+                location.href = "dashboard.html";
+            });
+
+            // LOGOUT
+            document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+
+            // SIDEBAR
+            document.getElementById("hrBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=hr-logo");
+            document.getElementById("financeBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=finance-logo");
+            document.getElementById("itBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=it-logo");
+            document.getElementById("performanceBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=performance-logo");
+            document.getElementById("reportsBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=reports-logo");
+            document.getElementById("attachBtn")?.addEventListener("click", openIncentiveFileUpload);
+        });
+    </script>
+
+
+    <script>
+        // 📌 LOAD PERSONAL INFORMATION - SALES
+        fetch("/api/sales/personal-info")
+            .then(res => res.json())
+            .then(data => {
+                console.log("Sales Personal Info:", data);
+
+                document.getElementById("info-employee-id").textContent = data.employee_id || "-";
+                document.getElementById("info-name").textContent = data.employee_name || "-";
+                document.getElementById("info-department").textContent = data.department || "-";
+                document.getElementById("info-designation").textContent = data.designation || "-";
+                document.getElementById("info-line-manager").textContent = data.line_manager || "-";
+                const joiningDateFormatted = data.joining_date
+                    ? new Date(data.joining_date).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    })
+                    : "-";
+
+                document.getElementById("info-joining-date").textContent = joiningDateFormatted;
+
+                // Save for submission later
+                window.salesPersonalInfo = data;
+            })
+            .catch(err => console.error("Personal info error:", err));
+
+
+        // 🔐 SESSION CHECK
+        document.addEventListener("DOMContentLoaded", function () {
+
+            fetch("/api/auth/session-check", {
+                credentials: "include"
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (!data.loggedIn) {
+                        window.location.href = "index.html";
+                        return;
+                    }
+
+                    // ✅ Set username
+                    document.getElementById("userName").textContent = data.user.name;
+
+                    // ===============================
+                    // ✅ HEADER REDIRECT
+                    // ===============================
+                    const header = document.getElementById("headerLogo");
+
+                    if (header) {
+                        header.onclick = () => {
+                            if (data.user.roleId === 4) {
+                                window.location.href = "employee-dashboard.html";
+                            } else {
+                                window.location.href = "humanresource.html";
+                            }
+                        };
+                    }
+
+                    // ===============================
+                    // ✅ SIDEBAR CHANGE
+                    // ===============================
+                    if (data.user.roleId === 4) {
+
+                        const panel = document.getElementById("sidePanel");
+
+                        if (panel) {
+                            panel.innerHTML = `
+
+<button class="btn-hr" id="leaveBtn">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-calendar-check"></i>
+        <span>Leave</span>
+    </div>
+</button>
+
+<button class="btn-finance" id="expenseBtn">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-money-bill"></i>
+        <span>Expense</span>
+    </div>
+</button>
+
+<button class="btn-reports" id="performanceBtn2">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-chart-column"></i>
+        <span>Performance</span>
+    </div>
+</button>
+
+<button class="btn-it" id="petrolBtn">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-gas-pump"></i>
+        <span>Petrol</span>
+    </div>
+</button>
+
+<button class="btn-reports" style="background-color:#0d6efd;" id="certificateBtn">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-certificate"></i>
+        <span>Certificate</span>
+    </div>
+</button>
+
+<button class="btn-pm" id="incentiveBtn">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Incentive</span>
+    </div>
+</button>
+
+`;
+                            document.getElementById("leaveBtn")?.addEventListener("click", () => location.href = "LeaveRequest.html");
+                            document.getElementById("expenseBtn")?.addEventListener("click", () => location.href = "expense-claim.html");
+                            document.getElementById("performanceBtn2")?.addEventListener("click", () => location.href = "performance.html");
+                            document.getElementById("petrolBtn")?.addEventListener("click", () => location.href = "petrol-conveyance.html");
+                            document.getElementById("salesBtn")?.addEventListener("click", () => location.href = "sales.html");
+                            document.getElementById("certificateBtn")?.addEventListener("click", () => location.href = "certificate.html");
+                        }
+                    }
+
+                })
+                .catch(err => {
+                    console.error("Session error:", err);
+                    window.location.href = "index.html";
+                });
+
+        });
+
+
+
+        //  Logout 
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You’ll be logged out of Worklife Dashboard.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html";
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

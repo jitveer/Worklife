@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title> My Expence Claim</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- SweetAlert2 for logout -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(120deg, #dff5e4, #f8fffb, #e0f2df);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* === HEADER === */
+        .header {
+            background-color: #52af8d;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            height: 60px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo-box {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+
+        .worklife-text {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header select {
+            background-color: white;
+            border: 1px solid white;
+            color: rgb(10, 10, 10);
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logout {
+            cursor: pointer;
+        }
+
+        /* === MAIN === */
+        .main {
+            display: flex;
+        }
+
+        /* === LEFT PANEL === */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+        }
+
+        .left-panel button {
+            width: 110px;
+            height: 100px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .left-panel button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-hr {
+            background-color: #a493b9;
+        }
+
+        .btn-finance {
+            background-color: #c78864;
+        }
+
+        .btn-it {
+            background-color: #863f33;
+        }
+
+        .btn-pm {
+            background-color: #15ac7f;
+        }
+
+        .btn-reports {
+            background-color: #82b435;
+        }
+
+        .left-panel i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        /* === CONTENT === */
+        /* -----------------------------------
+            Content
+        ----------------------------------- */
+        .content {
+            flex: 1;
+            padding: 30px;
+            background-color: #ffffff;
+            margin: 30px 10px 10px 0px;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .content h1 {
+            font-size: 26px;
+            margin-bottom: 25px;
+            color: #52af8d;
+            font-weight: bold;
+        }
+
+        .status-buttons button {
+            background: none;
+            border: 2px solid #ccc;
+            padding: 8px 16px;
+            margin-right: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .status-buttons button:hover {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        /* -----------------------------------
+           Table
+        ----------------------------------- */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        th {
+            background-color: #3a9d79;
+            color: white;
+            padding: 12px;
+            font-size: 15px;
+            border-right: 1px solid #dcdcdc;
+        }
+
+        td {
+            background-color: #ffffff;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            border-right: 1px solid #5dbd98;
+        }
+
+        tr:hover td {
+            background-color: #e4f3eb;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-box {
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            color: rgb(14, 13, 13);
+            background-color: transparent;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        }
+
+        .icon-box.view:hover {
+            background-color: #35a38b;
+            color: rgb(102, 93, 93);
+        }
+
+        .icon-box.delete:hover {
+            background-color: #c75a65;
+            color: rgb(70, 64, 64);
+        }
+
+        .status-box {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .status-box.small {
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .status-box.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-box.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-box.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            position: relative;
+            background: #fff;
+            padding: 20px;
+            width: 500px;
+            border-radius: 5px;
+        }
+
+        .modal-content button {
+            padding: 8px 16px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #approvalNote {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .close-btn i {
+            color: red;
+        }
+
+        .swal2-validation-message {
+            color: red !important;
+        }
+
+        .tracking-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tracking-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+        }
+
+        .status-square {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 0px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .status-approved {
+            background-color: #28a745;
+        }
+
+        .status-pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .status-box.rejected {
+            background-color: #dc3545;
+        }
+
+        .status-skipped {
+            background-color: #6c757d;
+        }
+
+        .label {
+            margin-top: 6px;
+            font-size: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .arrow {
+            font-size: 24px;
+            color: #0f0f0f;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- === HEADER === -->
+    <header>
+        <div class="header">
+            <!-- Left -->
+            <div id="headerLogo" class="header-left">
+                <div class="logo-box">WL</div>
+                <div class="worklife-text">Worklife</div>
+            </div>
+            <!-- Right -->
+            <div class="header-right">
+                <select>
+                    <option>Eastern</option>
+                    <option>Western</option>
+                    <option>Northern</option>
+                    <option>Southern</option>
+                </select>
+                <span>English</span>
+                <div class="profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userName" style="text-transform: capitalize;">Loading...</span>
+                </div>
+                <div class="logout" id="logoutBtn">
+                    <i class="fas fa-power-off"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- === MAIN === -->
+    <div class="main">
+        <!-- LEFT PANEL -->
+        <div id="sidePanel" class="left-panel">
+            <button class="btn-hr" id="hrBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-user"></i>
+                    <span>HR</span>
+                </div>
+            </button>
+            <button class="btn-finance" id="financeBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-folder"></i>
+                    <span>Finance</span>
+                </div>
+            </button>
+            <button class="btn-it" id="itBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-desktop"></i>
+                    <span>IT</span>
+                </div>
+            </button>
+            <button class="btn-pm" id="performanceBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Performance</span>
+                </div>
+            </button>
+            <button class="btn-reports" id="reportsBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-chart-bar"></i>
+                    <span>Reports</span>
+                </div>
+            </button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <h1>My Expence Claims</h1>
+
+            <div class="status-buttons">
+                <button id="allBtn">All</button>
+                <button id="approvedBtn">Approved</button>
+                <button id="pendingBtn">Pending</button>
+                <button id="rejectedBtn">Rejected</button>
+            </div>
+
+
+            <table id="expenseTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Requested By</th>
+                        <th>Amount</th>
+                        <th>Admin Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamic rows go here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- EXPENSE MODAL -->
+    <div class="modal" id="expenseModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModalBtn">
+                <i class="fa-solid fa-rectangle-xmark"></i>
+            </span>
+            <h3>
+                Expense Claim Details
+                <span id="expenseStatusTag" class="status-box small">Status</span>
+            </h3>
+            <p><strong>Request No:</strong> <span id="expenseReqNo"></span></p>
+
+            <div id="expenseDetails"></div>
+            <div id="rejectSection" style="display: none;">
+                <p><strong>Rejected By:</strong> <span id="rejected_by"></span></p>
+                <p><strong>Rejection Reason:</strong> <span id="rejection_reason"></span></p>
+            </div>
+            <div id="approvalFlow" style="margin-top: 20px;"></div>
+
+            <div id="expenseApprovalNote"></div>
+        </div>
+    </div>
+
+
+    <script>
+        // ===============================
+        // LOAD TABLE
+        // ===============================
+        function loadRequests(status = "all") {
+
+            fetch(`/api/expense/my-requests?status=${status}`)
+                .then(response => response.json())
+                .then(data => {
+
+                    const tbody = document.querySelector('#expenseTable tbody');
+                    tbody.innerHTML = '';
+
+                    if (!data.length) {
+                        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No expense claims found.</td></tr>`;
+                        return;
+                    }
+
+                    data.forEach((row, index) => {
+
+                        const tr = document.createElement('tr');
+
+                        tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${row.requester_name}</td>
+                    <td>₹${row.amount}</td>
+                    <td><span class="status-box small ${row.status.toLowerCase()}">${row.status}</span></td>
+                `;
+
+                        const actionTd = document.createElement("td");
+
+                        const viewBtn = document.createElement("span");
+                        viewBtn.className = "icon-box view";
+                        viewBtn.innerHTML = `<i class="fas fa-eye"></i>`;
+
+                        viewBtn.addEventListener("click", () => {
+                            viewRequest(row.req_no);
+                        });
+
+                        actionTd.appendChild(viewBtn);
+                        tr.appendChild(actionTd);
+
+                        tbody.appendChild(tr);
+                    });
+
+                })
+                .catch(err => console.error(err));
+        }
+
+        // view pop-up
+        function viewRequest(reqNo) {
+            currentRequestId = reqNo;
+            fetch(`/api/expense/view/${reqNo}`)
+                .then(res => res.json())
+                .then(data => {
+                    // Show req_no
+                    document.getElementById("expenseReqNo").textContent = data.req_no;
+
+                    // Set status
+                    const statusTag = document.getElementById("expenseStatusTag");
+                    statusTag.textContent = data.status || "N/A";
+                    statusTag.className = `status-box small ${data.status ? data.status.toLowerCase() : 'na'}`;
+
+                    // Cancel Info
+                    const rejectDiv = document.getElementById("rejectSection");
+                    if (rejectDiv) {
+                        if (data.status && data.status.toLowerCase() === "rejected") {
+                            rejectDiv.style.display = "block";
+                            document.getElementById("rejected_by").textContent = data.rejected_by || 'N/A';
+                            document.getElementById("rejection_reason").textContent = data.rejection_reason || 'N/A';
+                        } else {
+                            rejectDiv.style.display = "none";
+                        }
+                    }
+
+                    // Show modal
+                    document.getElementById("expenseModal").style.display = "flex";
+
+                    // Load tracking
+                    trackExpenseApproval(reqNo);
+                });
+        }
+        window.onload = () => {
+            loadRequests(); // Load the table with all expense requests
+
+            const reqNo = new URLSearchParams(window.location.search).get("reqNo");
+            if (reqNo) {
+                // 🔔 If opened via notification or direct link, open the view modal
+                setTimeout(() => {
+                    viewRequest(reqNo);
+                }, 300);
+            }
+        };
+
+        function closeExpenseModal() {
+            const modal = document.getElementById("expenseModal");
+            if (modal) modal.style.display = "none";
+        }
+
+
+        // tracking
+        function trackExpenseApproval(reqNo) {
+            fetch(`/api/expense/track/${reqNo}`)
+                .then(res => res.json())
+                .then(steps => {
+                    const container = document.getElementById("approvalFlow");
+                    if (!steps.length) {
+                        container.innerHTML = "No approval steps.";
+                        return;
+                    }
+
+                    // Start container
+                    let html = `<div style="display: flex; justify-content: center; align-items: center; flex-wrap: nowrap; overflow-x: auto;">`;
+
+                    // Loop through each step
+                    steps.forEach((step, i) => {
+                        const name = step.approved_by_name || "N/A";
+                        const status = step.status?.toLowerCase() || "pending";
+
+                        let color = "#ddd";
+                        if (status === "approved") color = "#28a745";       // green
+                        else if (status === "pending") color = "#ffc107";   // yellow
+                        else if (status === "rejected") color = "#dc3545"; // red
+                        else if (status === "skipped") color = "#6c757d";   // grey
+
+                        // Approver block
+                        html += `
+                    <div style="display: flex; flex-direction: column; align-items: center; margin: 0 10px;">
+                        <div style="
+                            padding: 10px 16px;
+                            background: ${color};
+                            color: #fff;
+                            border-radius: 4px;
+                            font-weight: bold;
+                            min-width: 130px;
+                            text-align: center;
+                            white-space: nowrap;
+                        ">
+                            ${name}
+                        </div>
+                        <div style="font-size: 14px; font-weight: bold; margin-top: 6px; text-transform: capitalize;">
+                            ${status}
+                        </div>
+                    </div>
+                `;
+
+                        // Arrow between boxes
+                        if (i < steps.length - 1) {
+                            html += `
+                        <div style="display: flex; align-items: center; font-size: 24px; margin-top: -26px;">➡</div>
+                    `;
+                        }
+                    });
+
+                    html += `</div>`;
+                    container.innerHTML = html;
+                })
+                .catch(err => {
+                    console.error("Failed to load tracking info:", err);
+                });
+        }
+
+        // session check
+        fetch("/api/auth/session-check", {
+            credentials: "include"   // ⭐ IMPORTANT
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                if (!data.loggedIn) {
+                    window.location.href = "index.html";
+                    return;
+                }
+
+                // ✅ Show username
+                document.getElementById("userName").textContent = data.user.name;
+
+                // ===============================
+                // ✅ HEADER CLICK FIX
+                // ===============================
+                const header = document.getElementById("headerLogo");
+
+                if (header) {
+                    header.addEventListener("click", () => {
+                        if (data.user.roleId === 4) {
+                            window.location.href = "employee-dashboard.html";
+                        } else {
+                            window.location.href = "humanresource.html";
+                        }
+                    });
+                }
+
+
+                
+
+                // ===============================
+                // ✅ SIDEBAR CHANGE (MAIN FIX)
+                // ===============================
+                if (data.user.roleId === 4) {
+
+                    const panel = document.getElementById("sidePanel");
+
+                    if (panel) {
+                        panel.innerHTML = `
+
+            <button class="btn-hr" id="leaveBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Leave</span>
+                </div>
+            </button>
+
+            <button class="btn-finance"  id="expenseBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-money-bill"></i>
+                    <span>Expense</span>
+                </div>
+            </button>
+
+            <button class="btn-reports"id="performanceBtn2">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Performance</span>
+                </div>
+            </button>
+
+            <button class="btn-it"  id="petrolBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-gas-pump"></i>
+                    <span>Petrol</span>
+                </div>
+            </button>
+
+            <button class="btn-pm"  id="salesBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Incentive</span>
+                </div>
+            </button>
+
+            <!-- 🔵 Blue Certificate -->
+            <button class="btn-reports" style="background-color:#0d6efd;" id="certificateBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-certificate"></i>
+                    <span>Certificate</span>
+                </div>
+            </button>
+
+            `;
+
+                        document.getElementById("leaveBtn")?.addEventListener("click", () => {
+                            window.location.href = "LeaveRequest.html";
+                        });
+
+                        document.getElementById("expenseBtn")?.addEventListener("click", () => {
+                            window.location.href = "expense-claim.html";
+                        });
+
+                        document.getElementById("performanceBtn2")?.addEventListener("click", () => {
+                            window.location.href = "performance.html";
+                        });
+
+                        document.getElementById("petrolBtn")?.addEventListener("click", () => {
+                            window.location.href = "petrol-conveyance.html";
+                        });
+
+                        document.getElementById("salesBtn")?.addEventListener("click", () => {
+                            window.location.href = "sales.html";
+                        });
+
+                        document.getElementById("certificateBtn")?.addEventListener("click", () => {
+                            window.location.href = "certificate.html";
+                        });
+
+                    }
+                }
+
+            })
+            .catch(error => {
+                console.error("Session check failed:", error);
+                window.location.href = "index.html";
+            });
+
+        const params = new URLSearchParams(window.location.search);
+        const sectionParam = params.get('section');
+        if (sectionParam) {
+            const menuTile = document.getElementById(sectionParam);
+            if (menuTile) {
+                menuTile.click();
+            }
+        }
+
+
+
+        // ===============================
+        // SESSION + EVENTS
+        // ===============================
+        document.addEventListener("DOMContentLoaded", () => {
+
+            loadRequests("all");
+
+            // FILTERS
+            document.getElementById("allBtn")?.addEventListener("click", () => loadRequests("all"));
+            document.getElementById("approvedBtn")?.addEventListener("click", () => loadRequests("approved"));
+            document.getElementById("pendingBtn")?.addEventListener("click", () => loadRequests("pending"));
+            document.getElementById("rejectedBtn")?.addEventListener("click", () => loadRequests("rejected"));
+
+            // MODAL CLOSE
+            document.getElementById("closeModalBtn")?.addEventListener("click", closeExpenseModal);
+
+            // LOGOUT
+            document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+
+            // SIDEBAR
+            document.getElementById("hrBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=hr-logo");
+            document.getElementById("financeBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=finance-logo");
+            document.getElementById("itBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=it-logo");
+            document.getElementById("performanceBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=performance-logo");
+            document.getElementById("reportsBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=reports-logo");
+
+        });
+
+
+
+
+        // logout
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out from your session.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Call logout API
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html"; // Redirect to login
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
+
+    </script>
+    <script src="https://kit.fontawesome.com/8c8a15d638.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

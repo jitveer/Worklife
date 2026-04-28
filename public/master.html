@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Worklife - Master Setup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            background-image: url('./images/vcb.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+
+        }
+
+        .left-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            background-color: white;
+            color: rgb(202, 70, 70);
+            padding: 8px 12px;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .logo-text {
+            padding: 6px 10px;
+            border-radius: 5px;
+            color: white;
+            font-size: 20px;
+            /* 👈 Increase the size as needed */
+            font-weight: bold;
+        }
+
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile i {
+            margin-right: 5px;
+        }
+
+        .logout i {
+            cursor: pointer;
+        }
+
+        .master-page {
+            background: url('./images/vcb.jpg') no-repeat center center fixed;
+            background-size: cover;
+            width: 100%;
+            height: calc(100vh - 80px);
+            padding-top: 40px;
+        }
+
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 40px;
+        }
+
+        /* GRID LAYOUT */
+        .master-grid {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            height: calc(100vh - 80px);
+            background: url("/images/vcb") center/cover no-repeat fixed;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* LEFT BUTTONS */
+        .left-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 700px;
+            height: 700px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* BUTTON DESIGN */
+        .master-btn {
+            flex: 1;
+            height: 130px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0px;
+            font-size: 24px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .3s;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        .master-btn:hover {
+            transform: translateY(-8px);
+            filter: brightness(1.1);
+            box-shadow: 0 12px 25px rgba(255, 255, 255, 0.4);
+        }
+
+        .teal {
+            background: #1abc9c;
+        }
+
+        .orange {
+            background: #ff7f50;
+        }
+
+        .blue {
+            background: #0057d9;
+        }
+
+        .green {
+            background: #067a00;
+        }
+
+        .purple {
+            background: #8e24aa;
+        }
+
+        .pink {
+            background: #e91e63;
+        }
+
+        .brown {
+            background: #8b4600;
+        }
+
+
+        /* RIGHT PANEL */
+        .right-panel {
+            position: fixed;
+            top: 100px;
+            right: 100px;
+            background: white;
+            border-radius: 0px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            width: 40%;
+            max-height: 70vh;
+            height: auto;
+            overflow-y: auto;
+        }
+
+        /* Only add gap between Company and Department */
+        .btn-row .master-btn:first-child {
+            margin-right: 30px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-panel {
+            font-size: 26px;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        .close-panel:hover {
+            color: red;
+        }
+
+        .add-btn {
+            background: #ff7b00;
+            padding: 8px 14px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .add-btn {
+            transition: 0.25s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            filter: brightness(1.1);
+        }
+
+        .search-box {
+            width: 180px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+        }
+
+
+        .close-panel-icon {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            font-size: 20px;
+            color: #ff1a1a;
+            cursor: pointer;
+            z-index: 99;
+            transition: 0.2s ease;
+        }
+
+        .close-panel-icon:hover {
+            transform: scale(1.2);
+        }
+
+        /* TABLE */
+        .panel-table {
+            margin-top: 20px;
+        }
+
+        /* NEW MODERN TABLE STYLE */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        /* HEADER */
+        table thead th {
+            background: #33cea7;
+            padding: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            text-align: center;
+        }
+
+        /* ROWS */
+        table tbody tr {
+            transition: 0.25s ease;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        /* CELLS */
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #444;
+        }
+
+        /* HOVER EFFECT */
+        table tbody tr:hover {
+            background: #e8f3ff;
+        }
+
+        /* ICONS */
+        .edit {
+            color: #0057d9;
+            cursor: pointer;
+            margin-right: 12px;
+            transition: 0.2s ease;
+        }
+
+        .delete {
+            color: #cc0000;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .edit:hover,
+        .delete:hover {
+            transform: scale(1.18);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="left-section">
+            <a href="dashboard.html" style="text-decoration:none; display:flex; align-items:center; gap:10px;">
+                <div class="logo-icon">WL</div>
+                <div class="logo-text">Worklife</div>
+            </a>
+        </div>
+
+        <div class="top-right">
+            <select class="dropdown">
+                <option>East</option>
+                <option>West</option>
+                <option>South</option>
+                <option>North</option>
+            </select>
+            <div>English</div>
+            <div class="profile">
+                <i class="fa-solid fa-circle-user"></i>
+                <span id="userName">Loading...</span>
+            </div>
+            <div class="logout" id="logoutBtn"><i class="fas fa-power-off"></i></div>
+        </div>
+    </header>
+
+
+
+    <!-- MAIN TWO COLUMN AREA -->
+    <div class="master-grid">
+
+        <!-- LEFT BUTTONS -->
+        <div class="left-buttons">
+
+            <div class="btn-row">
+                <div class="master-btn teal" id="companyBtn">Company</div>
+                <div class="master-btn orange" id="departmentBtn">Department</div>
+            </div>
+
+            <div class="btn-row">
+                <div class="master-btn blue" id="managerBtn">Line-manager</div>
+                <div class="master-btn green" id="projectsBtn">Projects</div>
+            </div>
+
+            <div class="btn-row">
+                <div class="master-btn purple" id="typoBtn">Typo</div>
+                <div class="master-btn pink" id="statusBtn">Project Status</div>
+            </div>
+
+            <div class="btn-row">
+                <div class="master-btn brown" id="roleBtn">User Role</div>
+                <div class="master-btn" style="background:#11c0df" id="certificateBtn"> Certificate Types </div>
+            </div>
+        </div>
+
+
+        <!-- RIGHT PANEL (Initially hidden) -->
+        <div class="right-panel hidden" id="rightPanel"></div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+
+
+        // ---------------- COLORS ----------------
+
+        const panelColors = {
+            company: "#1abc9c",
+            department: "#ff7f50",
+            manager: "#0057d9",
+            projects: "#0b7a00",
+            typo: "#8e24aa",
+            status: "#e91e63",
+            role: "#8b4600",
+            "certificate-type": "#11c0df"
+        };
+
+        //-------------table heading------------------
+        const tableHeadings = {
+            company: "Company Name",
+            department: "Department Name",
+            manager: "Name (Line Manager)",
+            projects: "Project Name",
+            typo: "Typo",
+            status: "Status Name",
+            role: "Role Name",
+            "certificate-type": "Certificate Type"
+        };
+
+
+        function loadPanel(type) {
+
+            const panel = document.getElementById("rightPanel");
+
+            const titles = {
+                company: "Company",
+                department: "Department",
+                manager: "Line Manager",
+                projects: "Projects",
+                typo: "Typo",
+                status: "Project Status",
+                role: "User Role",
+                "certificate-type": "Certificate Type"
+            };
+
+            const color = panelColors[type];
+
+            panel.classList.remove("hidden");
+
+            panel.innerHTML = `
+
+        <!-- X ICON -->
+        <i class="fa-solid fa-xmark close-panel-icon" id="closePanelBtn"></i>
+
+        <div class="panel-header" style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding-bottom:12px;
+            padding-top:20px;
+            border-bottom:1px solid #ccc;
+            position: relative;
+        ">
+            <h2 style="margin:0; color:${color}; font-weight:700;">
+                ${titles[type]}
+            </h2>
+            
+            <button class="add-btn"
+            style="background:${color}; border:none; padding:8px 16px; border-radius:6px; color:white; font-weight:bold;"
+            id="addBtn">
+            Add ${titles[type]}
+            </button>
+        </div>
+
+        <div class="panel-table">
+
+          <input type="text" id="masterSearch" placeholder="Search..." class="search-box"/>
+
+            <div class="table-wrapper">
+                <table class="master-table">
+                    <thead>
+                        <tr>
+                            <th>SL No</th>
+                            <th>${titles[type]} Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="masterTableBody"></tbody>
+
+                </table>
+            </div>
+
+        </div>
+    `;
+            // 👇 ADD HERE (NOT ABOVE)
+            const closeBtn = document.getElementById("closePanelBtn");
+            if (closeBtn) {
+                closeBtn.addEventListener("click", closePanel);
+            }
+
+            const addBtn = document.getElementById("addBtn");
+            if (addBtn) {
+                addBtn.addEventListener("click", () => addMaster(type));
+            }
+
+            // ✅ NOW FETCH BACKEND DATA AFTER PANEL IS BUILT
+            fetch(`https://worklife.globesproperties.in/api/master/${type}`)
+                .then(res => res.json())
+                .then(data => {
+
+                    const tbody = document.getElementById("masterTableBody");
+                    tbody.innerHTML = "";
+
+                    if (!data.length) {
+                        tbody.innerHTML = `
+                    <tr><td colspan="3">No records found</td></tr>
+                    `;
+                        return;
+                    }
+
+                    data.forEach((item, index) => {
+
+                        const row = document.createElement("tr");
+
+                        row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.name}</td>
+                        <td>
+                            <i class="fa-solid fa-pen edit"></i>
+                            <i class="fa-solid fa-trash delete"></i>
+                            </td>
+                            `;
+
+                        row.querySelector(".edit")
+                            .addEventListener("click", () => editMaster(type, item.id));
+
+                        row.querySelector(".delete")
+                            .addEventListener("click", () => deleteMaster(type, item.id));
+
+                        tbody.appendChild(row);
+
+                    });
+                    enableSearch();
+
+                })
+                .catch(err => console.log("Master Load Error:", err));
+        }
+
+
+
+
+        // ---------------- CLOSE PANEL ----------------
+        function closePanel() {
+            const panel = document.getElementById("rightPanel");
+            panel.classList.add("hidden");
+            panel.innerHTML = ""; // make empty again
+        }
+
+
+
+        // ---------------- ADD ----------------
+        function addMaster(type) {
+            Swal.fire({
+                title: `Add ${type}`,
+                input: "text",
+                inputLabel: `Enter ${type} name`,
+                inputPlaceholder: "Type here...",
+                showCancelButton: true,
+                confirmButtonText: "Save",
+                cancelButtonColor: "#d33"
+            }).then(result => {
+
+                if (!result.value) return;
+
+                fetch(`https://worklife.globesproperties.in/api/master/${type}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: result.value })
+                })
+                    .then(res => res.json())
+                    .then(() => {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Added Successfully!",
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+                        loadPanel(type);
+                    });
+            });
+        }
+
+
+
+        // ---------------- EDIT ----------------
+        function editMaster(type, id) {
+            Swal.fire({
+                title: "Edit Name",
+                input: "text",
+                inputLabel: "Enter new name",
+                inputPlaceholder: "Type here...",
+                showCancelButton: true,
+                confirmButtonText: "Update"
+            }).then(result => {
+
+                if (!result.value) return;
+
+                fetch(`https://worklife.globesproperties.in/api/master/${type}/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: result.value })
+                })
+                    .then(res => res.json())
+                    .then(() => {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Updated Successfully!",
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+                        loadPanel(type);
+                    });
+            });
+        }
+
+
+
+        // ---------------- DELETE ----------------
+        function deleteMaster(type, id) {
+            console.log("DELETE CLICKED", type, id);
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This record will be permanently deleted.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#e74c3c",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then(result => {
+
+                if (!result.isConfirmed) return;
+
+                fetch(`https://worklife.globesproperties.in/api/master/${type}/${id}`, {
+                    method: "DELETE"
+                })
+                    .then(res => res.json())
+                    .then(() => {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Deleted Successfully!",
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+                        loadPanel(type);
+                    });
+            });
+        }
+
+
+
+        // ---------------- SEARCH ----------------
+        function enableSearch() {
+            const searchBox = document.getElementById("masterSearch");
+
+            searchBox.addEventListener("keyup", function () {
+                const value = this.value.toLowerCase();
+                const rows = document.querySelectorAll("#masterTableBody tr");
+
+                rows.forEach(row => {
+                    row.style.display = row.innerText.toLowerCase().includes(value)
+                        ? ""
+                        : "none";
+                });
+            });
+        }
+
+
+        //-------------------------------
+        // onclick buttons 
+        //-------------------------------
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            document.getElementById("logoutBtn")
+                ?.addEventListener("click", logoutUser);
+
+            document.getElementById("companyBtn")
+                ?.addEventListener("click", () => loadPanel("company"));
+
+            document.getElementById("departmentBtn")
+                ?.addEventListener("click", () => loadPanel("department"));
+
+            document.getElementById("managerBtn")
+                ?.addEventListener("click", () => loadPanel("manager"));
+
+            document.getElementById("projectsBtn")
+                ?.addEventListener("click", () => loadPanel("projects"));
+
+            document.getElementById("typoBtn")
+                ?.addEventListener("click", () => loadPanel("typo"));
+
+            document.getElementById("statusBtn")
+                ?.addEventListener("click", () => loadPanel("status"));
+
+            document.getElementById("roleBtn")
+                ?.addEventListener("click", () => loadPanel("role"));
+
+            document.getElementById("certificateBtn")
+                ?.addEventListener("click", () => loadPanel("certificate-type"));
+
+        });
+
+
+
+
+
+
+        // 🔐 SESSION CHECK
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/api/auth/session-check", {
+                credentials: "include"
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.loggedIn) {
+                        //  Set the user name on your dashboard
+                        document.getElementById("userName").textContent = data.user.name;
+
+                    } else {
+                        //  Not logged in → redirect
+                        window.location.href = "index.html";
+                    }
+                });
+        });
+
+        // logout
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out from your session.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Call logout API
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html"; // Redirect to login
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>

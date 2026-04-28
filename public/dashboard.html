@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Worklife Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-black: #000000;
+      --hr-purple: #8a7ab2;
+      --finance-tan: #c68c6a;
+      --it-brown: #6d4034;
+      --employee-blue: #1d7ba8;
+      --performance-teal: #1d9d73;
+      --reports-lime: #8eb73e;
+      --awards-blue: #002c81;
+
+      --my-task-navy: #1a1e4d;
+      --requests-pink: #b01a4f;
+      --attendance-green: #27a288;
+      --enrollment-green: #009339;
+      --lumi-yellow: #fbbd08;
+      --leaves-red: #a84c3e;
+      --quick-links-purple: #932a84;
+
+      --text-white: #ffffff;
+      --sidebar-bg: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-black);
+      color: var(--text-white);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-image: url('./images/db-bg.jpg');
+      /* Using existing bg from project if available */
+      background-size: cover;
+      background-position: bottom;
+    }
+
+    /* Header Styles */
+    header {
+      background-color: #000;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      border-bottom: 1px solid #333;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .logo-text {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 13px;
+    }
+
+    .header-right select {
+      background: transparent;
+      color: #fff;
+      border: 1px solid #fff;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Layout Grid */
+    .container {
+      display: grid;
+      grid-template-columns: 550px 1fr 380px;
+      gap: 20px;
+      padding: 15px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Panel Common */
+    .panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* --- LEFT PANEL --- */
+    .left-grid {
+      display: grid;
+      grid-template-columns: 3fr 3fr;
+      gap: 20px;
+    }
+
+    .card-main {
+      height: 155px;
+      border-radius: 4px;
+      padding: 15px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.2s;
+    }
+
+    .card-main:hover {
+      opacity: 0.95;
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-main h3 {
+      font-size: 16px;
+      width: 70%;
+      line-height: 1.2;
+    }
+
+    .card-main i {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      font-size: 24px;
+      opacity: 0.8;
+    }
+
+    .hr-card {
+      background-color: var(--hr-purple);
+    }
+
+    .finance-card {
+      background-color: var(--finance-tan);
+    }
+
+    .it-card {
+      background-color: var(--it-brown);
+    }
+
+    .employee-card {
+      background-color: var(--employee-blue);
+    }
+
+    .performance-card {
+      background-color: var(--performance-teal);
+    }
+
+    .reports-card {
+      background-color: var(--reports-lime);
+    }
+
+    .awards-section {
+      grid-column: span 2;
+      height: 300px;
+      background-color: var(--awards-blue);
+      background-image: url('./images/rewards.jpg');
+      background-size: cover;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .awards-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .awards-logo {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 40px;
+    }
+
+    .mnm-text {
+      font-size: 32px;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    /* --- CENTER PANEL --- */
+    .center-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .banner-main {
+      width: 100%;
+      height: 100%;
+      background-image: url('./images/IT Support.png');
+      background-size: cover;
+      /* 🔥 fills full area */
+      background-position: center;
+      /* center alignment */
+      background-repeat: no-repeat;
+    }
+
+    .it-main-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      /* ✅ shows full image */
+      background-color: #fff;
+      /* optional */
+    }
+
+    .it-banner {
+      background-color: #fff;
+      color: #000;
+      border-radius: 4px;
+      height: 500px;
+      padding: 0px;
+      /* Removed padding to let image fill */
+      display: grid;
+      grid-template-columns: 1fr;
+      /* Full width since support-logos removed */
+      align-items: center;
+      position: relative;
+      background-image: radial-gradient(circle at 100% 0%, #e5e7eb 0%, transparent 40%);
+    }
+
+    .support-logos {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .support-logos img {
+      max-width: 150px;
+    }
+
+    .banner-main h2 {
+      font-size: 28px;
+      color: #1a1e4d;
+      margin-bottom: 20px;
+    }
+
+    .feature-img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .center-bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      /* 3 Columns */
+      gap: 20px;
+      flex: 1;
+    }
+
+    .small-card {
+      border-radius: 4px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .small-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .my-task {
+      background-color: var(--my-task-navy);
+    }
+
+    .pending-circle {
+      border: 2px solid #fff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 10px auto;
+      font-size: 12px;
+    }
+
+    .pending-circle span:first-child {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .requests {
+      background-color: var(--requests-pink);
+    }
+
+    .req-list {
+      list-style: circle;
+      padding-left: 15px;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .attendance {
+      background-color: var(--attendance-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: row;
+      gap: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .enrollment {
+      background-color: var(--enrollment-green);
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .lumi {
+      background-color: var(--lumi-yellow);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .lumi-circle {
+      border: 2px solid #000;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-bottom: 5px;
+    }
+
+    .policies {
+      background-color: #fff;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .policies img {
+      width: 100%;
+      height: 100%;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .leaves {
+      background-color: var(--leaves-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .quick-links {
+      background-color: var(--quick-links-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      position: relative;
+    }
+
+    #calendar-btn {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #111056, #6366f1);
+      color: #fff;
+      font-size: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease;
+      z-index: 1000;
+    }
+
+    #calendar-btn:hover {
+      transform: scale(1.08);
+    }
+
+    .small-card my-task {
+      height: 80px;
+
+    }
+
+    /* --- RIGHT PANEL --- */
+    .right-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .right-sidebar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .notification-card {
+      background-color: var(--sidebar-bg);
+      border-radius: 4px;
+      padding: 20px;
+      color: #000;
+      height: 500px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+
+    .notification-card::-webkit-scrollbar {
+      display: none;
+    }
+
+    .notification-card h2 {
+      font-size: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-weight: bold;
+    }
+
+    .notification-card h2 i {
+      color: #fabb18;
+      font-size: 18px;
+    }
+
+    .task-group-title {
+      color: #000;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      flex: 1;
+      /* 🔥 takes remaining space */
+      overflow-y: auto;
+      /* 🔥 scroll inside */
+      min-height: 0;
+    }
+
+    .task-item {
+      background: #dcf8ff;
+      border: 1px solid #c0eefc;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #084c61;
+      font-weight: bold;
+      line-height: 1.4;
+      position: relative;
+    }
+
+    .task-item.green-bg {
+      background: #d1e7dd;
+      border: 1px solid #badbcc;
+      color: #166534;
+    }
+
+    .task-item i.check {
+      color: #198754;
+      font-size: 14px;
+    }
+
+    /* Alerts generated via JS */
+    #notificationList .alert {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.35;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .06);
+    }
+
+    #notificationList .alert.alert-success {
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+
+    #notificationList .alert.alert-danger {
+      background: #f8d7da;
+      color: #842029;
+    }
+
+    #notificationList .alert.alert-warning {
+      background: #fff3cd;
+      color: #664d03;
+    }
+
+    #notificationList .alert.alert-info {
+      background: #cff4fc;
+      color: #055160;
+    }
+
+    #notificationList .alert .btn-close {
+      background: none;
+      border: 0;
+      font-size: 14px;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .task-item.purple-indicator {
+      border-right: 4px solid #6f42c1;
+    }
+
+    .right-bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* WhatsApp Button */
+    .whatsapp-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #25d366;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* ===============================================
+           WIREFRAME-MATCHED GAPLESS RESPONSIVE DESIGN
+           Desktop: UNTOUCHED
+           Laptop:  5 cols x 4 rows (NO SCROLL)
+           Tablet:  4 cols x 7 rows
+           Mobile:  2 cols (scrollable)
+           =============================================== */
+
+    /* Allow scroll everywhere except laptop */
+    body {
+      height: auto;
+      min-height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .container {
+      overflow: visible !important;
+    }
+
+    /* === SHARED: Hide IT Banner + flatten panels for all non-desktop === */
+    @media (max-width: 1400px) {
+      .it-banner {
+        display: none !important;
+      }
+
+      .panel,
+      .left-grid,
+      .center-content,
+      .center-bottom-grid,
+      .right-sidebar,
+      .right-bottom-grid {
+        display: contents;
+      }
+
+      .card-main,
+      .small-card {
+        padding: 18px !important;
+      }
+
+      .policies {
+        padding: 0 !important;
+      }
+
+      /* Hide "My Task" label/icon, keep only the pending circle */
+      .small-card.my-task>div:first-child {
+        display: none !important;
+      }
+    }
+
+    /* ============================================
+           LAPTOP (1024px–1400px) — 5 cols × 4 rows
+           NO SCROLLING — entire dashboard in viewport
+           
+           Row 1: Notif | Notif | HR     | Finance | MyTask
+           Row 2: Notif | Notif | Enroll | Enroll  | Awards
+           Row 3: IT    | Emp   | PM     | Reports | Requests
+           Row 4: Atten | Lumi  | Policies| Leaves | QuickLinks
+           ============================================ */
+    @media (max-width: 1400px) and (min-width: 1024px) {
+      body {
+        overflow: hidden !important;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        gap: 12px;
+        height: calc(100vh - 50px);
+        grid-auto-flow: row dense;
+      }
+
+      /* Reset ALL items to 1×1 */
+      .card-main,
+      .small-card,
+      .awards-section {
+        grid-column: span 1 !important;
+        grid-row: span 1 !important;
+        height: 100% !important;
+      }
+
+      /* --- Row 1-2: Notification (2c × 2r) --- */
+      .notification-card {
+        grid-column: span 2 !important;
+        grid-row: span 2 !important;
+        order: 1;
+        overflow-y: hidden !important;
+        padding: 12px !important;
+        height: 415px;
+
+        display: flex;
+        /* 🔥 IMPORTANT */
+        flex-direction: column;
+      }
+
+      .task-list {
+        flex: 1;
+        overflow-y: auto;
+        /* 🔥 scroll here */
+        min-height: 0;
+      }
+
+      /* --- Row 1: HR, Finance, MyTask --- */
+      .hr-card {
+        order: 2;
+      }
+
+      .finance-card {
+        order: 3;
+      }
+
+      .small-card.my-task {
+        order: 4;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: center !important;
+        gap: 15px;
+      }
+
+      /* --- Row 2: Enrollment (2c) + Awards --- */
+      .awards-section {
+        grid-column: span 2 !important;
+        order: 5;
+      }
+
+      .enrollment {
+        order: 6;
+      }
+
+      /* --- Row 3: IT, Employee, PM, Reports, Requests --- */
+      .it-card {
+        order: 7;
+      }
+
+      .employee-card {
+        order: 8;
+      }
+
+      .performance-card {
+        order: 9;
+      }
+
+      .reports-card {
+        order: 10;
+      }
+
+      .small-card.requests {
+        order: 11;
+      }
+
+      /* --- Row 4: Attendance, Lumi, Policies, Leaves, QuickLinks --- */
+      .attendance {
+        order: 12;
+        font-size: 16px !important;
+      }
+
+      .lumi {
+        order: 13;
+      }
+
+      .policies {
+        order: 14;
+      }
+
+      .leaves {
+        order: 15;
+        font-size: 16px !important;
+      }
+
+      .quick-links {
+        order: 16;
+        font-size: 16px !important;
+      }
+
+      /* Compact notification internals */
+      .notification-card h2 {
+        font-size: 14px;
+        margin-bottom: 10px;
+        gap: 10px;
+      }
+
+      .task-group-title {
+        margin-bottom: 6px;
+        font-size: 11px;
+      }
+
+      .task-item {
+        padding: 7px 10px;
+        font-size: 10px;
+        line-height: 1.3;
+      }
+
+      .task-list {
+        gap: 4px;
+      }
+
+      /* Compact MyTask pending circle */
+      .small-card.my-task .pending-circle {
+        width: 55px !important;
+        height: 55px !important;
+        border-width: 2px !important;
+      }
+
+      .small-card.my-task .pending-circle span:first-child {
+        font-size: 16px !important;
+      }
+
+      .small-card.my-task .pending-circle span:last-child {
+        font-size: 9px !important;
+      }
+
+      .small-card.my-task div[style*="font-size: 18px"] {
+        font-size: 13px !important;
+      }
+
+      .header-right span {
+        font-size: 12px;
+      }
+
+      .card-main h3 {
+        font-size: 13px;
+      }
+    }
+
+    /* ============================================
+           TABLET (768px–1023px) — 4 cols × 7 rows
+           
+           Row 1: Notif | Notif | Awards | Awards
+           Row 2: Notif | Notif | Awards | Awards
+           Row 3: Notif | Notif | HR     | Finance
+           Row 4: IT    | Emp   | PM     | Reports
+           Row 5: Atten | Lumi  | Req    | Policies
+           Row 6: MyTask| MyTask| Enroll | Enroll
+           Row 7: MyTask| MyTask| Leaves | QuickLinks
+           ============================================ */
+    @media (max-width: 1023px) and (min-width: 768px) {
+      .container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-rows: minmax(110px, auto);
+        gap: 12px;
+        grid-auto-flow: row dense;
+      }
+
+      /* Reset ALL items to 1×1 */
+      .card-main,
+      .small-card,
+      .awards-section,
+      .notification-card {
+        grid-column: span 1 !important;
+        grid-row: span 1 !important;
+        height: 100% !important;
+      }
+
+      /* Row 1-3: Notification 2c × 3r (tall left) */
+      .notification-card {
+        grid-column: span 2 !important;
+        grid-row: span 3 !important;
+        order: 1;
+        overflow-y: auto;
+        padding: 12px !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        /* 3 rows * 110px + 2 gaps * 12px */
+      }
+
+      /* Row 1-2: Awards 2c × 2r (right of notifications) */
+      .enrollment {
+        grid-column: span 2 !important;
+        grid-row: span 2 !important;
+        order: 2;
+      }
+
+      /* Row 3: HR + Finance fill gap under Awards */
+      .hr-card {
+        order: 3;
+      }
+
+      .finance-card {
+        order: 4;
+      }
+
+      /* Row 4: IT | Employee | PM | Reports */
+      .it-card {
+        order: 5;
+      }
+
+      .employee-card {
+        order: 6;
+      }
+
+      .performance-card {
+        order: 7;
+      }
+
+      .reports-card {
+        order: 8;
+      }
+
+      /* Row 5: Attendance | Lumi | Requests | Policies */
+      .attendance {
+        order: 9;
+        font-size: 16px !important;
+      }
+
+      .lumi {
+        order: 10;
+      }
+
+      .small-card.requests {
+        order: 11;
+      }
+
+      .policies {
+        order: 12;
+      }
+
+      /* Row 6-7: MyTask 2c × 2r + Enrollment 2c × 1r + Leaves + QuickLinks */
+      .small-card.my-task {
+        grid-column: span 2 !important;
+        grid-row: span 2 !important;
+        order: 13;
+        flex-direction: column !important;
+        justify-content: center !important;
+      }
+
+      .awards-section {
+        grid-column: span 2 !important;
+        order: 14;
+      }
+
+      .leaves {
+        order: 15;
+        font-size: 16px !important;
+      }
+
+      .quick-links {
+        order: 16;
+        font-size: 16px !important;
+      }
+    }
+
+    /* ============================================
+           MOBILE (<768px) — 2 cols (scrollable)
+           
+           Row 1:  HR       | Finance
+           Row 2:  IT       | Employee
+           Row 3:  PM       | Reports
+           Row 4:  Awards   | Awards      (full width)
+           Row 5:  MyTask   | Requests
+           Row 6:  MyTask   | Attendance
+           Row 7:  Enroll   | Enroll      (full width)
+           Row 8:  Lumi     | Policies
+           Row 9:  Notif    | Notif       (full width)
+           Row 10: Notif    | Notif
+           Row 11: Leaves   | QuickLinks
+           ============================================ */
+    @media (max-width: 767px) {
+      .container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: minmax(110px, auto);
+        gap: 10px;
+        padding: 10px;
+        grid-auto-flow: row dense;
+      }
+
+      /* Reset ALL items to 1×1 */
+      .card-main,
+      .small-card,
+      .awards-section,
+      .notification-card {
+        grid-column: span 1 !important;
+        grid-row: span 1 !important;
+        height: 100% !important;
+      }
+
+      /* Row 1-3: Module cards in 2-col pairs */
+      .hr-card {
+        order: 1;
+      }
+
+      .finance-card {
+        order: 2;
+      }
+
+      .it-card {
+        order: 3;
+      }
+
+      .employee-card {
+        order: 4;
+      }
+
+      .performance-card {
+        order: 5;
+      }
+
+      .reports-card {
+        order: 6;
+      }
+
+      /* Row 4-5: Awards full width, 2 rows tall */
+      .awards-section {
+        grid-column: span 2 !important;
+        grid-row: span 2 !important;
+        order: 7;
+      }
+
+      /* Row 5-6: MyTask (1c × 2r) + Requests + Attendance stacked */
+      .small-card.my-task {
+        grid-row: span 2 !important;
+        order: 8;
+        flex-direction: column !important;
+        justify-content: center !important;
+      }
+
+      .small-card.requests {
+        order: 9;
+      }
+
+      .attendance {
+        order: 10;
+        font-size: 14px !important;
+        gap: 5px !important;
+      }
+
+      /* Row 7: Enrollment full width */
+      .enrollment {
+        grid-column: span 2 !important;
+        order: 11;
+      }
+
+      /* Row 8: Lumi | Policies */
+      .lumi {
+        order: 12;
+      }
+
+      .policies {
+        order: 13;
+      }
+
+      /* Row 9-10: Notification full width, 2 rows tall */
+      .notification-card {
+        grid-column: span 2 !important;
+        grid-row: span 2 !important;
+        order: 14;
+        overflow-y: auto;
+        height: 230px !important;
+        /* 2 rows * 110px + 1 gap * 10px */
+      }
+
+      /* Row 11: Leaves | QuickLinks */
+      .leaves {
+        order: 15;
+        font-size: 14px !important;
+      }
+
+      .quick-links {
+        order: 16;
+        font-size: 14px !important;
+      }
+
+      .card-main h3 {
+        font-size: 13px;
+      }
+
+      .header-right span {
+        display: none;
+      }
+
+      /* Compact pending circle for mobile */
+      .small-card.my-task .pending-circle {
+        width: 70px !important;
+        height: 70px !important;
+      }
+    }
+
+    /* ============================================
+           MODAL AND CALENDAR STYLES
+           ============================================ */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+    }
+
+    #calendar-modal,
+    #event-form {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 360px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(16px);
+      border-radius: 16px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+      z-index: 1001;
+      color: black;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 6px;
+      position: relative;
+    }
+
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1f2937;
+      margin: 0;
+    }
+
+    #calendar-title {
+      min-width: 130px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1b3c5e;
+    }
+
+    .close-btn {
+      cursor: pointer;
+      font-size: 18px;
+      color: #ef4444;
+      position: absolute;
+      right: 0;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      font-size: 12px;
+      color: white;
+      margin: 10px 0;
+      text-align: center;
+      background: #4c577c;
+      padding: 8px 0;
+      border-radius: 10px;
+    }
+
+    #calendar-box {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .day {
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      font-size: 14px;
+      color: #1f2937;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .day:hover {
+      background: #eef2ff;
+    }
+
+    .day.green::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: #1b3c5e;
+    }
+
+    .date-label {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgb(90 90 205);
+      font-size: 13px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    #event-form input {
+      width: 92%;
+      padding: 10px 12px;
+      border-radius: 0px;
+      border: 1px solid #d1d5db;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .primary-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #12ab56, #6366f1);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .primary-btn:hover {
+      opacity: 0.9;
+    }
+
+    #event-image {
+      width: 100%;
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(6px);
+      border: 1px dashed rgba(79, 70, 229, 0.4);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .file-input-wrapper {
+      width: 100%;
+    }
+
+    #file-display {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 13px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .event-view {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 420px;
+      max-height: 80vh;
+      overflow-y: auto;
+      background: #f1f5f9;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+      z-index: 2000;
+    }
+
+    .event-view .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 18px;
+      cursor: pointer;
+      color: #ef4444;
+    }
+
+    .event-image img {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .event-text {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 14px;
+      color: #1f2937;
+      line-height: 1.6;
+      box-shadow: inset 0 0 0 1px #e5e7eb;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-btn {
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      color: #1b3c5e;
+      padding: 4px 8px;
+      border-radius: 8px;
+      user-select: none;
+    }
+
+    .nav-btn:hover {
+      background: #e0e7ff;
+    }
+
+    .month-nav {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body style="display:none;">
+
+  <header>
+    <div class="logo-section">
+      <div class="logo-box">WL</div>
+      <span class="logo-text">Worklife</span>
+    </div>
+    <div class="header-right">
+      <div class="notification-wrapper" style="text-decoration: none;">
+        <i class="fa-solid fa-bell" style="font-size: 18px;"></i>
+      </div>
+      <select>
+        <option>South</option>
+        <option>East</option>
+        <option>West</option>
+        <option>North</option>
+      </select>
+      <span>English</span>
+      <div class="user-info">
+        <i class="fa-regular fa-user"></i>
+        <span id="userName" style="text-transform: capitalize;">Loading...</span>
+        <div id="logoutBtn" style="cursor: pointer; display: inline-block;">
+          <i class="fa-solid fa-power-off" style="color: #fff;"></i>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- LEFT PANEL -->
+    <div class="panel">
+      <div class="left-grid">
+        <a href="humanresource.html?section=hr-logo" class="card-main hr-card"
+          style="text-decoration:none; color:inherit; display:block;">
+          <h3>Human Resource</h3>
+          <i class="fa-regular fa-user"></i>
+        </a>
+        <a href="humanresource.html?section=finance-logo" class="card-main finance-card"
+          style="text-decoration:none; color:inherit; display:block;">
+          <h3>Finance</h3>
+          <i class="fa-regular fa-folder"></i>
+        </a>
+        <a href="humanresource.html?section=it-logo" class="card-main it-card"
+          style="text-decoration:none; color:inherit; display:block;">
+          <h3>Information Technology</h3>
+          <i class="fa-solid fa-desktop"></i>
+        </a>
+        <a href="employee-list.html" class="card-main employee-card"
+          style="text-decoration:none; color:inherit; display:block;">
+          <h3>Employee</h3>
+          <i class="fa-solid fa-users"></i>
+        </a>
+        <a href="humanresource.html?section=performance-logo" class="card-main performance-card"
+          style="text-decoration:none; color:inherit; display:block;">
+          <h3>Performance Management</h3>
+          <i class="fa-solid fa-chart-line"></i>
+        </a>
+        <a href="humanresource.html?section=reports-logo" class="card-main reports-card"
+          style="text-decoration:none; color:inherit; display:block;">
+          <h3>Reports</h3>
+          <i class="fa-regular fa-clock"></i>
+        </a>
+
+        <a href="https://mnmenterprises.ltd/achievements/" class="awards-section" style="text-decoration:none;">
+          <div class="awards-logo" alt="Logo"></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CENTER PANEL -->
+    <div class="panel center-content">
+      <div class="it-banner">
+        <div class="banner-main" style="position: relative;">
+          <!-- Blue Dots Decoration -->
+          <div style="position: absolute; top: -40px; right: 0; color: #435b91; font-size: 40px; opacity: 0.3;">
+            <i class="fa-solid fa-braille"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="center-bottom-grid">
+        <!-- Row Span 2 Card -->
+        <div class="small-card my-task" style="grid-row: span 2; justify-content: space-around; padding: 30px;">
+          <div style="text-align: center;">
+            <i class="fa-regular fa-folder" style="font-size: 32px; height:10px; margin-bottom: 10px;"></i>
+            <div style="font-size: 18px; font-weight: bold;">My Task</div>
+          </div>
+          <div class="pending-circle" style="width: 120px; height: 130px; border-width: 4px;">
+            <span id="pendingCount" class="circle-number" style="font-size: 32px;">0</span>
+            <span style="font-size: 14px;">Pending</span>
+          </div>
+        </div>
+
+        <!-- Top Row -->
+        <div class="small-card requests" style="height: 140px; padding: 25px;">
+          <div style="font-size: 20px; font-weight: bold; margin-bottom: 15px;">Requests</div>
+          <ul class="req-list" style="font-size: 16px; font-weight: bold;">
+            <li style="margin-bottom: 8px;"><a href="my-request.html?type=myrequest"
+                style="color:inherit; text-decoration:none;">My Request</a></li>
+            <li><a href="leave-requests-approval.html?type=pending"
+                style="color:inherit; text-decoration:none;">Pending</a></li>
+          </ul>
+        </div>
+        <div class="small-card attendance" id="attendanceBtn"
+          style="height: 140px; font-size: 24px; gap: 15px; cursor: pointer; flex-direction: column; text-align: center;">
+          <i class="fa-regular fa-calendar-check" style="font-size: 32px;"></i>
+          <span style="font-size: 18px;">Attendance</span>
+          <div id="myAttendanceTime" style="font-size: 13px;"></div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="small-card lumi" style="height: 140px; padding: 20px;">
+          <div class="lumi-circle" style="width: 70px; height: 70px; border-width: 3px; margin-bottom: 10px;">
+          </div>
+          <span style="font-weight: bold;">Lumi By Next Care</span>
+        </div>
+        <div class="small-card policies" style="height: 140px;">
+          <img src="./images/policies.jpg" alt="Policies" style="object-fit: cover; width: 100%; height: 100%;">
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="panel right-sidebar">
+      <div id="notifications" class="notification-card">
+        <h2><i class="fa-solid fa-bell"></i> Notifications</h2>
+
+        <div class="task-group-title">MY TASK</div>
+
+        <div class="task-list" id="notificationList">
+          <h5>No new notification</h5>
+        </div>
+      </div>
+
+      <div class="small-card enrollment" style="height: 150px; padding: 30px 20px;">
+        <h3 style="font-size: 18px; font-weight: bold;">Enroll for <br> Gartner's Upcoming <br> () Webinars!
+        </h3>
+      </div>
+
+      <div class="right-bottom-grid">
+        <div class="small-card leaves" style="height: 130px; font-size: 24px;">
+          Leaves Info
+        </div>
+        <div class="small-card quick-links" style="height: 130px; font-size: 24px;">
+          Quick Links
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a href="https://wa.me/918495974929" class="whatsapp-btn" style="color:inherit; text-decoration:none;">
+    <i class="fa-brands fa-whatsapp"></i>
+  </a>
+
+  <!-- Floating Calendar Button -->
+  <div id="calendar-btn" title="Open Calendar">
+    <i class="fa-solid fa-calendar-days"></i>
+    <span id="calendar-count" class="hidden"
+      style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 2px 5px; border-radius: 50%;"></span>
+  </div>
+
+  <!-- Overlay -->
+  <div id="overlay" class="hidden"></div>
+
+  <!-- Calendar Modal -->
+  <div id="calendar-modal" class="hidden">
+    <div class="modal-header calendar-header">
+      <div class="month-nav">
+        <span class="nav-btn" id="prevBtn">❮</span>
+        <div id="calendar-title"></div>
+        <span class="nav-btn" id="nextBtn">❯</span>
+      </div>
+      <span class="close-btn" id="closeCalendarBtn">✖</span>
+    </div>
+    <div class="calendar-days">
+      <div>Mon</div>
+      <div>Tue</div>
+      <div>Wed</div>
+      <div>Thu</div>
+      <div>Fri</div>
+      <div>Sat</div>
+      <div>Sun</div>
+    </div>
+    <div id="calendar-box"></div>
+  </div>
+
+  <!-- Event Form Modal -->
+  <div id="event-form" class="hidden">
+    <div class="modal-header">
+      <h3>Add Event</h3>
+      <span class="close-btn" id="closeEventFormBtn">✖</span>
+    </div>
+    <p id="picked-date" class="date-label"></p>
+    <input id="event-title" placeholder="Event Title" />
+    <div class="file-input-wrapper">
+      <input type="text" id="file-display" placeholder="Choose file" readonly />
+      <input type="file" id="event-image" hidden />
+    </div>
+    <button class="primary-btn" id="saveEventBtn">Save Event</button>
+  </div>
+
+  <!-- Event View Modal -->
+  <div id="event-view-modal" class="event-view hidden">
+    <span class="close-btn" id="closeEventViewBtn">✖</span>
+    <div id="event-image-box" class="event-image hidden"></div>
+    <div id="event-text-box" class="event-text"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="/js/push.js"></script>
+
+</body>
+
+</html>

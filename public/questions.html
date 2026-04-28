@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Online Exam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+    }
+
+    .exam-container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      border: 1px solid #ccc;
+    }
+
+    /* HEADER */
+    .exam-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: #000;
+      color: #fff;
+    }
+
+    .company-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .company-info img {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .company-info h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .company-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #ddd;
+      gap: 3px;
+    }
+
+    .timer {
+      font-size: 19px;
+      font-weight: bold;
+    }
+
+    /* EMAIL */
+    .candidate-email {
+      padding: 10px 20px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .candidate-email input {
+      width: 25%;
+      padding: 8px;
+      border: 1px solid #aaa;
+    }
+
+    /* QUESTIONS */
+    .questions {
+      padding: 20px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-top: 25px;
+    }
+
+    .question {
+      margin: 15px 0;
+    }
+
+    .question p {
+      margin-bottom: 8px;
+    }
+
+    .options label {
+      display: block;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+
+    /* SUBMIT */
+    .submit-area {
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid #ccc;
+    }
+
+    .submit-area button {
+      background: #000;
+      color: #fff;
+      border: none;
+      padding: 10px 30px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+
+
+    /* ================= MOBILE RESPONSIVE ================= */
+    @media (max-width: 768px) {
+
+      /* Container */
+      .exam-container {
+        max-width: 100%;
+        margin: 0;
+        border: none;
+      }
+
+      /* Header stack */
+      .exam-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .company-info {
+        gap: 10px;
+      }
+
+      .company-info img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .company-info h2 {
+        font-size: 16px;
+      }
+
+      .company-info p {
+        font-size: 12px;
+      }
+
+      .timer {
+        font-size: 16px;
+        align-self: flex-end;
+      }
+
+      /* Email input full width */
+      .candidate-email input {
+        width: 100%;
+        font-size: 14px;
+      }
+
+      /* Questions padding */
+      .questions {
+        padding: 12px;
+      }
+
+      .section-title {
+        font-size: 14px;
+        margin-top: 18px;
+      }
+
+      /* Question text */
+      .question p {
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      /* Options */
+      .options label {
+        font-size: 14px;
+        padding: 6px 0;
+      }
+
+      /* Submit button */
+      .submit-area button {
+        width: 100%;
+        font-size: 16px;
+        padding: 12px;
+      }
+
+      /* Result screen center fix */
+      #resultScreen {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="exam-container">
+
+    <!-- HEADER -->
+    <div class="exam-header">
+      <div class="company-info">
+        <img src="images/mnmlogo.jpg" alt="Logo">
+        <div>
+          <h2 id="companyName">MNM REALITY PVT LTD.</h2>
+          <p>2nd Round Interview</p>
+        </div>
+      </div>
+      <div class="timer" id="timer">5:00</div>
+    </div>
+
+    <!-- EMAIL -->
+    <div class="candidate-email">
+      <input type="text" id="candidateEmail" readonly>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div class="questions" id="questionsContainer">
+      <!-- Dynamic questions will load here -->
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-area">
+      <button id="submitExamBtn">Submit Exam</button>
+    </div>
+
+  </div>
+
+
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen" style="
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:#0f172a;
+  color:white;
+  align-items:center;
+  justify-content:center;
+  font-family:Arial;
+">
+
+    <div style="
+    background:#111827;
+    padding:40px;
+    border-radius:12px;
+    text-align:center;
+    width:320px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  ">
+      <h2 style="font-size:22px;margin-bottom:10px;">✅ Exam Completed</h2>
+
+      <p style="color:#9ca3af;margin-bottom:20px;">
+        Your performance summary
+      </p>
+
+      <div style="
+      font-size:42px;
+      font-weight:bold;
+      color:#22c55e;
+      margin-bottom:10px;
+    " id="finalScore">
+        0 / 0
+      </div>
+
+      <p style="color:#9ca3af;font-size:14px;">
+        Thank you for attending the interview.<br>
+        HR will contact you soon.
+      </p>
+    </div>
+  </div>
+
+
+  <script>
+
+    // 1. Read token from URL
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    let examLoaded = false;
+    let examSubmitted = false;
+
+    if (!token) {
+      alert("Invalid exam link");
+      throw new Error("Token missing");
+    }
+
+    // 2. Fetch exam data from backend
+    fetch(`/api/exam/start?token=${token}`)
+      .then(res => res.json())
+      .then(data => {
+
+        // Fill header + email
+        document.getElementById("companyName").innerText = data.company;
+        document.getElementById("candidateEmail").value = data.email;
+
+        // Render questions FIRST
+        renderQuestions(data.paper);
+
+        // Mark exam as loaded
+        examLoaded = true;
+
+        // Start timer AFTER questions load
+        startTimer(data.duration);
+      })
+      .catch(() => {
+        alert("Exam link expired or invalid");
+      });
+
+
+    // 3. Render questions dynamically
+    function renderQuestions(paper) {
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+
+      let currentSection = "";
+
+      paper.forEach((q, index) => {
+
+        if (q.section !== currentSection) {
+          currentSection = q.section;
+          container.innerHTML += `
+        <div class="section-title">${q.section}</div>
+      `;
+        }
+
+        const optionsHtml = q.options.map((opt, i) => `
+      <label>
+        <input type="radio" name="q${index}" value="${i}">
+        ${String.fromCharCode(65 + i)}) ${opt}
+      </label>
+    `).join("");
+
+        container.innerHTML += `
+      <div class="question">
+        <p>${index + 1}. ${q.question}</p>
+        <div class="options">${optionsHtml}</div>
+      </div>
+    `;
+      });
+    }
+
+
+    // 4. Timer
+    function startTimer(seconds) {
+
+      // Safety check
+      if (!seconds || seconds <= 0) {
+        console.error("Invalid exam duration:", seconds);
+        return; // ❌ stop auto submit
+      }
+
+      let time = seconds;
+
+      const interval = setInterval(() => {
+        let min = Math.floor(time / 60);
+        let sec = time % 60;
+
+        document.getElementById("timer").innerText =
+          `${min}:${sec.toString().padStart(2, '0')}`;
+
+        time--;
+
+        // Auto submit only when exam is really loaded
+        if (time < 0 && examLoaded && !examSubmitted) {
+          clearInterval(interval);
+          submitExam();
+        }
+      }, 1000);
+    }
+
+
+    // pressing back not allowed
+    history.pushState(null, null, location.href);
+
+    window.onpopstate = function () {
+      history.pushState(null, null, location.href);
+      alert("❌ Back navigation is not allowed during the exam.");
+    };
+
+
+
+
+
+    // onclick submit
+    document.addEventListener("DOMContentLoaded", () => {
+
+      document.getElementById("submitExamBtn")
+        ?.addEventListener("click", submitExam);
+
+    });
+
+
+
+
+    
+
+    // 5. Submit exam
+    function submitExam() {
+
+      if (examSubmitted) return;
+      examSubmitted = true;
+
+      const answers = [];
+
+      document.querySelectorAll(".question").forEach((q, index) => {
+        const selected = document.querySelector(
+          `input[name="q${index}"]:checked`
+        );
+        answers.push(selected ? selected.value : null);
+      });
+
+      fetch("/api/exam/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, answers })
+      })
+        .then(res => {
+          if (res.status === 403) {
+            alert("Exam already submitted or link expired");
+            return;
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (!data) return;
+
+          // Hide exam UI
+          document.querySelector(".exam-container").style.display = "none";
+
+          // Show result screen
+          document.getElementById("resultScreen").style.display = "flex";
+
+          // Display score
+          document.getElementById("finalScore").innerText =
+            `${data.score} / ${data.total}`;
+
+          // 🎉 Celebration for high scores
+          if (data.score >= 8) {
+            blastConfetti();
+            alert("🎉 Congratulations! You have done very well.");
+          }
+        })
+        .catch(err => {
+          console.error("Submit error:", err);
+          alert("Submission failed");
+        });
+    }
+
+
+    // color paper blast 
+    function blastConfetti() {
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+</body>
+
+</html>

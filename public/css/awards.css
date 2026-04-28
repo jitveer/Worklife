@@ -1,0 +1,626 @@
+/* Center container */
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Hero section background */
+.top-hero {
+  position: relative;
+  height: 300px;
+  background-image: url('../images/awards/background1.jpg'); /* 🔁 Use your correct image path */
+  background-size: cover;
+  background-position: center;
+}
+
+/* Dark transparent overlay */
+.hero-overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* Layout for logo and heading */
+.hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Logo styling */
+.logo-circle img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* Heading text */
+.hero-heading h1 {
+  font-family: "Arial", Sans-serif;
+  font-size: 46px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+
+.achievements-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex-grow: 0;
+  align-self: auto;
+  flex-wrap: wrap;
+  padding: 25px 0;
+  background-color: #fff;
+  text-align: center;
+}
+
+.achievements-title {
+  font-family: "Caudex", sans-serif;
+  font-size: 33px;
+  font-weight: 500;
+  color: #000000;
+  margin-bottom: 60px;
+}
+
+.achievements-description {
+  font-family: "Caudex", sans-serif;
+  font-size: 22px;
+  font-weight: 500;
+  color: #353535;
+  max-width: 950px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+
+.custom-divider {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.divider-line {
+  display: block;
+  width: 100px;
+  height: 3px;
+  background-color: #ffab00; /* Yellow color */
+  border-radius: 4px;
+}
+
+
+
+
+
+
+
+.indian-icon-hero {
+  background-image: url('../images/awards/kar-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  padding: 0 15px;
+}
+
+
+.indian-icon-hero-overlay {
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 700px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.indian-icon-hero-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: auto;
+  gap: 40px;
+  color: white;
+}
+
+.indian-icon-hero-image img {
+  width: 100%;
+  height: 400px;
+  max-width: 480px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  margin-top: 0;
+}
+
+.indian-icon-hero-text {
+  flex: 1;
+  min-width: 280px;
+}
+
+.indian-icon-hero-text h2{
+  text-align: center;
+}
+
+.indian-icon-hero-text h2 {
+  font-family: "Oswald", sans-serif;
+  font-size: 42px;
+  font-weight: bold;
+  text-transform: uppercase;
+  line-height: 1.3;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.indian-icon-hero-text p {
+  font-family: "Caudex", serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #ededed;
+}
+
+/* 3 sliding section */
+/* Slider Section Styling */
+
+.mySwiper3 .swiper-slide img {
+  width: auto;
+  height: 100%;
+  max-height: 400px;  
+  object-fit: contain; 
+  display: block;
+  margin: 0 auto;
+}
+
+/* Swiper Slide */
+.mySwiper3 .swiper-slide {
+  text-align: center;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.swiper-slide img {
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #333;
+  padding: 15px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* Paragraph Styling Below Slider */
+.slider-text-3 {
+  margin-top: 0px;
+  padding: 0 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: "Caudex", Sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  color: #0c0b0b;
+  line-height: 1.9;
+  text-align: justify;
+}
+
+
+/* Award Highlight Background Section */
+.award-highlight {
+  position: relative;
+  background-image: url('../images/awards/award-photo.jpg.jpg'); /* ✅ Update this path if incorrect */
+  background-size: cover;
+  background-position: center;
+  padding: 80px 0 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Dark transparent overlay */
+.award-highlight .hero-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  padding: 60px 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* Flex content inside award section */
+.award-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0 40px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Left text block */
+.award-left {
+  flex: 1;
+  min-width: 300px;
+  margin-right: 30px;
+}
+
+/* Main heading (left side) */
+.award-text {
+  font-family: "Oswald", sans-serif;
+  font-size: 48px;
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+/* Paragraph below heading */
+.award-description {
+  font-family: "Caudex", Sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.4px;
+  color: #EDEDED;
+  line-height: 1.4;
+  margin-top: 10px;
+}
+
+/* Right image */
+.award-right {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.award-right img {
+  width: 700px;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Video Section */
+.video-section {
+  background: linear-gradient(to bottom, #0b0b0b 50%, #ffffff 50%);
+  padding: 40px 20px 10px;
+  text-align: center;
+}
+
+.video-wrapper iframe {
+  width: 100%;
+  max-width: 560px;
+  height: 315px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+
+/*  Slider Section */
+.slider-section {
+  background-color: #ffffff;
+  padding: 30px 20px 40px;
+  text-align: center;
+}
+
+/*  Swiper core container */
+.swiper {
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  position: relative;
+}
+
+/*  Each slide */
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  width: 300px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/*  Navigation Arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #f7f1e5;
+  padding: 12px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 28px;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+/*  Paragraph Below Slider */
+.slider-text {
+  margin-top: 10px;
+  padding: 0 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: "Caudex", Sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  color: #000000;
+  line-height: 1.6;
+  text-align: left;
+}
+
+/*  Full-width Hero Section with background */
+.karnataka-hero {
+  background-image: url('../images/awards/kar-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  padding:0px 15px;
+}
+
+/*  Full dark overlay */
+.karnataka-hero-overlay {
+  background-color: rgba(0, 0, 0, 0.6); /* transparent black */
+  width: 100%;
+  height: 100%;
+  padding: 350px 8px;
+
+}
+
+/*  Flex layout inside */
+.karnataka-hero-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: auto;
+  gap: 40px;
+  color: white;
+}
+
+/*  Image styles */
+.karnataka-hero-image img {
+  width: 100%;
+  height: 300px; 
+  max-width: 480px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  margin-top: -200px;
+}
+
+/*  Text styles */
+.karnataka-hero-text {
+  flex: 1;
+  min-width: 280px;
+}
+
+.karnataka-hero-text h2 {
+  font-family: "Oswald", sans-serif;
+  font-size: 42px;
+  font-weight: bold;
+  text-transform: uppercase;
+  line-height: 1.3;
+  margin-bottom: 20px;
+  margin-top: -200px;
+}
+
+.karnataka-hero-text p {
+  font-family: "Caudex", serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #ededed;
+}
+
+/* Second video section overlapping half and half */
+.video-section-2 {
+  position: relative;
+  margin-top: -280px; /* Adjust to overlap with top background */
+  padding-top: 100px;
+  padding-bottom: 4px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, white 100%);
+  z-index: 10;
+}
+
+.video-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.video-container iframe {
+  width: 580px;
+  height: 320px;
+  border-radius: 10px;
+  display: block
+}
+/*2nd slider section */
+/* Slider Section Styling */
+.slider-section {
+  background: white;
+  padding: 30px 20px 10px;
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Swiper Slide */
+.mySwiper .swiper-slide {
+  text-align: center;
+}
+
+.mySwiper .swiper-slide img {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #333;
+  padding: 15px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* Paragraph Styling Below Slider */
+.slider-text {
+  margin-top: 0px;
+  padding: 0 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: "Caudex", Sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  color: #080808;
+  line-height: 1.9;
+  text-align: left;
+}
+
+
+/* ========== MOBILE RESPONSIVE CSS ========== */
+@media (max-width: 768px) {
+  .hero-heading h1 {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .award-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .award-left, .award-right {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .award-right img {
+    width: 90%;
+  }
+
+  .karnataka-hero-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .karnataka-hero-image img {
+    width: 90%;
+    margin-bottom: 20px;
+  }
+
+  .video-wrapper iframe,
+  .video-container iframe {
+    width: 100%;
+    height: auto;
+  }
+
+  .swiper-slide img {
+    width: 100%;
+    height: auto;
+  }
+
+  .slider-section .swiper {
+    padding: 0 10px;
+  }
+
+  .slider-text {
+    padding: 15px;
+    font-size: 15px;
+  }
+
+  .achievements-description {
+    padding: 0 15px;
+    font-size: 16px;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

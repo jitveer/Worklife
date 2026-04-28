@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Performance Management Request</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #fceff6, #e0f7ef);
+            /* same as expense soft mix */
+            color: #333;
+        }
+
+        /* HEADER */
+        header {
+            background-color: #52af8d;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            height: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo-box {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .worklife-text {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header select {
+            background-color: white;
+            border: 1px solid white;
+            color: rgb(10, 10, 10);
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* LEFT PANEL */
+        .left-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 15px;
+            margin-top: 75px;
+            gap: 0;
+            /* NO GAP */
+        }
+
+        /* LEFT PANEL BUTTONS */
+        .left-panel button {
+            width: 85px;
+            /* reduced width */
+            height: 85px;
+            /* reduced height */
+            border: none;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 0px;
+            /* no gap between buttons */
+            border-radius: 0px;
+            /* sharp edge */
+            transition: 0.3s;
+            background-size: cover;
+
+            font-size: 12px;
+            /* smaller text */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Hover effect */
+        .left-panel button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ICON SIZE SMALLER */
+        .left-panel i {
+            font-size: 20px;
+            /* reduced from 28px */
+            margin-bottom: 4px;
+        }
+
+        /* Button Colors */
+        .btn-hr {
+            background-color: #7f6aa8;
+        }
+
+        .btn-finance {
+            background-color: #cb7e56;
+        }
+
+        .btn-it {
+            background-color: #773631;
+        }
+
+        .btn-pm {
+            background-color: #138f6c;
+        }
+
+        .btn-reports {
+            background-color: #71a92c;
+        }
+
+
+        /* CONTENT */
+        .content {
+            flex: 1;
+            padding: 30px;
+            background-color: #ffffff;
+            margin: 10px 10px 10px 140px;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #52af8d;
+            font-size: 26px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* FILTER BUTTONS (matching expense UI) */
+        .status-buttons button,
+        .stage-buttons button {
+            background: #ffffff;
+            border: 2px solid #d0d0d0;
+            padding: 6px 10px;
+            /* reduced width */
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+        }
+
+        .status-buttons button:hover,
+        .stage-buttons button:hover {
+            background-color: #494aaf;
+            color: white;
+            border-color: #52af8d;
+        }
+
+        /* FILTER ROW */
+        .filter-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 0px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: none;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        td {
+            border-right: 1px solid #5dbd98;
+            border-bottom: 1px solid #dcdcdc;
+        }
+
+        th {
+            background: #52af8d;
+            color: #fff;
+            font-size: 15px;
+            border-right: 1px solid #f8f8f8;
+        }
+
+        /* ICONS */
+        .icon-box {
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .icon-box:hover {
+            background: #52af8d;
+            color: white;
+        }
+
+        /* -----------------------------------
+   Status Box
+----------------------------------- */
+        .status-box {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .status-box.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-box.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-box.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            width: 600px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+
+
+
+        /* MAIN TWO-COLUMN FILTER BAR */
+        /* MAIN TWO-COLUMN FILTER BAR */
+        .performance-filter-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        /* LEFT SIDE COLUMN */
+        .filter-left {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* RIGHT SIDE COLUMN */
+        .filter-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        .right-top {
+            display: flex;
+            gap: 10px;
+        }
+
+        .right-bottom {
+            display: flex;
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        /* Buttons */
+        .date-btn {
+            background: #173E9A;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .report-btn {
+            background: white;
+            border: 1px solid #173E9A;
+            color: #173E9A;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Search */
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 8px 36px 8px 12px;
+            width: 200px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: gray;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 28px;
+            top: 2px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+            display: none;
+        }
+
+        /* POPUP */
+        .perf-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .perf-popup-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+        }
+
+        .popup-btn,
+        .popup-close-btn {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            background: #173E9A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .popup-close-btn {
+            background: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-left" id="headerLogo">
+            <div class="logo-box">WL</div>
+            <div class="worklife-text">Worklife</div>
+        </div>
+        <div class="header-right">
+            <select>
+                <option>Eastern</option>
+                <option>Western</option>
+                <option>Northern</option>
+                <option>Southern</option>
+            </select>
+            <span>English</span>
+            <div class="profile">
+                <i class="fa-solid fa-circle-user"></i>
+                <span id="userName">Loading...</span>
+            </div>
+            <div class="logout" id="logoutBtn">
+                <i class="fas fa-power-off"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <button class="btn-hr" id="hrBtn">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <i class="fa-regular fa-user"></i>
+                <span>HR</span>
+            </div>
+        </button>
+
+        <button class="btn-finance" id="financeBtn">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <i class="fa-regular fa-folder"></i>
+                <span>Finance</span>
+            </div>
+        </button>
+
+        <button class="btn-it" id="itBtn">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <i class="fa-solid fa-desktop"></i>
+                <span>IT</span>
+            </div>
+        </button>
+
+        <button class="btn-pm" id="performanceBtn">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <i class="fa-solid fa-clock"></i>
+                <span>Performance</span>
+            </div>
+        </button>
+
+        <button class="btn-reports" id="reportsBtn">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <i class="fa-solid fa-chart-bar"></i>
+                <span>Reports</span>
+            </div>
+        </button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+        <h1>My Performance Management</h1>
+
+        <div class="performance-filter-container">
+
+            <!-- LEFT FILTERS -->
+            <div class="filter-left">
+
+                <!-- STATUS BUTTONS -->
+                <div class="status-buttons">
+                    <button id="statusAll">All</button>
+                    <button id="statusApproved">Approved</button>
+                    <button id="statusPending">Pending</button>
+                    <button id="statusRejected">Rejected</button>
+                </div>
+
+                <!-- STAGE BUTTONS -->
+                <div class="stage-buttons">
+                    <button id="stageAll">All</button>
+                    <button id="stageStart">Start</button>
+                    <button id="stageMid">Mid</button>
+                    <button id="stageFull">Full</button>
+                </div>
+            </div>
+
+            <!-- RIGHT FILTERS -->
+            <div class="filter-right">
+                <div class="right-top">
+                    <button id="perfDateBtn" class="date-btn" id="perfDateBtn">Select Date</button>
+                    <button id="perfReportBtn" class="report-btn">Generate Report</button>
+                </div>
+
+                <div class="right-bottom">
+                    <div class="search-box">
+                        <input type="text" id="perfSearch" placeholder="Search by name…">
+                        <i class="fa fa-search search-icon"></i>
+                        <span id="clearPerfSearch" class="clear-search">×</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- DATE POPUP -->
+        <div id="perfReportPopup" class="perf-popup">
+            <div class="perf-popup-content">
+                <h3>Select Date Range</h3>
+
+                <input type="date" id="fromDate" style="width:100%; margin-top:10px;">
+                <input type="date" id="toDate" style="width:100%; margin-top:10px;">
+
+                <button class="popup-btn" id="applyDateBtn">Apply</button>
+                <button class="popup-close-btn" id="closeDateBtn">Close</button>
+            </div>
+        </div>
+
+        <table id="performanceTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Req No</th>
+                    <th>Name</th>
+                    <th>Stage</th>
+                    <th>My Status</th>
+                    <th>Overall Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic rows will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+    </div>
+    <script>
+        /* ----------------------------------------
+         GLOBAL FILTER STATE
+       ---------------------------------------- */
+        let filterStage = "all";
+        let filterStatus = "all";
+        let filterName = "";
+        let filterFromDate = "";
+        let filterToDate = "";
+
+        /* ----------------------------------------
+           LOAD DATA FROM BACKEND
+        ---------------------------------------- */
+        async function loadApproverList() {
+
+            const url =
+                `/api/section/approvals/list?` +
+                `stage=${filterStage}&status=${filterStatus}` +
+                `&name=${filterName}&fromDate=${filterFromDate}&toDate=${filterToDate}`;
+
+            const res = await fetch(url);
+            const data = await res.json();
+
+            const tbody = document.querySelector("#performanceTable tbody");
+            tbody.innerHTML = "";
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No records found</td></tr>`;
+                return;
+            }
+
+            data.forEach((row, index) => {
+                const tr = document.createElement("tr");
+
+                tr.innerHTML = `
+                <td>${index + 1}</td> 
+                <td>${row.ReqNo}</td>
+                <td>${row.Name}</td>
+                <td>${formatStage(row.Stage)}</td>
+                <td>${row.MyStatus}</td>
+                <td>${row.OverallStatus}</td>
+                `;
+
+                const actionTd = document.createElement("td");
+
+                const btn = document.createElement("div");
+                btn.className = "icon-box view";
+                btn.innerHTML = `<i class="fas fa-eye"></i>`;
+
+                btn.addEventListener("click", () => {
+                    viewRequest(row.ID, row.Stage);
+                });
+
+                actionTd.appendChild(btn);
+                tr.appendChild(actionTd);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* ----------------------------------------
+           FORMAT STAGE LABEL
+        ---------------------------------------- */
+        function formatStage(stage) {
+            if (stage === "start_stage") return "Start";
+            if (stage === "mid_stage") return "Mid";
+            if (stage === "full_stage") return "Full";
+            return stage;
+        }
+
+        /* ----------------------------------------
+           STATUS BUTTONS
+        ---------------------------------------- */
+        function setStatus(status) {
+            filterStatus = status;
+            loadApproverList();
+        }
+
+        /* ----------------------------------------
+           STAGE BUTTONS
+        ---------------------------------------- */
+        function setStage(stage) {
+            filterStage = stage;
+            loadApproverList();
+        }
+
+        /* ----------------------------------------
+           SEARCH BAR
+        ---------------------------------------- */
+        document.getElementById("perfSearch").addEventListener("input", () => {
+            filterName = document.getElementById("perfSearch").value.trim();
+
+            document.getElementById("clearPerfSearch").style.display =
+                filterName.length > 0 ? "block" : "none";
+
+            loadApproverList();
+        });
+
+        // search
+        document.getElementById("clearPerfSearch")
+            ?.addEventListener("click", () => {
+                document.getElementById("perfSearch").value = "";
+                filterName = "";
+                document.getElementById("clearPerfSearch").style.display = "none";
+                loadApproverList();
+            });
+
+        /* ----------------------------------------
+           DATE POPUP
+        ---------------------------------------- */
+        function openDatePopup() {
+            document.getElementById("perfReportPopup").style.display = "flex";
+        }
+
+        function closeDatePopup() {
+            document.getElementById("perfReportPopup").style.display = "none";
+        }
+
+        function applyDate() {
+            filterFromDate = document.getElementById("fromDate").value; // already YYYY-MM-DD
+            filterToDate = document.getElementById("toDate").value;     // already YYYY-MM-DD
+
+            closeDatePopup();
+            loadApproverList();
+        }
+
+
+        /* ----------------------------------------
+           GENERATE REPORT → CSV DOWNLOAD
+        ---------------------------------------- */
+        document.getElementById("perfReportBtn")
+            ?.addEventListener("click", () => {
+
+                const params = new URLSearchParams({
+                    csv: 1,
+                    stage: filterStage,
+                    status: filterStatus,
+                    name: filterName,
+                    fromDate: filterFromDate,
+                    toDate: filterToDate
+                });
+
+                window.location.href = `/api/section/approvals/list?${params.toString()}`;
+            });
+
+
+        /* ----------------------------------------
+           INITIAL LOAD
+        ---------------------------------------- */
+        loadApproverList();
+
+
+
+
+        // onclick
+        document.addEventListener("DOMContentLoaded", () => {
+
+            loadApproverList();
+
+            // HEADER
+            document.getElementById("headerLogo")?.addEventListener("click", () => {
+                window.location.href = "dashboard.html";
+            });
+
+            // LOGOUT
+            document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+
+            // SIDEBAR
+            document.getElementById("hrBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=hr-logo");
+            document.getElementById("financeBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=finance-logo");
+            document.getElementById("itBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=it-logo");
+            document.getElementById("performanceBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=performance-logo");
+            document.getElementById("reportsBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=reports-logo");
+
+            // STATUS
+            document.getElementById("statusAll")?.addEventListener("click", () => setStatus("all"));
+            document.getElementById("statusApproved")?.addEventListener("click", () => setStatus("approved"));
+            document.getElementById("statusPending")?.addEventListener("click", () => setStatus("pending"));
+            document.getElementById("statusRejected")?.addEventListener("click", () => setStatus("rejected"));
+
+            // STAGE
+            document.getElementById("stageAll")?.addEventListener("click", () => setStage("all"));
+            document.getElementById("stageStart")?.addEventListener("click", () => setStage("start_stage"));
+            document.getElementById("stageMid")?.addEventListener("click", () => setStage("mid_stage"));
+            document.getElementById("stageFull")?.addEventListener("click", () => setStage("full_stage"));
+
+            // POPUP
+            document.getElementById("perfDateBtn")?.addEventListener("click", openDatePopup);
+            document.getElementById("applyDateBtn")?.addEventListener("click", applyDate);
+            document.getElementById("closeDateBtn")?.addEventListener("click", closeDatePopup);
+
+        });
+
+
+
+
+        // //date convertion helper
+        // function convertToMySQL(dateStr) {
+        //     if (!dateStr) return "";
+        //     const parts = dateStr.split("-");
+        //     if (parts.length !== 3) return dateStr;
+        //     const [day, month, year] = parts;
+        //     return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+        // }
+
+
+        // view button functionality
+        function viewRequest(appraisalId, stage) {
+            console.log("🔍 Viewing request:", appraisalId, "Stage:", stage);
+
+            // Optionally store for later use
+            sessionStorage.setItem("currentAppraisalId", appraisalId);
+            sessionStorage.setItem("currentStage", stage);
+
+            // Redirect to the same format used by notifications
+            window.location.href = `performance-approval.html?id=${encodeURIComponent(appraisalId)}&stage=${encodeURIComponent(stage)}`;
+        }
+
+        // working of filter buttons
+        function loadPerformance(filter) {
+            filter = filter.toLowerCase();
+
+            if (filter === "all") {
+                loadApproverList();
+                return;
+            }
+
+            // filter data directly from API
+            fetch("/api/section/approvals/list")
+                .then(r => r.json())
+                .then(data => {
+                    const filtered = data.filter(r =>
+                        r.OverallStatus &&
+                        r.OverallStatus.toLowerCase().includes(filter)
+                    );
+
+                    const tbody = document.querySelector("#performanceTable tbody");
+                    tbody.innerHTML = "";
+
+                    if (filtered.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No records found</td></tr>`;
+                        return;
+                    }
+
+                    filtered.forEach((row) => {
+
+                        const tr = document.createElement("tr");
+
+                        tr.innerHTML = `
+                        <td>${row.ID}</td>
+                        <td>${row.ReqNo}</td>
+                        <td>${row.Name}</td>
+                        <td>${formatStage(row.Stage)}</td>
+                        <td>${row.MyStatus}</td>
+                        <td>${row.OverallStatus}</td>
+                         `;
+
+                        const actionTd = document.createElement("td");
+
+                        const btn = document.createElement("div");
+                        btn.className = "icon-box view";
+                        btn.innerHTML = `<i class="fas fa-eye"></i>`;
+
+                        btn.addEventListener("click", () => {
+                            viewRequest(row.ID, row.Stage);
+                        });
+
+                        actionTd.appendChild(btn);
+                        tr.appendChild(actionTd);
+
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
+
+
+
+
+        // working of stage buttons
+        function loadStage(stageFilter) {
+            stageFilter = stageFilter.toLowerCase();
+
+            if (stageFilter === "all") {
+                loadApproverList();
+                return;
+            }
+
+            fetch("/api/section/approvals/list")
+                .then(r => r.json())
+                .then(data => {
+                    const filtered = data.filter(r =>
+                        r.Stage && r.Stage.toLowerCase() === stageFilter
+                    );
+
+                    const tbody = document.querySelector("#performanceTable tbody");
+                    tbody.innerHTML = "";
+
+                    if (filtered.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No records found</td></tr>`;
+                        return;
+                    }
+
+                    filtered.forEach((row) => {
+
+                        const tr = document.createElement("tr");
+
+                        tr.innerHTML = `
+                        <td>${row.ID}</td>
+                        <td>${row.ReqNo}</td>
+                        <td>${row.Name}</td>
+                        <td>${formatStage(row.Stage)}</td>
+                        <td>${row.MyStatus}</td>
+                        <td>${row.OverallStatus}</td>
+                        `;
+
+                        const actionTd = document.createElement("td");
+
+                        const btn = document.createElement("div");
+                        btn.className = "icon-box view";
+                        btn.innerHTML = `<i class="fas fa-eye"></i>`;
+
+                        btn.addEventListener("click", () => {
+                            viewRequest(row.ID, row.Stage);
+                        });
+
+                        actionTd.appendChild(btn);
+                        tr.appendChild(actionTd);
+
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
+
+
+
+
+
+        // ==========================
+        // Session Check + Logout
+        // ==========================
+        fetch("/api/auth/session-check")
+            .then(res => res.json())
+            .then(data => {
+                if (!data.loggedIn) {
+                    // Not logged in → go to login
+                    window.location.href = "index.html";
+                } else {
+                    sessionStorage.setItem("user_id", data.user.user_id);
+                    document.getElementById("userName").textContent = data.user.name;
+                    console.log("✅ Session loaded. user_id:", data.user.user_id);
+
+                }
+            })
+            .catch(error => {
+                console.error("Session check failed:", error);
+                window.location.href = "index.html";
+            });
+
+
+        const params = new URLSearchParams(window.location.search);
+        const sectionParam = params.get('section');
+        if (sectionParam) {
+            const menuTile = document.getElementById(sectionParam);
+            if (menuTile) {
+                menuTile.click();
+            }
+        }
+
+        // logout
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out from your session.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Call logout API
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html"; // Redirect to login
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
+
+
+
+        // setting the current date on button
+        (function setPerfTodayDate() {
+            const btn = document.getElementById("perfDateBtn");
+            if (!btn) return;
+
+            const now = new Date();
+            const day = now.getDate();
+            const month = now.toLocaleString("en-US", { month: "long" });
+            const year = now.getFullYear();
+
+            btn.innerText = `${day} ${month} ${year}`;
+        })();
+
+    </script>
+</body>
+
+</html>

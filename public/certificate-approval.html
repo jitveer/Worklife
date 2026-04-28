@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Employee Certificate Request</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Tailwind CDN -->
+    <link rel="stylesheet" href="/output.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="bg-[#c3e2d1] font-[Roboto]">
+
+    <!-- ================= HEADER ================= -->
+    <header class="bg-[#52af8d] text-white h-[60px] flex justify-between items-center px-4">
+
+        <!-- Left -->
+        <div class="flex items-center cursor-pointer" id="goHR">
+            <div class="bg-white text-black font-bold text-lg px-3 py-1 rounded mr-2">WL</div>
+            <div class="text-xl font-bold">Worklife</div>
+        </div>
+
+        <!-- Right -->
+        <div class="flex items-center gap-3 text-sm">
+            <select class="text-black px-2 py-1 rounded">
+                <option>Eastern</option>
+                <option>Western</option>
+                <option>Northern</option>
+                <option>Southern</option>
+            </select>
+
+            <span>English</span>
+
+            <div class="flex items-center gap-1">
+                <i class="fa-solid fa-circle-user"></i>
+                <span id="userName">Loading...</span>
+            </div>
+
+            <i class="fa-solid fa-power-off cursor-pointer" id="logoutBtn"></i>
+        </div>
+    </header>
+
+    <!-- ================= MAIN ================= -->
+    <div class="flex justify-center gap-8 p-6">
+
+        <!-- LEFT PANEL -->
+        <div class="flex flex-col mt-2">
+
+            <!-- HR -->
+            <button id="hrBtn" class="w-[110px] h-[100px] bg-[#a493b9] text-white font-bold flex flex-col items-center justify-center
+                hover:-translate-y-1 hover:shadow-xl transition">
+                <i class="fa-regular fa-user text-xl mb-1"></i>
+                <span class="text-sm">HR</span>
+            </button>
+
+            <!-- Finance -->
+            <button id="financeBtn" class="w-[110px] h-[100px] bg-[#c78864] text-white font-bold flex flex-col items-center justify-center
+                hover:-translate-y-1 hover:shadow-xl transition">
+                <i class="fa-regular fa-folder text-xl mb-1"></i>
+                <span class="text-sm">Finance</span>
+            </button>
+
+            <!-- IT -->
+            <button id="itBtn" class="w-[110px] h-[100px] bg-[#863f33] text-white font-bold flex flex-col items-center justify-center
+                hover:-translate-y-1 hover:shadow-xl transition">
+                <i class="fa-solid fa-desktop text-xl mb-1"></i>
+                <span class="text-sm">IT</span>
+            </button>
+
+            <!-- Performance -->
+            <button id="performanceBtn" class="w-[110px] h-[100px] bg-[#15ac7f] text-white font-bold flex flex-col items-center justify-center
+                hover:-translate-y-1 hover:shadow-xl transition">
+                <i class="fa-solid fa-clock text-xl mb-1"></i>
+                <span class="text-sm">Performance</span>
+            </button>
+
+            <!-- Reports -->
+            <button id="reportsBtn" class="w-[110px] h-[100px] bg-[#82b435] text-white font-bold flex flex-col items-center justify-center
+                hover:-translate-y-1 hover:shadow-xl transition">
+                <i class="fa-solid fa-chart-bar text-xl mb-1"></i>
+                <span class="text-sm">Reports</span>
+            </button>
+
+        </div>
+
+
+        <!-- CENTER : CERTIFICATE FORM -->
+        <form id="certificateForm" class="bg-white rounded-xl shadow-lg w-full p-6">
+
+            <!-- TITLE -->
+            <h2 class="text-lg font-semibold text-black mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-file-lines text-black"></i>
+                Employee Certificate Request
+            </h2>
+
+            <!-- TABLE -->
+            <div class="overflow-x-auto mb-6">
+                <table class="w-full table-fixed border border-gray-200 rounded-lg overflow-hidden">
+
+                    <!-- TABLE HEADER -->
+                    <thead>
+                        <tr class="text-xs font-bold uppercase tracking-wide text-[#52af8d]
+                            bg-[#52af8d]/5 border-b-2 border-[#52af8d]/30 text-center">
+                            <th class="py-3 px-4 border-r border-gray-300">Name</th>
+                            <th class="py-3 px-4 border-r border-gray-300">Employee ID</th>
+                            <th class="py-3 px-4 border-r border-gray-300">Certificate Type</th>
+                            <th class="py-3 px-4 border-r border-gray-300">Joining Date</th>
+                            <th class="py-3 px-4">Ending Date</th>
+                        </tr>
+                    </thead>
+
+                    <!-- TABLE BODY -->
+                    <tbody>
+                        <tr class="text-center">
+
+                            <!-- Name -->
+                            <td class="w-1/5 py-4 px-4 border-r border-gray-200">
+                                <select id="employeeName" disabled class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                                    focus:outline-none focus:ring-2 focus:ring-[#52af8d]">
+                                    <option>Select</option>
+                                </select>
+                            </td>
+
+                            <!-- Employee ID -->
+                            <td class="py-4 px-4 border-r border-gray-200">
+                                <select id="employeeCode" disabled class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                                   focus:outline-none focus:ring-2 focus:ring-[#52af8d]">
+                                    <option>Select</option>
+                                </select>
+                            </td>
+
+                            <!-- Certificate Type -->
+                            <td class="py-4 px-4 border-r border-gray-200">
+                                <select id="certificateType" disabled class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                                    focus:outline-none focus:ring-2 focus:ring-[#52af8d]">
+                                    <option>Select</option>
+                                    <option>Employment Certificate</option>
+                                    <option>Experience Certificate</option>
+                                    <option>Salary Certificate</option>
+                                    <option>Address Proof Certificate</option>
+                                </select>
+                            </td>
+
+                            <!-- Joining Date -->
+                            <td class="py-4 px-4 border-r border-gray-200">
+                                <input type="date" id="joiningDate" readonly class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                                focus:outline-none focus:ring-2 focus:ring-[#52af8d]">
+                            </td>
+
+                            <!-- Ending Date -->
+                            <td class="py-4 px-4">
+                                <input type="date" id="endingDate" readonly class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm
+                                focus:outline-none focus:ring-2 focus:ring-[#52af8d]">
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- REMARKS -->
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-[#52af8d] mb-2">
+                    Remarks
+                </label>
+                <textarea rows="3" id="remarks" readonly class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm
+                    focus:outline-none focus:ring-2 focus:ring-[#52af8d]"
+                    placeholder="Enter reason or additional notes..."></textarea>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex justify-start gap-4">
+
+                <!-- APPROVE -->
+                <button type="button" id="approveBtn" class="px-6 py-2 text-sm font-bold rounded-md
+                bg-[#198754] text-white hover:bg-[#157347]
+                transition shadow">
+                    Approve
+                </button>
+
+                <!-- REJECT -->
+                <button type="button" id="rejectBtn" class="px-6 py-2 text-sm font-bold rounded-md
+                bg-[#dc3545] text-white hover:bg-[#bb2d3b]
+                transition shadow">
+                    Reject
+                </button>
+
+            </div>
+
+        </form>
+
+        <!-- RIGHT PANEL -->
+        <!-- ================= RIGHT : PERSONAL INFORMATION ================= -->
+        <div class="w-[260px] bg-white p-4 shadow-md rounded-lg">
+
+            <div class="text-lg font-bold text-[#2db381] mb-4">
+                Personal Information
+            </div>
+
+            <div class="odd:bg-[#c7ece3] even:bg-[#acf1d5] p-2 mb-2 rounded">
+                <span class="font-bold block">Employee ID</span>
+                <div id="info-employee-id">Loading...</div>
+            </div>
+
+            <div class="odd:bg-[#c7ece3] even:bg-[#acf1d5] p-2 mb-2 rounded">
+                <span class="font-bold block">Name</span>
+                <div id="info-name">Loading...</div>
+            </div>
+
+            <div class="odd:bg-[#c7ece3] even:bg-[#acf1d5] p-2 mb-2 rounded">
+                <span class="font-bold block">Department</span>
+                <div id="info-department">Loading...</div>
+            </div>
+
+            <div class="odd:bg-[#c7ece3] even:bg-[#acf1d5] p-2 mb-2 rounded">
+                <span class="font-bold block">Designation</span>
+                <div id="info-designation">Loading...</div>
+            </div>
+
+            <div class="odd:bg-[#c7ece3] even:bg-[#acf1d5] p-2 mb-2 rounded">
+                <span class="font-bold block">Line Manager</span>
+                <div id="info-line-manager">Loading...</div>
+            </div>
+
+            <div class="odd:bg-[#c7ece3] even:bg-[#acf1d5] p-2 rounded">
+                <span class="font-bold block">Joining Date</span>
+                <div id="info-joining-date">Loading...</div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+        /* 1️⃣ Get reqNo from URL */
+        const urlParams = new URLSearchParams(window.location.search);
+        const reqNo = urlParams.get("reqNo");
+
+        if (!reqNo) {
+            Swal.fire("Error", "Request number missing", "error");
+        }
+
+        /* 2️⃣ Button handlers */
+        document.getElementById("approveBtn").addEventListener("click", () => {
+            updateCertificateStatus("Approved");
+        });
+
+        document.getElementById("rejectBtn").addEventListener("click", () => {
+            askRejectReason();
+        });
+
+        /* 3️⃣ Update function */
+        function updateCertificateStatus(status, comments = null) {
+
+            Swal.fire({
+                title: `Confirm ${status}`,
+                text: `Are you sure you want to ${status.toLowerCase()} this certificate request?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: status === "Approved" ? "#198754" : "#dc3545",
+                confirmButtonText: "Yes",
+                cancelButtonText: "Cancel"
+            }).then(result => {
+                if (!result.isConfirmed) return;
+
+                fetch("/api/certificate/update-status", {
+                    method: "PUT",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        req_no: reqNo,
+                        status: status,
+                        comments
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                toast: true,
+                                position: "top-end",
+                                icon: "success",
+                                title: `Certificate ${status.toLowerCase()} successfully`,
+                                showConfirmButton: false,
+                                timer: 2500,
+                                background: "#16a34a",
+                                color: "#fff"
+                            });
+
+                            // Disable buttons after action
+                            document.getElementById("approveBtn").disabled = true;
+                            document.getElementById("rejectBtn").disabled = true;
+
+
+                        } else {
+                            Swal.fire({
+                                toast: true,
+                                position: "top-end",
+                                icon: "error",
+                                title: data.error || "Update failed",
+                                showConfirmButton: false,
+                                timer: 3000,
+                                background: "#dc2626",
+                                color: "#fff"
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            toast: true,
+                            position: "top-end",
+                            icon: "error",
+                            title: "Server error",
+                            showConfirmButton: false,
+                            timer: 3000,
+                            background: "#dc2626",
+                            color: "#fff"
+                        });
+                    });
+            });
+        }
+
+
+        // rejection reason
+        function askRejectReason() {
+            Swal.fire({
+                title: "Reject Certificate",
+                input: "textarea",
+                inputLabel: "Reason for rejection",
+                inputPlaceholder: "Enter rejection reason...",
+                inputAttributes: {
+                    "aria-label": "Rejection reason"
+                },
+                showCancelButton: true,
+                confirmButtonText: "Reject",
+                confirmButtonColor: "#dc3545",
+                cancelButtonText: "Cancel",
+                preConfirm: (reason) => {
+                    if (!reason || !reason.trim()) {
+                        Swal.showValidationMessage("Rejection reason is required");
+                    }
+                    return reason;
+                }
+            }).then(result => {
+                if (!result.isConfirmed) return;
+
+                updateCertificateStatus("Rejected", result.value);
+            });
+        }
+
+
+        /* 2️⃣ Fetch certificate details */
+        fetch(`/api/certificate/details/${reqNo}`, {
+            credentials: "include"
+        })
+            .then(res => res.json())
+        /* 2️⃣ Certificate type mapping */
+        const certTypeMap = {
+            1: "Employment Certificate",
+            2: "Experience Certificate",
+            3: "Salary Certificate",
+            4: "Address Proof Certificate"
+        };
+
+        /* 3️⃣ Fetch certificate details */
+        fetch(`/api/certificate/details/${reqNo}`, {
+            credentials: "include"
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                /* 🔹 Read-only form fields */
+                document.getElementById("employeeName").innerHTML =
+                    `<option>${data.name}</option>`;
+
+                document.getElementById("employeeCode").innerHTML =
+                    `<option>${data.employee_id}</option>`;
+
+                document.getElementById("certificateType").innerHTML =
+                    `<option>${certTypeMap[data.certificate_type] || data.certificate_type}</option>`;
+
+                document.getElementById("joiningDate").value =
+                    data.joining_date ? data.joining_date.split("T")[0] : "";
+
+                document.getElementById("endingDate").value =
+                    data.ending_date ? data.ending_date.split("T")[0] : "";
+
+                // Employee remarks
+                document.getElementById("remarks").value =
+                    data.remarks || "—";
+
+                // // Rejection remarks (optional separate textarea)
+                // document.getElementById("rejectionReason").value =
+                //     data.rejection_reason || "—";
+
+                /* 🔹 Disable buttons if already processed */
+                if (data.status !== "pending") {
+                    document.getElementById("approveBtn").disabled = true;
+                    document.getElementById("rejectBtn").disabled = true;
+                }
+
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire("Error", "Failed to load certificate data", "error");
+            });
+
+
+
+
+
+        //-----------------------------------
+        // NAVIGATION FIX (ADD THIS)
+        //-----------------------------------
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // HEADER
+            document.getElementById("goHR")
+                ?.addEventListener("click", () => {
+                    window.location.href = "certificate-list.html";
+                });
+
+            // SIDEBAR
+            document.getElementById("hrBtn")
+                ?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=hr-logo";
+                });
+
+            document.getElementById("financeBtn")
+                ?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=finance-logo";
+                });
+
+            document.getElementById("itBtn")
+                ?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=it-logo";
+                });
+
+            document.getElementById("performanceBtn")
+                ?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=performance-logo";
+                });
+
+            document.getElementById("reportsBtn")
+                ?.addEventListener("click", () => {
+                    window.location.href = "humanresource.html?section=reports-logo";
+                });
+
+        });
+
+
+
+
+
+
+        // session check remains same
+        fetch("/api/auth/session-check", {
+            method: "GET",
+            credentials: "include"   // ⭐ THIS IS MANDATORY
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.loggedIn) {
+                    window.location.href = "index.html";
+                } else {
+                    document.getElementById("userName").textContent = data.user.name;
+                }
+            })
+            .catch(error => {
+                console.error("Session check failed:", error);
+                window.location.href = "index.html";
+            });
+
+
+
+
+        document.getElementById("logoutBtn")
+            ?.addEventListener("click", logoutUser);
+
+
+
+
+
+        // logout
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out from your session.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Call logout API
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html"; // Redirect to login
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
+
+    </script>
+
+
+</body>
+
+</html>

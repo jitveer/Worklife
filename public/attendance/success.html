@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Success</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+">
+
+    <div style="
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    ">
+        <h1 style="color: #28a745;">✅ Attendance Marked</h1>
+        <p>Your attendance has been recorded successfully.</p>
+        <p><strong>Thank you!</strong></p>
+    </div>
+<script>
+    // If page is refreshed → redirect to passcode
+    if (performance.navigation.type === 1) {
+        window.location.href = "passcode.html";
+    }
+
+    // Alternative modern way (better)
+    if (performance.getEntriesByType("navigation")[0].type === "reload") {
+        window.location.href = "passcode.html";
+    }
+</script>
+</body>
+</html>

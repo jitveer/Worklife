@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title> My Petrol Conveyance</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- SweetAlert2 for logout -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* -----------------------------------
+   Global
+----------------------------------- */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(120deg, #e8f5ee, #ffffff);
+            color: #333;
+        }
+
+        /* -----------------------------------
+   Header
+----------------------------------- */
+        .header {
+            background: linear-gradient(90deg, #3a9d79, #52af8d);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            height: 56px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo-box {
+            background-color: #ffffff;
+            color: #333;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            margin-right: 12px;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .worklife-text {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .header select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: none;
+            background-color: white;
+            font-weight: 600;
+        }
+
+        /* -----------------------------------
+   Layout
+----------------------------------- */
+        .main {
+            display: flex;
+            padding-top: 10px;
+        }
+
+        /* -----------------------------------
+   Left Panel
+----------------------------------- */
+        .left-panel {
+            width: 110px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+        }
+
+        .left-panel button {
+            width: 100px;
+            height: 100px;
+            border: none;
+            border-radius: 0px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .left-panel button:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .left-panel i {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .btn-hr {
+            background-color: #7f6aa8;
+        }
+
+        .btn-finance {
+            background-color: #cb7e56;
+        }
+
+        .btn-it {
+            background-color: #773631;
+        }
+
+        .btn-pm {
+            background-color: #138f6c;
+        }
+
+        .btn-reports {
+            background-color: #71a92c;
+        }
+
+        /* -----------------------------------
+   Content
+----------------------------------- */
+        .content {
+            flex: 1;
+            padding: 30px;
+            background: #ffffff;
+            margin: 10px;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .content h1 {
+            font-size: 26px;
+            margin-bottom: 18px;
+            color: #3a9d79;
+            font-weight: bold;
+        }
+
+        /* -----------------------------------
+   Status Buttons
+----------------------------------- */
+        .status-buttons {
+            margin-bottom: 18px;
+        }
+
+        .status-buttons button {
+            padding: 10px 22px;
+            background: #fff;
+            border: 2px solid #d0d0d0;
+            border-radius: 8px;
+            margin-right: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .status-buttons button:hover,
+        .status-buttons .active {
+            background: #3d36a5;
+            color: #fff;
+            border-color: #979e9b;
+        }
+
+        /* -----------------------------------
+   Table
+----------------------------------- */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        thead th {
+            background: #3a9d79;
+            color: white;
+            padding: 12px;
+            font-size: 15px;
+            border-right: 1px solid white
+        }
+
+        tbody td {
+            background: #ffffff;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            border-right: 1px solid #5dbd98;
+        }
+
+        tr:hover td {
+            background: #e9f7f0;
+        }
+
+        /* -----------------------------------
+   Status Box
+----------------------------------- */
+        .status-box {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-box.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-box.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-box.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* -----------------------------------
+   Modal
+----------------------------------- */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            width: 450px;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            cursor: pointer;
+        }
+
+        .close-btn i {
+            color: #d9534f;
+        }
+
+
+
+        /* ---------- Sales Modal ---------- */
+        #salesModal .modal-content {
+            width: 600px;
+            /* Wider modal */
+            max-width: 95%;
+            /* Responsive */
+            max-height: 90vh;
+            /* Prevent overflow */
+            overflow-y: auto;
+            /* Only vertical scroll when needed */
+            border-radius: 12px;
+        }
+
+        /* ---------- Tracking Flow Container ---------- */
+        #salesApprovalFlow {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #dce3eb;
+        }
+
+        /* ---------- Each Approver Box ---------- */
+        .track-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 130px;
+            padding: 10px 5px;
+        }
+
+        /* Approver Name Box */
+        .track-name {
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        /* Status Label */
+        .track-status {
+            margin-top: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        /* Arrow Between Steps */
+        .track-arrow {
+            font-size: 28px;
+            margin: 0 12px;
+            color: #444;
+        }
+
+        /* Flex container wraps steps automatically (NO SCROLL) */
+        .track-wrapper {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            /* WRAPS instead of scrolling ➜ no overflow */
+            gap: 20px 30px;
+            /* Row-gap & column-gap */
+        }
+
+
+        @keyframes fadeIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- === HEADER === -->
+    <header>
+        <div class="header">
+            <!-- Left -->
+            <div class="header-left" id="headerLogo">
+                <div class="logo-box">WL</div>
+                <div class="worklife-text">Worklife</div>
+            </div>
+            <!-- Right -->
+            <div class="header-right">
+                <select>
+                    <option>Eastern</option>
+                    <option>Western</option>
+                    <option>Northern</option>
+                    <option>Southern</option>
+                </select>
+                <span>English</span>
+                <div class="profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userName" style="text-transform: capitalize;">Loading...</span>
+                </div>
+                <div class="logout" id="logoutBtn">
+                    <i class="fas fa-power-off"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- === MAIN === -->
+    <div class="main">
+        <!-- LEFT PANEL -->
+        <div id="sidePanel" class="left-panel">
+            <button class="btn-hr" id="hrBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-user"></i>
+                    <span>HR</span>
+                </div>
+            </button>
+            <button class="btn-finance" id="financeBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-folder"></i>
+                    <span>Finance</span>
+                </div>
+            </button>
+            <button class="btn-it" id="itBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-desktop"></i>
+                    <span>IT</span>
+                </div>
+            </button>
+            <button class="btn-pm" id="performanceBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Performance</span>
+                </div>
+            </button>
+            <button class="btn-reports" id="reportsBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-chart-bar"></i>
+                    <span>Reports</span>
+                </div>
+            </button>
+        </div>
+
+
+        <div class="content">
+            <h1>My Incentives Requests</h1>
+
+            <div class="status-buttons">
+                <button id="allBtn">All</button>
+                <button id="approvedBtn">Approved</button>
+                <button id="pendingBtn">Pending</button>
+                <button id="rejectedBtn">Rejected</button>
+            </div>
+
+            <table id="salesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Request No</th>
+                        <th>Date Of Request</th>
+                        <th>Final Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Sales Modal -->
+        <div id="salesModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" id="closeModalBtn">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </span>
+
+                <h2>Sales Request <span id="salesStatusTag" class="status-box small"></span></h2>
+
+                <p><b>Requester Name:</b> <span id="modalRequesterName"></span></p>
+                <p><b>Request No:</b> <span id="modalReqNo"></span></p>
+
+                <!-- Rejection Section (hidden until rejected) -->
+                <div id="rejectSection" style="display:none; margin-top:10px;">
+                    <p><b>Rejected By:</b> <span id="modalRejectedBy"></span></p>
+                    <p><b>Rejection Reason:</b> <span id="modalRejectionReason"></span></p>
+                </div>
+
+                <div id="salesApprovalFlow"></div>
+            </div>
+        </div>
+
+
+        <script>
+            function loadSales(status = "all") {
+                fetch(`/api/sales/my-sales?status=${status}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const tbody = document.querySelector("#salesTable tbody");
+                        tbody.innerHTML = "";
+
+                        if (data.length === 0) {
+                            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No records found</td></tr>`;
+                            return;
+                        }
+
+                        data.forEach((row, index) => {
+
+                            const tr = document.createElement("tr");
+
+                            tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${row.req_no}</td>
+                    <td>${formatDate(row.created_date)}</td>
+                    <td>
+                        <span class="status-box ${row.final_status.toLowerCase()}">
+                            ${row.final_status}
+                        </span>
+                    </td>
+                `;
+
+                            const actionTd = document.createElement("td");
+
+                            const btn = document.createElement("button");
+                            btn.className = "icon-box view";
+                            btn.innerHTML = `<i class="fa-solid fa-eye"></i>`;
+
+                            btn.addEventListener("click", () => {
+                                viewSales(row.req_no);
+                            });
+
+                            actionTd.appendChild(btn);
+                            tr.appendChild(actionTd);
+
+                            tbody.appendChild(tr);
+                        });
+                    });
+            }
+
+
+            // formating date 
+            function formatDate(dateString) {
+                if (!dateString) return "-";
+                const date = new Date(dateString);
+                if (isNaN(date)) return "-";
+
+                let day = String(date.getDate()).padStart(2, "0");
+                let month = String(date.getMonth() + 1).padStart(2, "0");
+                let year = date.getFullYear();
+
+                return `${day}-${month}-${year}`;   // FINAL → DD-MM-YYYY
+            }
+
+
+
+
+
+            // view popup
+            let currentSalesReqNo = null;
+
+            function viewSales(reqNo) {
+                currentSalesReqNo = reqNo;
+
+                fetch(`/api/sales/view/${reqNo}`)
+                    .then(res => res.json())
+                    .then(data => {
+
+                        // Correct requester name
+                        document.getElementById("modalRequesterName").textContent =
+                            data.sale.requester_name || "-";
+
+                        // Request No
+                        document.getElementById("modalReqNo").textContent = data.sale.req_no;
+
+                        // Status Tag
+                        const status = data.sale.status;
+                        const statusTag = document.getElementById("salesStatusTag");
+                        statusTag.textContent = status;
+                        statusTag.className = `status-box small ${status.toLowerCase()}`;
+
+                        // Correct rejection section ID
+                        const rejectSection = document.getElementById("rejectSection");
+
+                        if (status.toLowerCase() === "rejected") {
+                            rejectSection.style.display = "block";
+                            document.getElementById("modalRejectedBy").textContent =
+                                data.sale.rejected_by_name || "N/A";
+                            document.getElementById("modalRejectionReason").textContent =
+                                data.sale.rejection_reason || "N/A";
+                        } else {
+                            rejectSection.style.display = "none";
+                        }
+
+                        // Show modal
+                        document.getElementById("salesModal").style.display = "flex";
+
+                        // Tracking
+                        trackSales(reqNo);
+                    });
+            }
+
+
+            // tracking 
+            function trackSales(reqNo) {
+                fetch(`/api/sales/track/${reqNo}`)
+                    .then(res => res.json())
+                    .then(steps => {
+                        const container = document.getElementById("salesApprovalFlow");
+
+                        if (!steps.length) {
+                            container.innerHTML = "<p>No approval history available.</p>";
+                            return;
+                        }
+
+                        let html = `
+                        <div style="display: flex; gap: 15px; align-items: center; overflow-x: auto;">
+                        `;
+
+                        steps.forEach((step, i) => {
+
+                            let color = "#d1d1d1";
+                            if (step.status === "approved") color = "#28a745";
+                            if (step.status === "pending") color = "#ffc107";
+                            if (step.status === "rejected") color = "#dc3545";
+
+                            html += `
+                            <div style="text-align:center;">
+                            <div style="
+                            background:${color};
+                            padding:8px 16px;
+                            border-radius:8px;
+                            color:white;
+                            font-weight:bold;
+                            ">
+                            ${step.approver_name || "Unknown"}
+                            </div>
+                            <div style="margin-top:5px; font-size:13px; text-transform:capitalize;">
+                            ${step.status}
+                            </div>
+                            </div>
+                            `;
+
+                            if (i < steps.length - 1) {
+                                html += `<span style="font-size:22px;">➡</span>`;
+                            }
+                        });
+
+                        html += `</div>`;
+                        container.innerHTML = html;
+                    });
+            }
+
+
+
+            // close popup
+            function closeSalesModal() {
+                document.getElementById("salesModal").style.display = "none";
+            }
+
+
+            // open moda
+            window.onload = function () {
+                loadSales("all");
+
+                const reqNo = new URLSearchParams(window.location.search).get("reqNo");
+                if (reqNo) setTimeout(() => viewSales(reqNo), 300);
+            };
+
+        </script>
+        <script>
+            fetch("/api/auth/session-check", {
+                method: "GET",
+                credentials: "include"   // ⭐ VERY IMPORTANT
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (!data.loggedIn) {
+                        window.location.href = "index.html";
+                        return;
+                    }
+
+                    // ✅ Set username
+                    document.getElementById("userName").textContent = data.user.name;
+
+                    // ✅ Store user id
+                    sessionStorage.setItem("user_id", data.user.user_id);
+
+                    // ===============================
+                    // ✅ HEADER REDIRECT
+                    // ===============================
+                    // HEADER
+                    const header = document.getElementById("headerLogo");
+                    header?.addEventListener("click", () => {
+                        fetch("/api/auth/session-check", { credentials: "include" })
+                            .then(res => res.json())
+                            .then(data => {
+                                window.location.href =
+                                    data.user.roleId === 4
+                                        ? "employee-dashboard.html"
+                                        : "humanresource.html";
+                            });
+                    });
+
+                    // ===============================
+                    // ✅ SIDEBAR CHANGE
+                    // ===============================
+                    if (data.user.roleId === 4) {
+
+                        const panel = document.getElementById("sidePanel");
+
+                        if (panel) {
+                            panel.innerHTML = `
+
+            <button class="btn-hr" id="leaveBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Leave</span>
+                </div>
+            </button>
+
+            <button class="btn-finance" id="expenseBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-money-bill"></i>
+                    <span>Expense</span>
+                </div>
+            </button>
+
+            
+            <button class="btn-reports" id="performanceBtn2">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Performance</span>
+                </div>
+            </button>
+
+            <button class="btn-it" id="petrolBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-gas-pump"></i>
+                    <span>Petrol</span>
+                </div>
+            </button>
+
+            <button class="btn-pm" id="salesBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Incentive</span>
+                </div>
+            </button>
+
+            <!-- 🔵 BLUE CERTIFICATE -->
+            <button class="btn-reports" style="background-color:#0d6efd;" id="certificateBtn">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                    <i class="fa-solid fa-certificate"></i>
+                    <span>Certificate</span>
+                </div>
+            </button>
+
+            `;
+
+                            document.getElementById("leaveBtn")?.addEventListener("click", () => location.href = "LeaveRequest.html");
+                            document.getElementById("expenseBtn")?.addEventListener("click", () => location.href = "expense-claim.html");
+                            document.getElementById("performanceBtn2")?.addEventListener("click", () => location.href = "performance.html");
+                            document.getElementById("petrolBtn")?.addEventListener("click", () => location.href = "petrol-conveyance.html");
+                            document.getElementById("salesBtn")?.addEventListener("click", () => location.href = "sales.html");
+                            document.getElementById("certificateBtn")?.addEventListener("click", () => location.href = "certificate.html");
+                        }
+                    }
+
+                })
+                .catch(error => {
+                    console.error("Session check failed:", error);
+                    window.location.href = "index.html";
+                });
+
+
+
+
+            // onclick
+            document.addEventListener("DOMContentLoaded", () => {
+
+                // LOGOUT
+                document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+                // SIDEBAR
+                document.getElementById("hrBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=hr-logo");
+                document.getElementById("financeBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=finance-logo");
+                document.getElementById("itBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=it-logo");
+                document.getElementById("performanceBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=performance-logo");
+                document.getElementById("reportsBtn")?.addEventListener("click", () => location.href = "humanresource.html?section=reports-logo");
+
+                // FILTERS
+                document.getElementById("allBtn")?.addEventListener("click", () => loadSales("all"));
+                document.getElementById("approvedBtn")?.addEventListener("click", () => loadSales("approved"));
+                document.getElementById("pendingBtn")?.addEventListener("click", () => loadSales("pending"));
+                document.getElementById("rejectedBtn")?.addEventListener("click", () => loadSales("rejected"));
+
+                // MODAL CLOSE
+                document.getElementById("closeModalBtn")?.addEventListener("click", closeSalesModal);
+            });
+
+
+
+
+
+            // logout
+            function logoutUser() {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You will be logged out from your session.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, logout",
+                    cancelButtonText: "Cancel"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Call logout API
+                        fetch("/api/auth/logout")
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: "Logged Out!",
+                                        text: "You have been successfully logged out.",
+                                        icon: "success",
+                                        showConfirmButton: false,
+                                        timer: 2000
+                                    });
+
+                                    setTimeout(() => {
+                                        window.location.href = "index.html"; // Redirect to login
+                                    }, 2000);
+                                } else {
+                                    Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                                }
+                            })
+                            .catch(err => {
+                                console.error("Logout error:", err);
+                                Swal.fire("Error", "Something went wrong. Try again.", "error");
+                            });
+                    }
+                });
+            }
+        </script>
+</body>
+
+</html>

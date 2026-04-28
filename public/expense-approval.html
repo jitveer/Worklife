@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Expence Claim Approval</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 for logout -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* -----------------------------------
+          Global
+        ----------------------------------- */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(120deg, #dff5e4, #f8fffb, #e0f2df);
+            background-size: cover;
+            background-attachment: fixed;
+            color: #333;
+        }
+
+        /* -----------------------------------
+        Header
+        ----------------------------------- */
+        .header {
+            background: linear-gradient(90deg, #3a9d79, #52af8d);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            height: 56px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .logo-box {
+            background-color: #ffffff;
+            color: #333;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 14px;
+            border-radius: 8px;
+            margin-right: 12px;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .worklife-text {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .header select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: none;
+            background-color: white;
+            color: #444;
+            font-weight: 600;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+        }
+
+        .profile {
+            font-weight: bold;
+        }
+
+        .logout {
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .logout:hover {
+            color: #ffe6e6;
+        }
+
+        /* -----------------------------------
+        Layout
+        ----------------------------------- */
+        .main {
+            display: flex;
+            padding-top: 10px;
+        }
+
+        .left-panel {
+            width: 110px;
+            padding: 10px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+        }
+
+        /* -----------------------------------
+        Left Panel Buttons
+        ----------------------------------- */
+        .left-panel button {
+            width: 100px;
+            height: 100px;
+            border: none;
+            border-radius: 0px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .left-panel button:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .left-panel i {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        /* Button Colors */
+        .btn-hr {
+            background-color: #7f6aa8;
+        }
+
+        .btn-finance {
+            background-color: #cb7e56;
+        }
+
+        .btn-it {
+            background-color: #773631;
+        }
+
+        .btn-pm {
+            background-color: #138f6c;
+        }
+
+        .btn-reports {
+            background-color: #71a92c;
+        }
+
+        /* -----------------------------------
+         Content Area
+        ----------------------------------- */
+        .content {
+            flex: 1;
+            padding: 30px;
+            background-color: #ffffff;
+            margin: 10px 10px 10px 0px;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .content h1 {
+            font-size: 26px;
+            margin-bottom: 25px;
+            color: #52af8d;
+            font-weight: bold;
+        }
+
+        /* -----------------------------------
+        Status Buttons
+        ----------------------------------- */
+        .status-buttons button {
+            background: #ffffff;
+            border: 2px solid #d0d0d0;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .status-buttons button:hover {
+            background-color: #5654ce;
+            color: #fff;
+            border-color: #3a9d79;
+        }
+
+        /* -----------------------------------
+        Table
+        ----------------------------------- */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+
+        }
+
+        th {
+            background-color: #3a9d79;
+            color: white;
+            padding: 12px;
+            font-size: 15px;
+            border-right: 1px solid #dcdcdc;
+        }
+
+        td {
+            background-color: #ffffff;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            border-right: 1px solid #5dbd98;
+        }
+
+        tr:hover td {
+            background-color: #e4f3eb;
+        }
+
+        /* -----------------------------------
+        Status Box
+        ----------------------------------- */
+        .status-box {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+        }
+
+        .status-box.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-box.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-box.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* -----------------------------------
+        Action Icons
+       ----------------------------------- */
+        .action-icons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .icon-box {
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f1f1f1;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .icon-box:hover {
+            transform: scale(1.1);
+        }
+
+        .icon-box.view:hover {
+            background-color: #3a9d79;
+            color: white;
+        }
+
+        .icon-box.delete:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* -----------------------------------
+         Modal
+        ----------------------------------- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            width: 480px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 14px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .close-btn i {
+            color: red;
+        }
+
+        .modal-content button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .approve-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        button:disabled {
+            background-color: #bbb !important;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+
+
+
+        /* filter by date name popup */
+        /* FILTER BAR */
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .date-btn,
+        .report-btn {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .date-btn {
+            background: #173E9A;
+            color: white;
+        }
+
+        .report-btn {
+            background: white;
+            border: 1px solid #173E9A;
+            color: #173E9A;
+        }
+
+        /* Search Box */
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 8px 30px 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 9px;
+            color: gray;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 28px;
+            top: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+        }
+
+        /* DATE POPUP */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 320px;
+        }
+
+        .popup-box input[type=date] {
+            width: 92%;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+
+        .popup-box label {
+            color: #173E9A;
+            font-weight: bold;
+        }
+
+        .popup-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .apply-btn {
+            background: #173E9A;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- === HEADER === -->
+    <header>
+        <div class="header">
+            <!-- Left -->
+            <div class="header-left" id="goDashboard">
+                <div class="logo-box">WL</div>
+                <div class="worklife-text">Worklife</div>
+            </div>
+            <!-- Right -->
+            <div class="header-right">
+                <select>
+                    <option>Eastern</option>
+                    <option>Western</option>
+                    <option>Northern</option>
+                    <option>Southern</option>
+                </select>
+                <span>English</span>
+                <div class="profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userName" style="text-transform: capitalize;">Loading...</span>
+                </div>
+                <div class="logout" id="logoutBtn">
+                    <i class="fas fa-power-off"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- === MAIN === -->
+    <div class="main">
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <button class="btn-hr" id="hrBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-user"></i>
+                    <span>HR</span>
+                </div>
+            </button>
+            <button class="btn-finance" id="financeBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-folder"></i>
+                    <span>Finance</span>
+                </div>
+            </button>
+            <button class="btn-it" id="itBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-desktop"></i>
+                    <span>IT</span>
+                </div>
+            </button>
+            <button class="btn-pm" id="performanceBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Performance</span>
+                </div>
+            </button>
+            <button class="btn-reports" id="reportsBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-chart-bar"></i>
+                    <span>Reports</span>
+                </div>
+            </button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <h1>Expence Claims</h1>
+
+            <div class="filter-bar">
+
+                <!-- Left: Status Buttons -->
+                <div class="status-buttons">
+                    <button class="status-btn active" data-status="all" id="allBtn">All</button>
+                    <button class="status-btn" data-status="approved" id="approvedBtn">Approved</button>
+                    <button class="status-btn" data-status="pending" id="pendingBtn">Pending</button>
+                    <button class="status-btn" data-status="rejected" id="rejectedBtn">Rejected</button>
+                </div>
+
+                <!-- Right: Date + Report + Search -->
+                <div class="right-controls">
+
+                    <button id="openDatePopup" class="date-btn"></button>
+
+                    <button id="generateReport" class="report-btn">Generate Report</button>
+
+                    <div class="search-box">
+                        <input type="text" id="searchName" placeholder="Search by name…" maxlength="40">
+                        <i class="fa fa-search search-icon"></i>
+                        <span id="clearSearch" class="clear-search">×</span>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <!-- DATE FILTER POPUP -->
+            <div id="datePopup" class="popup-overlay">
+                <div class="popup-box">
+                    <h3>Select Date Range</h3>
+
+                    <label>Start Date</label>
+                    <input type="date" id="startDate">
+
+                    <label>End Date</label>
+                    <input type="date" id="endDate">
+
+                    <div class="popup-actions">
+                        <button id="applyDate" class="apply-btn">Apply</button>
+                        <button id="cancelDate" class="cancel-btn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <table id="approvalTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Expense Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Final Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data rows will be injected here -->
+                </tbody>
+            </table>
+
+
+            <!-- EXPENSE MODAL -->
+            <div class="modal" id="expenseModal">
+                <div class="modal-content">
+                    <span class="close-btn" id="closeExpenseModalBtn">
+                        <i class="fa-solid fa-rectangle-xmark"></i>
+                    </span>
+                    <h3>
+                        Expense Claim Details
+                        <span id="expenseStatusTag" class="status-box small">Status</span>
+                    </h3>
+                    <div id="expenseDetails"></div>
+                    <h4>Expense Items</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Expense Type</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenseItemsTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                    <button class="approve-btn" id="approveBtn">Approve</button>
+                    <button class="cancel-btn" id="rejectBtn">Reject</button>
+                    <p id="approvalMessage" style="color: red; display: none; margin-top: 10px;"></p>
+                    <div id="expenseApprovalNote"></div>
+                </div>
+            </div>
+
+            <script>
+
+                let currentRequestId = null;
+                let allExpenseClaims = [];
+
+                let filterState = {
+                    status: "all",
+                    search: "",
+                    start_date: "",
+                    end_date: ""
+                };
+
+                // Fetch and load approval data 
+                function loadExpenseClaims() {
+                    let url = "/api/expense/approvals";
+
+                    const params = new URLSearchParams();
+
+                    if (filterState.status !== "all") params.append("status", filterState.status);
+                    if (filterState.search) params.append("search", filterState.search);
+                    if (filterState.start_date) params.append("start_date", filterState.start_date);
+                    if (filterState.end_date) params.append("end_date", filterState.end_date);
+
+                    const finalURL = params.toString()
+                        ? `${url}?${params.toString()}`
+                        : url;
+
+                    fetch(finalURL)
+                        .then(response => response.json())
+                        .then(data => {
+
+                            allExpenseClaims = Array.isArray(data) ? data : [];
+                            renderExpenseClaims(allExpenseClaims); // render initially
+                        })
+                        .catch(err => {
+                            console.error("Failed to load approvals:", err);
+                        });
+                }
+
+                // Render given list of claims into the table
+                function renderExpenseClaims(list) {
+                    const tbody = document.querySelector('#approvalTable tbody');
+                    tbody.innerHTML = '';
+
+                    if (!list.length) {
+                        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No records found</td></tr>`;
+                        return;
+                    }
+
+                    list.forEach((row, index) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${row.requester_name}</td>
+                    <td>${row.expense_type}</td>
+                    <td>₹${row.amount}</td>
+                    <td>
+                        <span class="status-box small ${row.status.toLowerCase()}">
+                            ${row.status}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-box small ${row.final_status.toLowerCase()}">
+                            ${row.final_status}
+                        </span>
+                    </td>
+                    `;
+
+                        const actionTd = document.createElement("td");
+
+                        const viewBtn = document.createElement("span");
+                        viewBtn.className = "icon-box view";
+                        viewBtn.innerHTML = `<i class="fas fa-eye"></i>`;
+
+                        viewBtn.addEventListener("click", () => {
+                            viewRequest(row.req_no);
+                        });
+
+                        actionTd.appendChild(viewBtn);
+                        tr.appendChild(actionTd);
+
+                        tbody.appendChild(tr);
+                    });
+                }
+                // Called by the filter buttons
+                function loadRequests(filter) {
+                    filter = filter.toLowerCase();
+
+                    if (filter === 'all') {
+                        renderExpenseClaims(allExpenseClaims);
+                    } else {
+                        const filtered = allExpenseClaims.filter(row =>
+                            row.status && row.status.toLowerCase() === filter
+                        );
+                        renderExpenseClaims(filtered);
+                    }
+                }
+
+
+                // show present date in the button or Set dynamic today date on filter button
+                const dateBtn = document.getElementById("openDatePopup");
+                if (dateBtn) {
+                    const today = new Date();
+                    const day = String(today.getDate()).padStart(2, "0");
+                    const month = today.toLocaleString("en-US", { month: "long" });
+                    const year = today.getFullYear();
+
+                    dateBtn.innerText = `${day} ${month} ${year}`;
+                }
+
+
+                // ===============================
+                // 4) SEARCH BY NAME (only alphabets)
+                // ===============================
+                const searchInput = document.getElementById("searchName");
+                const clearSearch = document.getElementById("clearSearch");
+
+                if (searchInput) {
+                    searchInput.addEventListener("input", function () {
+
+                        let value = this.value;
+
+                        if (!/^[A-Za-z\s]*$/.test(value)) return;
+
+                        filterState.search = value.trim();
+
+                        clearSearch.style.display = value.length ? "block" : "none";
+
+                        loadExpenseClaims();
+                    });
+
+                    clearSearch.addEventListener("click", () => {
+                        searchInput.value = "";
+                        filterState.search = "";
+                        clearSearch.style.display = "none";
+                        loadExpenseClaims();
+                    });
+                }
+
+                // ===============================
+                // 5) DATE RANGE POPUP
+                // ===============================
+                const openDatePopup = document.getElementById("openDatePopup");
+                const datePopup = document.getElementById("datePopup");
+                const applyDate = document.getElementById("applyDate");
+                const cancelDate = document.getElementById("cancelDate");
+
+                openDatePopup.addEventListener("click", () => {
+                    datePopup.style.display = "flex";
+                });
+
+                cancelDate.addEventListener("click", () => {
+                    datePopup.style.display = "none";
+                });
+
+                applyDate.addEventListener("click", () => {
+                    filterState.start_date = document.getElementById("startDate").value;
+                    filterState.end_date = document.getElementById("endDate").value;
+
+                    if (filterState.start_date && filterState.end_date &&
+                        filterState.start_date > filterState.end_date) {
+                        alert("Start date cannot be greater than end date");
+                        return;
+                    }
+
+                    datePopup.style.display = "none";
+                    loadExpenseClaims();
+                });
+
+                // ===============================
+                // 6) DOWNLOAD REPORT
+                // ===============================
+                const generateReport = document.getElementById("generateReport");
+
+                if (generateReport) {
+                    generateReport.addEventListener("click", () => {
+                        let url = "/api/expense/approvals?report=1";
+
+                        if (filterState.status !== "all") url += `&status=${filterState.status}`;
+                        if (filterState.search) url += `&search=${filterState.search}`;
+                        if (filterState.start_date) url += `&start_date=${filterState.start_date}`;
+                        if (filterState.end_date) url += `&end_date=${filterState.end_date}`;
+
+                        window.location = url;
+                    });
+                }
+
+                // Navigate to view page
+                function viewExpense(reqNo) {
+                    window.location.href = `/expense-approval.html?req_no=${reqNo}`;
+                }
+
+                window.onload = () => {
+                    loadExpenseClaims(); // Load all requests into table
+
+                    const reqNo = new URLSearchParams(window.location.search).get("reqNo");
+                    if (reqNo) {
+                        // 🔔 Notification with reqNo → directly open modal
+                        setTimeout(() => {
+                            viewRequest(reqNo);
+                        }, 300);
+                    }
+                };
+
+                // view pop-up
+                function viewRequest(reqNo) {
+                    currentRequestId = reqNo;
+
+                    fetch(`/api/expense/view/${reqNo}?approver_id=${sessionStorage.getItem("user_id")}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log("✅ API JSON RESPONSE:", data);
+                            console.log("🔍 Status Field:", data.status);
+                            // Set status tag
+                            const statusTag = document.getElementById("expenseStatusTag");
+                            statusTag.textContent = data.status || "N/A";
+                            statusTag.classList.remove("approved", "pending", "rejected");
+                            const statusClass = (data.status || "").toLowerCase();
+                            if (statusClass) {
+                                statusTag.classList.add(statusClass);
+                            }
+
+                            // Fill modal content
+                            document.getElementById("expenseDetails").innerHTML = `
+                            <p><strong>Requester Name:</strong> ${data.employee_name}</p>
+                            <p><strong>Request No:</strong> ${data.req_no}</p>
+                            <p><strong>Email:</strong> ${data.email || '-'}</p>
+                            <p><strong>Date:</strong> ${new Date(data.date).toLocaleDateString('en-GB')}</p>
+                            <p><strong>Department:</strong> ${data.department}</p>
+                            <p><strong>Total Amount:</strong> ₹${data.amount}</p>
+                            <p><strong>Comments:</strong> ${data.requester_comments || '-'}</p>
+                            `;
+
+                            // 🔁 Populate items
+                            const tableBody = document.getElementById("expenseItemsTableBody");
+                            tableBody.innerHTML = "";
+                            if (data.items && data.items.length > 0) {
+                                data.items.forEach(item => {
+                                    const row = document.createElement("tr");
+                                    row.innerHTML = `
+                                    <td>${new Date(item.date).toLocaleDateString('en-GB')}</td>
+                                    <td>${item.expense_type}</td>
+                                    <td>${item.description}</td>
+                                    <td>₹${item.amount}</td>
+                                    `;
+                                    tableBody.appendChild(row);
+                                });
+                            } else {
+                                tableBody.innerHTML = `<tr><td colspan="4">No items found</td></tr>`;
+
+                            }
+
+                            // Show modal
+                            document.getElementById("expenseModal").style.display = "flex";
+
+                            // Enable buttons if still pending
+                            const approveBtn = document.querySelector(".approve-btn");
+                            const cancelBtn = document.querySelector(".cancel-btn");
+                            const approvalMessage = document.getElementById("approvalMessage");
+
+                            // Always show buttons first
+                            approveBtn.style.display = "inline-block";
+                            cancelBtn.style.display = "inline-block";
+
+                            const status = (data.user_status || "").toLowerCase(); //  only check current approver's own status
+
+                            if (status === "approved") {
+                                approveBtn.disabled = true;
+                                cancelBtn.disabled = true;
+                                approvalMessage.textContent = "You have already approved this request.";
+                                approvalMessage.style.color = "green";
+                                approvalMessage.style.display = "block";
+                            }
+                            else if (status === "rejected") {
+                                approveBtn.disabled = true;
+                                cancelBtn.disabled = true;
+                                approvalMessage.textContent = "You have already rejected this request.";
+                                approvalMessage.style.color = "red";
+                                approvalMessage.style.display = "block";
+                            }
+                            else {
+                                approveBtn.disabled = false;
+                                cancelBtn.disabled = false;
+                                approvalMessage.textContent = "";
+                                approvalMessage.style.display = "none";
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Failed to load expense details:", err);
+                            Swal.fire("Error", "Unable to load claim details.", "error");
+                        });
+                }
+                function closeExpenseModal() {
+                    document.getElementById("expenseModal").style.display = "none";
+                }
+
+
+                // update expence claims
+                function updateExpenseStatus(newStatus) {
+                    if (!currentRequestId) return;
+
+                    // Cancel flow
+                    if (newStatus === "rejected") {
+                        Swal.fire({
+                            title: "Reason for rejection",
+                            input: "text",
+                            inputLabel: "Rejection Reason",
+                            inputPlaceholder: "Enter reason here...",
+                            inputValidator: (value) => {
+                                if (!value || value.trim() === "") {
+                                    return "Reason required!";
+                                }
+                            },
+                            showCancelButton: true
+                        }).then(result => {
+                            if (result.isConfirmed) {
+
+                                fetch(`/api/expense/update-approval`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        req_no: currentRequestId,
+                                        status: newStatus,
+                                        reason: result.value,
+                                        comments: result.value,
+                                        role: "admin",
+                                        approver_id: sessionStorage.getItem("user_id")
+                                    })
+                                })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        Swal.fire("Rejected!", data.message, "success");
+                                        loadExpenseClaims(); // Refresh table
+                                        closeExpenseModal();
+                                    });
+                            }
+                        });
+
+                    } else {
+                        // Approval flow
+                        Swal.fire({
+                            title: "Approve expense?",
+                            text: "Once approved, cannot be reverted.",
+                            icon: "question",
+                            showCancelButton: true,
+                            confirmButtonText: "Approve"
+                        }).then(result => {
+                            if (result.isConfirmed) {
+
+                                fetch(`/api/expense/update-approval`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        req_no: currentRequestId,
+                                        status: newStatus,
+                                        role: "admin",
+                                        approver_id: sessionStorage.getItem("user_id")
+                                    })
+                                })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        Swal.fire("Approved!", data.message, "success");
+                                        loadExpenseClaims();
+                                        viewRequest(currentRequestId);
+                                    });
+                            }
+                        });
+                    }
+                };
+
+
+
+
+                //-------------------------------
+                // onclick buttons
+                //--------------------------------
+                document.addEventListener("DOMContentLoaded", () => {
+
+                    // HEADER
+                    document.getElementById("goDashboard")
+                        ?.addEventListener("click", () => {
+                            window.location.href = "dashboard.html";
+                        });
+
+                    document.getElementById("logoutBtn")
+                        ?.addEventListener("click", logoutUser);
+
+                    // SIDEBAR
+                    document.getElementById("hrBtn")
+                        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=hr-logo");
+
+                    document.getElementById("financeBtn")
+                        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=finance-logo");
+
+                    document.getElementById("itBtn")
+                        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=it-logo");
+
+                    document.getElementById("performanceBtn")
+                        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=performance-logo");
+
+                    document.getElementById("reportsBtn")
+                        ?.addEventListener("click", () => window.location.href = "humanresource.html?section=reports-logo");
+
+                    // STATUS FILTER
+                    document.getElementById("allBtn")?.addEventListener("click", () => loadRequests("all"));
+                    document.getElementById("approvedBtn")?.addEventListener("click", () => loadRequests("approved"));
+                    document.getElementById("pendingBtn")?.addEventListener("click", () => loadRequests("pending"));
+                    document.getElementById("rejectedBtn")?.addEventListener("click", () => loadRequests("rejected"));
+
+                    // MODAL
+                    document.getElementById("closeExpenseModalBtn")
+                        ?.addEventListener("click", closeExpenseModal);
+
+                    document.getElementById("approveBtn")
+                        ?.addEventListener("click", () => updateExpenseStatus("approved"));
+
+                    document.getElementById("rejectBtn")
+                        ?.addEventListener("click", () => updateExpenseStatus("rejected"));
+
+                });
+
+
+
+                // session check
+                fetch("/api/auth/session-check")
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.loggedIn) {
+                            // Not logged in → go to login
+                            window.location.href = "index.html";
+                        } else {
+                            sessionStorage.setItem("user_id", data.user.user_id);
+                            document.getElementById("userName").textContent = data.user.name;
+                            console.log("✅ Session loaded. user_id:", data.user.user_id);
+
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Session check failed:", error);
+                        window.location.href = "index.html";
+                    });
+
+
+                const params = new URLSearchParams(window.location.search);
+                const sectionParam = params.get('section');
+                if (sectionParam) {
+                    const menuTile = document.getElementById(sectionParam);
+                    if (menuTile) {
+                        menuTile.click();
+                    }
+                }
+
+                // logout
+                function logoutUser() {
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "You will be logged out from your session.",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, logout",
+                        cancelButtonText: "Cancel"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Call logout API
+                            fetch("/api/auth/logout")
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+                                            title: "Logged Out!",
+                                            text: "You have been successfully logged out.",
+                                            icon: "success",
+                                            showConfirmButton: false,
+                                            timer: 2000
+                                        });
+
+                                        setTimeout(() => {
+                                            window.location.href = "index.html"; // Redirect to login
+                                        }, 2000);
+                                    } else {
+                                        Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error("Logout error:", err);
+                                    Swal.fire("Error", "Something went wrong. Try again.", "error");
+                                });
+                        }
+                    });
+                }
+
+            </script>
+</body>
+
+</html>

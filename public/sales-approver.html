@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sale of Assets Request</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #c3e2d1;
+        }
+
+        .header {
+            margin-bottom: 20px;
+            /*  ADDED SPACING BELOW HEADER */
+        }
+
+        .header {
+            background-color: #4aa382;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            height: 60px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-box {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .worklife-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header select {
+            background-color: white;
+            border: 1px solid white;
+            color: black;
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
+
+        .username {
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            color: white;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 20px;
+            gap: 30px;
+        }
+
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            margin-top: 0px;
+            font-size: 13px;
+        }
+
+        .left-panel button {
+            width: 88px;
+            height: 88px;
+            padding: 10px;
+            font-weight: bold;
+            border: none;
+            color: white;
+            border-radius: 0px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .left-panel button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+        }
+
+
+        .left-panel .btn-hr {
+            background-color: #a493b9;
+        }
+
+        .left-panel .btn-finance {
+            background-color: #c78864;
+        }
+
+        .left-panel .btn-it {
+            background-color: #863f33;
+        }
+
+        .left-panel .btn-pm {
+            background-color: #15ac7f;
+        }
+
+        .left-panel .btn-reports {
+            background-color: #82b435;
+        }
+
+
+        .sales-form-section {
+            flex: 4;
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .sales-form-section h5 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #165c42;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            margin-bottom: 14px;
+        }
+
+        .sales-form-section table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        .sales-form-section thead th {
+            background: #4aa382;
+            color: white;
+            padding: 8px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #3d8c72;
+        }
+
+        .sales-form-section tbody td {
+            background: #e5f6ef;
+            border: 1px solid #b3ddcc;
+            padding: 6px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* Inputs inside table */
+        .sales-form-section input,
+        .sales-form-section select {
+            width: 100%;
+            padding: 6px;
+            font-size: 13px;
+            border-radius: 4px;
+            border: 1px solid #999;
+        }
+
+        /* Remove dropdown arrow for Sq-ft & Payment if needed */
+        input#dimension_in_sqft,
+        input#payment {
+            appearance: auto;
+            background-image: none !important;
+            padding-right: 8px;
+        }
+
+        .sales-form-section textarea {
+            width: 100%;
+            height: 80px;
+        }
+
+        /* Buttons */
+        .sales-form-section .btn {
+            margin-top: 10px;
+        }
+
+        /* + Add Row link */
+        #addSalesRow {
+            font-weight: 600;
+            color: #002b7b;
+            cursor: pointer;
+        }
+
+
+        /* Custom dropdown arrow ONLY for specific selects */
+        #salesItemsTable select.representative,
+        #salesItemsTable select.project,
+        #salesItemsTable select.typo,
+        #salesItemsTable select.status {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+
+            background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 14px;
+
+            padding-right: 30px;
+            cursor: pointer;
+        }
+
+
+        .personal-info {
+            flex: 1;
+            background: white;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            min-width: 130px;
+        }
+
+        .info-heading {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #2db381;
+        }
+
+        .info-block {
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 4px 0;
+            background-color: #e3f9f3;
+        }
+
+        .info-block:nth-child(odd) {
+            background-color: #c7ece3;
+        }
+
+        .info-block:nth-child(even) {
+            background-color: #acf1d5;
+        }
+
+        .label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .small-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .approve-btn {
+            padding: 6px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            background-color: #1c8c4d !important;
+            border: none;
+            transition: 0.2s ease-in-out;
+        }
+
+        .approve-btn:hover {
+            background-color: #146c3b !important;
+            transform: translateY(-2px);
+        }
+
+        .reject-btn {
+            padding: 6px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            background-color: #c82333 !important;
+            border: none;
+            transition: 0.2s ease-in-out;
+        }
+
+        .reject-btn:hover {
+            background-color: #a31727 !important;
+            transform: translateY(-2px);
+        }
+
+
+
+        .sales-approval-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sales-approval-table th,
+        .sales-approval-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e5e5;
+            text-align: left;
+        }
+
+        .sales-approval-table th {
+            background: #f7f7f7;
+            font-weight: bold;
+        }
+
+        .sales-approval-date {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .sales-approver-name,
+        .sales-remarks {
+            background: #fff9e6;
+        }
+
+
+        .sales-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            background: #ffffff;
+            font-size: 14px;
+        }
+
+        .sales-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+        }
+
+
+        #salesApprovalHistory {
+            margin-top: 50px !important;
+        }
+
+        #salesApprovalHistory .section-title {
+            font-size: 16px !important;
+            font-weight: bold !important;
+            color: #165c42 !important;
+            margin-bottom: 20px;
+        }
+
+        .sales-actions-top {
+            display: flex;
+            justify-content: space-between;
+            /* keeps both on same row */
+            align-items: center;
+            width: 100%;
+            margin: 12px 0;
+        }
+
+        .view-files-btn {
+            background-color: #203b6b;
+            /* cool grey */
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .view-files-btn:hover {
+            background-color: #203b6b;
+            transform: translateY(-1px);
+        }
+
+
+
+
+
+        /* 📱 Mobile Layout Styling */
+        @media(max-width: 768px) {
+
+            .header {
+                max-width: 400px;
+                /* reduces width to fit nice in mobile */
+                width: 100%;
+                margin: 0 auto;
+                /* centers the header */
+                padding: 6px 10px;
+                height: auto;
+            }
+
+            .logo-box {
+                font-size: 12px;
+                padding: 3px 6px;
+            }
+
+            .worklife-text {
+                font-size: 14px;
+            }
+
+            .header-right {
+                gap: 2px;
+                font-size: 11px;
+            }
+
+            .profile span {
+                font-size: 10px;
+            }
+
+            .header select {
+                font-size: 10px;
+                padding: 3px 4px;
+            }
+
+
+            /* Main container becomes 2 columns only */
+            .main-container {
+                display: grid;
+                grid-template-columns: 1.5fr 1fr;
+                gap: 14px;
+                padding: 15px;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .left-panel {
+                grid-column: 1 / span 2;
+                order: -1;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                gap: 0px;
+                width: 100%;
+                margin-bottom: 12px;
+            }
+
+            .left-panel button {
+                width: 80px;
+                height: 80px;
+                border-radius: 0px;
+                padding: 0;
+                background-size: cover;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            /* Make icon smaller and centered */
+            .left-panel i {
+                font-size: 16px !important;
+                margin: 0 !important;
+            }
+
+            /* Hide text labels in mobile */
+            .left-panel span {
+                font-size: 8px;
+            }
+
+
+            .left-panel button {
+                width: 55px;
+                height: 55px;
+                font-size: 10px;
+                padding: 6px;
+            }
+
+            /* FORM: Full width and centered */
+            .sales-form-section {
+                max-width: 360px;
+                width: 100%;
+                margin: 0 auto;
+                padding: 12px;
+            }
+
+            /* Card-style form title */
+            .sales-form-section h5 {
+                font-size: 16px;
+                text-align: left;
+                margin-bottom: 12px;
+            }
+
+            /* TRANSFORM TABLE TO VERTICAL FORM STYLE */
+            #salesItemsTable {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            #salesItemsTable thead {
+                display: none;
+                /* Hide top row for mobile */
+            }
+
+            #salesItemsTable tr {
+                display: flex;
+                flex-direction: column;
+                border: 1px solid #ccc;
+                margin-bottom: 12px;
+                padding: 8px;
+                background: #eaf7f2;
+            }
+
+            #salesItemsTable td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+                padding: 6px 8px;
+                font-size: 13px;
+                border: none !important;
+                width: 100%;
+            }
+
+            /* Custom labels on left side for each td */
+            #salesItemsTable td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                width: 50%;
+                color: #165c42;
+            }
+
+            /* Inputs inside td */
+            #salesItemsTable input,
+            #salesItemsTable select {
+                width: 45%;
+                font-size: 12px;
+            }
+
+            /* Delete button smaller */
+            .delete-row i {
+                font-size: 14px;
+                color: #b30000;
+            }
+
+
+            #salesItemsTable select.representative,
+            #salesItemsTable select.project,
+            #salesItemsTable select.typo,
+            #salesItemsTable select.status {
+                background-position: right 6px center;
+                background-size: 12px;
+                padding-right: 25px;
+            }
+
+
+            /* Personal Information box */
+            .personal-info {
+                width: 50%;
+                padding: 9px;
+                font-size: 11px !important;
+                margin: 0 auto;
+            }
+
+            .info-heading {
+                font-size: 12px !important;
+                font-weight: 600;
+                white-space: nowrap;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                margin-bottom: 8px;
+            }
+
+            .approve-btn {
+                padding: 3px 8px;
+                font-size: 12px;
+            }
+
+            .reject-btn {
+                padding: 3px 8px;
+                font-size: 12px;
+            }
+
+
+
+            /* Hide table header */
+            .sales-approval-table thead {
+                display: none;
+            }
+
+            /* Each row becomes a mobile card */
+            .sales-approval-table tbody tr {
+                display: flex;
+                flex-direction: column;
+                background: #eaf7f2;
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin-bottom: 12px;
+                border-radius: 6px;
+            }
+
+            /* Each cell becomes its own row */
+            .sales-approval-table td {
+                display: flex;
+                justify-content: space-between;
+                padding: 6px 4px;
+                font-size: 13px;
+                border: none !important;
+                width: 100%;
+                font-weight: 600;
+            }
+
+            /* Auto-generate labels from column positions */
+            .sales-approval-table td:nth-child(1)::before {
+                content: "Approver Type";
+                font-weight: bold;
+                color: #165c42;
+                width: 45%;
+            }
+
+            .sales-approval-table td:nth-child(2)::before {
+                content: "Name";
+                font-weight: bold;
+                color: #165c42;
+                width: 45%;
+            }
+
+            .sales-approval-table td:nth-child(3)::before {
+                content: "Date";
+                font-weight: bold;
+                color: #165c42;
+                width: 45%;
+            }
+
+            .sales-approval-table td:nth-child(4)::before {
+                content: "Remarks";
+                font-weight: bold;
+                color: #165c42;
+                width: 45%;
+            }
+
+            /* Input box resizing */
+            .sales-approval-table input.sales-input {
+                width: 50%;
+                padding: 6px;
+                font-size: 12px;
+            }
+
+            /* Approval History block same width as sales form */
+            .approval-wrapper {
+                max-width: 360px;
+                width: 100%;
+                margin: 0 auto;
+                padding: 0 6px;
+            }
+
+            /* Title spacing */
+            #salesApprovalHistory .section-title {
+                margin-top: 20px !important;
+                font-size: 15px !important;
+            }
+
+            .sales-actions-top {
+                flex-direction: row;
+                align-items: flex-start;
+                font-size: 14px;
+            }
+
+            .view-files-btn {
+                width: 100px;
+                font-size: 9px;
+                padding: none;
+                font-weight: bold;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header">
+            <div class="header-left">
+                <a href="sales-list.html" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                    <div class="logo-box">WL</div>
+                    <div class="worklife-text">Worklife</div>
+                </a>
+            </div>
+
+            <div class="header-right">
+                <select>
+                    <option>East</option>
+                    <option>West</option>
+                    <option>North</option>
+                    <option>South</option>
+                </select>
+                <span>English</span>
+
+                <div class="profile">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userName" style="text-transform: capitalize;">Loading...</span>
+                </div>
+
+                <div class="logout" id="logoutBtn">
+                    <i class="fas fa-power-off"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- ⭐ MAIN CONTAINER (ADDED BACK – REQUIRED!) -->
+    <div class="main-container">
+
+        <!-- ⭐ LEFT PANEL (You forgot this earlier) -->
+        <div class="left-panel">
+            <button class="btn-hr" id="hrBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-user" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">HR</span>
+                </div>
+            </button>
+            <button class="btn-finance" id="financeBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-regular fa-folder" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">Finance</span>
+                </div>
+            </button>
+            <button class="btn-it" id="itBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-desktop" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">IT</span>
+                </div>
+            </button>
+            <button class="btn-pm" id="performanceBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-clock" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">Performance</span>
+                </div>
+            </button>
+            <button class="btn-reports" id="reportsBtn">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <i class="fa-solid fa-chart-bar" style="font-size: 24px;"></i>
+                    <span style="margin-top: 6px;">Reports</span>
+                </div>
+            </button>
+        </div>
+
+        <!-- ⭐ CENTER SALES FORM (TABLE BASED UI) -->
+        <div class="sales-form-section">
+            <h5><i class="fa-solid fa-pen-to-square"></i> Incentives Request Form</h5>
+
+            <table class="table table-bordered" id="salesItemsTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>*Applied Date</th>
+                        <th>*Date of Booking</th>
+                        <th>*Representative Name</th>
+                        <th>*Project</th>
+                        <th>*Typo</th>
+                        <th>*Status</th>
+                        <th>*Dimension (Sq-ft)</th>
+                        <th>*Individual / Sharing</th>
+                        <th>*Earned Incentive Amount</th>
+                        <th>*Total Incentive Payable</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+
+                <tbody id="salesItemsBody">
+
+                    <!-- Row 1 -->
+                    <tr data-row-id="${item.id}">
+                        <td data-label="*Applied Date"><input type="date" class="form-control applied_date"></td>
+                        <td data-label="*Date of Booking"><input type="date" class="form-control booking_date"></td>
+
+                        <td data-label="*Representative Name">
+                            <select class="form-control representative">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Project">
+                            <select class="form-control project">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Typo">
+                            <select class="form-control typo">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Status">
+                            <select class="form-control status">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Dimension (Sq-ft)"><input type="text" class="form-control dimension"
+                                placeholder="ex: 1500"></td>
+                        <td data-label="*Individual / Sharing">
+                            <select class="form-control incentive_type">
+                                <option value="">Select</option>
+                                <option value="individual">Individual</option>
+                                <option value="sharing">Sharing</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Earned Incentive Amount">
+                            <input type="text" class="form-control earned_incentive" placeholder="ex: 50,000">
+                        </td>
+
+                        <td data-label="*Total Incentive Payable">
+                            <input type="text" class="form-control total_incentive" placeholder="ex: 2,00,000">
+                        </td>
+
+                        <td data-label="Delete" class="text-center">
+                            <button class="btn btn-sm btn-danger delete-row">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Row 2 -->
+                    <tr data-row-id="${item.id}">
+                        <td data-label="*Applied Date"><input type="date" class="form-control applied_date"></td>
+                        <td data-label="*Date of Booking"><input type="date" class="form-control booking_date"></td>
+
+                        <td data-label="*Representative Name">
+                            <select class="form-control representative">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Project">
+                            <select class="form-control project">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Typo">
+                            <select class="form-control typo">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Status">
+                            <select class="form-control status">
+                                <option disabled selected>Select</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Dimension (Sq-ft)"><input type="text" class="form-control dimension"
+                                placeholder="ex: 1500"></td>
+                        <td data-label="*Individual / Sharing">
+                            <select class="form-control incentive_type">
+                                <option value="">Select</option>
+                                <option value="individual">Individual</option>
+                                <option value="sharing">Sharing</option>
+                            </select>
+                        </td>
+
+                        <td data-label="*Earned Incentive Amount">
+                            <input type="text" class="form-control earned_incentive" placeholder="ex: 50,000">
+                        </td>
+
+                        <td data-label="*Total Incentive Payable">
+                            <input type="text" class="form-control total_incentive" placeholder="ex: 2,00,000">
+                        </td>
+
+                        <td data-label="Delete" class="text-center">
+                            <button class="btn btn-sm btn-danger delete-row">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="sales-actions-top">
+                <p><a href="#" id="addSalesRow"><strong>+ Add Row</strong></a></p>
+
+                <button type="button" class="view-files-btn" id="downloadBtn">
+                    View / Download
+                </button>
+            </div>
+
+            <button id="approveBtn" class="btn btn-success btn-sm" id="approveBtn">
+                Approve
+            </button>
+
+            <button id="rejectBtn" class="btn btn-danger btn-sm" id="rejectBtn">
+                Reject
+            </button>
+
+            <p id="approvalMessage" style="display:none; font-weight:bold; margin-top:8px;"></p>
+
+
+
+            <!-- Approver History -->
+            <div id="salesApprovalHistory" class="approval-wrapper">
+                <h4 class="section-title">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Approval History
+                </h4>
+
+                <table class="sales-approval-table">
+                    <thead>
+                        <tr>
+                            <th>Approver Type</th>
+                            <th>Name</th>
+                            <th>Date</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>HR Approval</td>
+                            <td><input type="text" class="sales-input" placeholder="Enter name"></td>
+                            <td><input type="date" class="sales-input"></td>
+                            <td><input type="text" class="sales-input" placeholder="Remarks"></td>
+                        </tr>
+
+                        <tr>
+                            <td>Head of Sales</td>
+                            <td><input type="text" class="sales-input" placeholder="Enter name"></td>
+                            <td><input type="date" class="sales-input"></td>
+                            <td><input type="text" class="sales-input" placeholder="Remarks"></td>
+                        </tr>
+
+                        <tr>
+                            <td>Head of Finance</td>
+                            <td><input type="text" class="sales-input" placeholder="Enter name"></td>
+                            <td><input type="date" class="sales-input"></td>
+                            <td><input type="text" class="sales-input" placeholder="Remarks"></td>
+                        </tr>
+
+                        <tr>
+                            <td>Chairman</td>
+                            <td><input type="text" class="sales-input" placeholder="Enter name"></td>
+                            <td><input type="date" class="sales-input"></td>
+                            <td><input type="text" class="sales-input" placeholder="Remarks"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+
+        <!-- ⭐ RIGHT PANEL -->
+        <div class="personal-info">
+            <h6 class="info-heading">Personal Information:</h6>
+
+            <div class="info-block"><span class="label">Employee Id:</span>
+                <div id="info-employee-id">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Name:</span>
+                <div id="info-name">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Department:</span>
+                <div id="info-department">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Designation:</span>
+                <div id="info-designation">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Line Manager:</span>
+                <div id="info-line-manager">Loading...</div>
+            </div>
+            <div class="info-block"><span class="label">Joining Date:</span>
+                <div id="info-joining-date">Loading...</div>
+            </div>
+
+        </div>
+
+    </div> <!-- END MAIN CONTAINER -->
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <script>
+
+
+        // Load dropdown master data
+        function loadDropdownData(callback) {
+            fetch("/api/sales/dropdown-data")
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Dropdown Loaded:", data);
+                    window.dropdownData = data;
+                    callback(); // ✅ continue after loading
+                })
+                .catch(err => console.error("Dropdown Load Failed:", err));
+        }
+
+
+        // Fill dropdown and auto select existing value
+        function populateDropdown(selectorOrElement, list) {
+
+            let elements = [];
+
+            // Case 1: CSS selector string → convert to node list
+            if (typeof selectorOrElement === "string") {
+                elements = document.querySelectorAll(selectorOrElement);
+            }
+
+            // Case 2: Direct DOM element (like newRow.querySelector(".representative"))
+            else if (selectorOrElement instanceof HTMLElement) {
+                elements = [selectorOrElement];
+            }
+
+            // Safety check
+            else {
+                console.error("populateDropdown(): invalid selector", selectorOrElement);
+                return;
+            }
+
+            elements.forEach(select => {
+                const selectedId = select.dataset.selected;
+
+                // Reset dropdown
+                select.innerHTML = `<option value="">Select</option>`;
+
+                // Fill options
+                list.forEach(item => {
+                    const option = document.createElement("option");
+                    option.value = item.id;
+                    option.textContent = item.name;
+
+                    if (selectedId && item.id == selectedId) {
+                        option.selected = true;
+                    }
+
+                    select.appendChild(option);
+                });
+            });
+        }
+
+
+        // fetching employee data to approver table
+        document.addEventListener("DOMContentLoaded", () => {
+            loadDropdownData(function () {
+
+                // 1️⃣ Read reqNo from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const reqNo = urlParams.get("reqNo");
+
+                if (!reqNo) return;
+                currentSalesRequestId = reqNo;
+
+                // 2️⃣ Fetch all data for this request
+                fetch(`/api/sales/view/${reqNo}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("Sales Approver Data:", data);
+
+                        // SAVE ATTACHMENTS (array of file paths)
+                        window.saleAttachments = data.sale.attachments || [];
+                        console.log("Attachments:", window.saleAttachments);
+
+                        const sale = data.sale;
+                        const items = data.items;
+
+                        // 3️⃣ Fill RIGHT PANEL details
+                        document.getElementById("info-employee-id").textContent = sale.employee_id;
+                        document.getElementById("info-name").textContent = sale.requester_name;
+                        document.getElementById("info-department").textContent = sale.department;
+                        document.getElementById("info-designation").textContent = sale.designation;
+                        document.getElementById("info-line-manager").textContent = sale.line_manager;
+
+                        const joinDate = sale.joining_date
+                            ? new Date(sale.joining_date).toLocaleDateString("en-GB")
+                            : "-";
+                        document.getElementById("info-joining-date").textContent = joinDate;
+
+                        // 4️⃣ Fill table rows
+                        const tbody = document.getElementById("salesItemsBody");
+                        tbody.innerHTML = "";
+
+                        items.forEach(item => {
+                            const row = document.createElement("tr");
+                            row.dataset.itemId = item.id; // IMPORTANT
+
+                            row.innerHTML = `
+                        <td><input type="date" class="form-control applied_date" value="${item.applied_date?.split('T')[0] || ''}"></td>
+                        <td><input type="date" class="form-control booking_date" value="${item.date_of_booking?.split('T')[0] || ''}"></td>
+                        <td>
+                            <select class="form-control representative" data-selected="${item.representative_id}">
+                                <option>Select</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control project" data-selected="${item.project_id}">
+                                <option>Select</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control typo" data-selected="${item.typo_id}">
+                                <option>Select</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-control status" data-selected="${item.status_id}">
+                                <option>Select</option>
+                            </select>
+                        </td>
+                        <td><input type="text" class="form-control dimension" value="${item.dimension_sqft}"></td>
+                        
+                        <td>
+                            <select class="form-control incentive_type">
+                                <option value="">Select</option>
+                                <option value="individual" ${item.incentive_type === 'individual' ? 'selected' : ''}>Individual</option>
+                                <option value="sharing" ${item.incentive_type === 'sharing' ? 'selected' : ''}>Sharing</option>
+                                </select>
+                                </td>
+                                
+                                <td>
+                                    <input type="text" class="form-control earned_incentive" value="${item.earned_incentive || ''}">
+                                </td>
+                                
+                                <td>
+                                    <input type="text" class="form-control total_incentive" value="${item.total_incentive || ''}">
+                        </td>
+
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-danger delete-row">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                        `;
+
+                            tbody.appendChild(row);
+                        });
+
+
+                        // ✅ Fill dropdowns AFTER table is ready
+                        populateDropdown(".representative", window.dropdownData.representatives);
+                        populateDropdown(".project", window.dropdownData.projects);
+                        populateDropdown(".typo", window.dropdownData.typos);
+                        populateDropdown(".status", window.dropdownData.statuses);
+
+
+                        // ⭐⭐ disable approve or reject even after refresh ⭐⭐
+                        if (data.currentApproverStatus && data.currentApproverStatus.toLowerCase() !== "pending") {
+
+                            const approveBtn = document.getElementById("approveBtn");
+                            const rejectBtn = document.getElementById("rejectBtn");
+                            const approvalMessage = document.getElementById("approvalMessage");
+
+                            approveBtn.disabled = true;
+                            rejectBtn.disabled = true;
+
+
+                            approveBtn.style.opacity = "0.5";
+                            rejectBtn.style.opacity = "0.5";
+
+                            approvalMessage.style.display = "block";
+                            approvalMessage.style.color =
+                                data.currentApproverStatus.toLowerCase() === "approved" ? "green" : "red";
+
+                            approvalMessage.textContent =
+                                data.currentApproverStatus.toLowerCase() === "approved"
+                                    ? "You have already approved this request."
+                                    : "You have already rejected this request.";
+                        }
+
+
+                        // // 5️⃣ Hide Add Row / Delete (approver shouldn't add)
+                        // document.getElementById("addSalesRow").style.display = "none";
+                        // document.querySelectorAll(".delete-row").forEach(btn => btn.style.display = "none");
+
+                        if (data.approvalHistory && data.approvalHistory.length > 0) {
+
+                            const historyRows = document.querySelectorAll("#salesApprovalHistory tbody tr");
+
+                            data.approvalHistory.forEach(entry => {
+                                historyRows.forEach(row => {
+                                    const approverType = row.querySelector("td:nth-child(1)").innerText.trim();
+
+                                    if (approverType === entry.approver_type) {
+                                        row.querySelector("td:nth-child(2) input").value = entry.approver_name || "";
+                                        row.querySelector("td:nth-child(3) input").value =
+                                            entry.approval_date && entry.approval_date !== "0000-00-00"
+                                                ? entry.approval_date.split("T")[0]
+                                                : "";
+                                        row.querySelector("td:nth-child(4) input").value = entry.remarks || "";
+                                    }
+                                });
+                            });
+                        }
+                    })
+                    .catch(err => console.error("Fetch error:", err));
+            });
+        });
+
+
+        // view the file added by employee
+        function downloadIncentiveFiles() {
+            if (!window.saleAttachments || window.saleAttachments.length === 0) {
+                Swal.fire("No Attachments", "This request has no attached files.", "info");
+                return;
+            }
+
+            // If single file → open in new tab
+            if (window.saleAttachments.length === 1) {
+                window.open(window.saleAttachments[0], "_blank");
+                return;
+            }
+
+            // Multiple → download all
+            window.saleAttachments.forEach(file => {
+                const link = document.createElement("a");
+                link.href = file;
+                link.download = file.split("/").pop();
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            });
+        }
+
+
+        // Add Row 
+        document.getElementById("addSalesRow").addEventListener("click", function (e) {
+            e.preventDefault(); // stop page jump
+
+            const tbody = document.getElementById("salesItemsBody");
+
+            const newRow = document.createElement("tr");
+            newRow.setAttribute("data-item-id", "");
+
+            newRow.innerHTML = `
+            <td data-label="*Applied Date"><input type="date" class="form-control applied_date"></td>
+            <td data-label="*Date of Booking"><input type="date" class="form-control booking_date"></td>
+            
+            <td data-label="*Representative Name">
+                <select class="form-control representative">
+                    <option disabled selected>Select</option>
+                    </select>
+            </td>
+            <td data-label="*Project">
+                <select class="form-control project">
+                    <option disabled selected>Select</option>
+                </select>
+            </td>
+
+            <td data-label="*Typo">
+                <select class="form-control typo">
+                   <option disabled selected>Select</option>
+                </select>
+            </td>
+            
+            <td data-label="*Status">
+                <select class="form-control status">
+                    <option disabled selected>Select</option>
+                </select>
+            </td>
+
+            <td data-label="*Dimension (Sq-ft)">
+                <input type="text" class="form-control dimension" placeholder="ex: 1500">
+            </td>
+
+            <td data-label="*Individual / Sharing">
+                <select class="form-control incentive_type">
+                    <option value="">Select</option>
+                    <option value="individual">Individual</option>
+                    <option value="sharing">Sharing</option>
+                </select>
+            </td>
+            
+            <td data-label="*Earned Incentive Amount">
+                <input type="text" class="form-control earned_incentive">
+            </td>
+            
+            <td data-label="*Total Incentive Payable">
+                <input type="text" class="form-control total_incentive">
+            </td>
+
+            <td data-label="Delete" class="text-center">
+                <button class="btn btn-sm btn-danger delete-row">X</button>
+            </td>
+            `;
+
+            tbody.appendChild(newRow);
+
+            // ⭐ SOLVE YOUR PROBLEM HERE (LOAD OPTIONS FOR NEW ROW)
+            populateDropdown(newRow.querySelector(".representative"), window.dropdownData.representatives);
+            populateDropdown(newRow.querySelector(".project"), window.dropdownData.projects);
+            populateDropdown(newRow.querySelector(".typo"), window.dropdownData.typos);
+            populateDropdown(newRow.querySelector(".status"), window.dropdownData.statuses);
+        });
+
+
+
+
+        // delete row in frontend 
+        document.addEventListener("click", async (e) => {
+            if (e.target.closest(".delete-row")) {
+                const row = e.target.closest("tr");
+                const item_id = row.getAttribute("data-item-id");
+
+                if (!item_id) {
+                    row.remove();
+                    return;
+                }
+
+                const res = await fetch(`/api/sales/delete-item/${item_id}`, {
+                    method: "DELETE"
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    row.remove();
+                } else {
+                    alert("Delete failed");
+                }
+            }
+        });
+
+
+        let currentSalesRequestId = null;
+
+        // Call this when opening sales request modal/page
+        function viewSales(reqNo) {
+            currentSalesRequestId = reqNo;
+        }
+
+        // APPROVE / REJECT HANDLER
+        function updateSalesStatus(newStatus) {
+
+            if (!currentSalesRequestId) {
+                alert("No request selected!");
+                return;
+            }
+
+
+            // ⭐ Collect updated sales items
+            let updatedItems = [];
+            document.querySelectorAll("#salesItemsBody tr").forEach(row => {
+                updatedItems.push({
+                    id: row.dataset.itemId || "",
+                    applied_date: row.querySelector(".applied_date").value,
+                    date_of_booking: row.querySelector(".booking_date").value,
+                    representative_id: row.querySelector(".representative").value,
+                    project_id: row.querySelector(".project").value,
+                    typo_id: row.querySelector(".typo").value,
+                    status_id: row.querySelector(".status").value,
+                    dimension_sqft: row.querySelector(".dimension").value,
+                    incentive_type: row.querySelector(".incentive_type").value,
+                    earned_incentive: row.querySelector(".earned_incentive").value,
+                    total_incentive: row.querySelector(".total_incentive").value
+                });
+            });
+
+            // ⭐ Collect Approval History
+            let approvalHistory = [];
+            document.querySelectorAll("#salesApprovalHistory tbody tr").forEach(row => {
+                const cells = row.querySelectorAll("td");
+
+                approvalHistory.push({
+                    approver_type: cells[0].innerText.trim(),
+                    approver_name: cells[1].querySelector("input").value,
+                    approval_date: cells[2].querySelector("input").value,
+                    remarks: cells[3].querySelector("input").value
+                });
+            });
+
+            const handleFetch = (comments = "") => {
+
+                const approveBtn = document.getElementById("approveBtn");
+                const rejectBtn = document.getElementById("rejectBtn");
+                const approvalMessage = document.getElementById("approvalMessage");
+
+                // Disable buttons instantly
+                approveBtn.disabled = true;
+                rejectBtn.disabled = true;
+
+                approvalMessage.style.display = "block";
+                approvalMessage.style.color = newStatus === "approved" ? "green" : "red";
+                approvalMessage.textContent =
+                    newStatus === "approved"
+                        ? "You have approved this request."
+                        : "You have rejected this request.";
+
+                fetch(`/api/sales/update-approval`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include",
+                    body: JSON.stringify({
+                        req_no: currentSalesRequestId,
+                        status: newStatus,
+                        comments: comments,
+                        approver_id: sessionStorage.getItem("user_id"), // must exist after session-check
+                        updatedItems: updatedItems,
+                        approvalHistory: approvalHistory
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        Swal.fire(
+                            newStatus === "approved" ? "Approved!" : "Rejected!",
+                            data.message,
+                            "success"
+                        );
+
+                        // loadSalesRequests();   // reload table if exists
+                        viewSales(currentSalesRequestId); // refresh details
+                    })
+                    .catch(err => {
+                        console.error("Approval error:", err);
+                        Swal.fire("Error", "Something went wrong", "error");
+                        approveBtn.disabled = false;
+                        rejectBtn.disabled = false;
+                    });
+            };
+
+            // REJECTION PROMPT
+            if (newStatus === "rejected") {
+                Swal.fire({
+                    title: "Reason for rejection",
+                    input: "text",
+                    inputPlaceholder: "Enter reason here...",
+                    inputValidator: value => {
+                        if (!value) return "Reason is required!";
+                    },
+                    showCancelButton: true
+                }).then(result => {
+                    if (result.isConfirmed) handleFetch(result.value);
+                });
+            }
+
+            // APPROVAL CONFIRMATION
+            else {
+                Swal.fire({
+                    title: "Approve Sales Request?",
+                    text: "This action cannot be reverted",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Approve"
+                }).then(result => {
+                    if (result.isConfirmed) handleFetch();
+                });
+            }
+        }
+
+
+
+
+        // onclick
+        document.addEventListener("DOMContentLoaded", () => {
+
+            console.log("Buttons working ✅");
+
+            // ==========================
+            // LEFT PANEL NAVIGATION
+            // ==========================
+            document.getElementById("hrBtn")?.addEventListener("click", () => {
+                location.href = "humanresource.html?section=hr-logo";
+            });
+
+            document.getElementById("financeBtn")?.addEventListener("click", () => {
+                location.href = "humanresource.html?section=finance-logo";
+            });
+
+            document.getElementById("itBtn")?.addEventListener("click", () => {
+                location.href = "humanresource.html?section=it-logo";
+            });
+
+            document.getElementById("performanceBtn")?.addEventListener("click", () => {
+                location.href = "humanresource.html?section=performance-logo";
+            });
+
+            document.getElementById("reportsBtn")?.addEventListener("click", () => {
+                location.href = "humanresource.html?section=reports-logo";
+            });
+
+            // ==========================
+            // DOWNLOAD
+            // ==========================
+            document.getElementById("downloadBtn")?.addEventListener("click", downloadIncentiveFiles);
+
+            // ==========================
+            // APPROVE / REJECT
+            // ==========================
+            document.getElementById("approveBtn")?.addEventListener("click", () => {
+                updateSalesStatus("approved");
+            });
+
+            document.getElementById("rejectBtn")?.addEventListener("click", () => {
+                updateSalesStatus("rejected");
+            });
+
+            document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+
+        });
+
+    </script>
+
+
+    <script>
+        // 🔐 SESSION CHECK
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("/api/auth/session-check", {
+                credentials: "include"
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.loggedIn) {
+                        //  Set the user name on your dashboard
+                        document.getElementById("userName").textContent = data.user.name;
+                        sessionStorage.setItem("user_id", data.user.user_id);
+
+                        loadPerformancePersonalInfo();
+
+                    } else {
+                        //  Not logged in → redirect
+                        window.location.href = "index.html";
+                    }
+                });
+        });
+
+
+
+        // 📌 LOAD PERSONAL INFORMATION 
+        async function loadPerformancePersonalInfo() {
+            try {
+                const r = await fetch("/api/section/personalinfo", { credentials: "include" });
+                const data = await r.json();
+                if (!data.success) return;
+
+                document.getElementById("info-employee-id").textContent = data.employee_id;
+                document.getElementById("info-name").textContent = data.name;
+                document.getElementById("info-department").textContent = data.department;
+                document.getElementById("info-designation").textContent = data.designation;
+                document.getElementById("info-line-manager").textContent = data.line_manager;
+                document.getElementById("info-joining-date").textContent = data.joining_date;
+            } catch (err) {
+                console.error("Personal info fetch error:", err);
+            }
+        }
+
+
+
+
+        //  Logout 
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You’ll be logged out of Worklife Dashboard.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html";
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
+
+
+
+
+    </script>
+
+</body>
+
+</html>
