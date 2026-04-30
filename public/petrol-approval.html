@@ -1120,7 +1120,7 @@
 
             </script>
             <script>
-                fetch("https://worklife.globesproperties.in/api/auth/session-check", {
+                fetch("/api/auth/session-check", {
                     credentials: "include"
                 })
                     .then(res => res.json())
@@ -1131,6 +1131,14 @@
                         } else {
                             document.getElementById("userName").textContent = data.user.name;
                             sessionStorage.setItem("user_id", data.user.user_id);
+
+                            // ✅ ADD THIS PART
+                            if (data.user.roleId === 4) {   // 4 = Employee
+                                const panel = document.querySelector(".left-panel");
+                                if (panel) {
+                                    panel.style.display = "none";
+                                }
+                            }
                         }
                     })
                     .catch(error => {
@@ -1139,7 +1147,7 @@
                     });
 
 
-                    
+
                 // logout
                 function logoutUser() {
                     Swal.fire({

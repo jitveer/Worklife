@@ -694,6 +694,15 @@
           console.log("ROLE:", userRole);
 
 
+          // ✅ ADD THIS BLOCK HERE
+          if (userRole === 4) { // Employee
+            const panel = document.querySelector(".left-panel"); // or use getElementById("sidePanel") if that's your HTML
+            if (panel) {
+              panel.style.display = "none";
+            }
+          }
+
+
           if (type === "myrequest") {
             loadRequests("myrequest", data.user.email);
           } else if (type === "pending") {

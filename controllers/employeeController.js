@@ -13,7 +13,7 @@ exports.addEmployee = (req, res) => {
   const data = req.body;
   delete data.database;
 
-  console.log("Incoming data:", data);
+  // console.log("Incoming data:", data);
 
   // Get last employee_id
   const getLastIdSql = `
@@ -35,7 +35,7 @@ exports.addEmployee = (req, res) => {
     }
 
     const newEmployeeId = generateNewEmployeeId(lastNumber);
-    console.log("Generated employee_id:", newEmployeeId);
+    // console.log("Generated employee_id:", newEmployeeId);
 
     const sql = `
       INSERT INTO employees (
@@ -88,8 +88,8 @@ exports.addEmployee = (req, res) => {
       data.islogged_in
     ];
 
-    console.log("Values length:", values.length);
-    console.log("Values:", values);
+    // console.log("Values length:", values.length);
+    // console.log("Values:", values);
 
     db.query(sql, values, (err, result) => {
       if (err) {
@@ -153,13 +153,13 @@ exports.getEmployeeById = (req, res) => {
 
 //company
 exports.getAllCompanies = (req, res) => {
-  console.log("getAllCompanies route hit");
+  // console.log("getAllCompanies route hit");
   db.query("SELECT id, company_name FROM company_name", (err, results) => {
     if (err) {
       console.error("Company fetch error:", err);
       return res.status(500).json({ error: "Database error" });
     }
-    console.log("Company query results:", results);
+    // console.log("Company query results:", results);
     res.json(results);
   });
 };
@@ -167,20 +167,20 @@ exports.getAllCompanies = (req, res) => {
 
 //Role
 exports.getAllRoles = (req, res) => {
-  console.log("getAllRoles route hit");
+  // console.log("getAllRoles route hit");
   db.query("SELECT id, role FROM user_role", (err, results) => {
     if (err) {
       console.error("Role fetch error:", err);
       return res.status(500).json({ error: "Database error" });
     }
-    console.log("Role query results:", results);
+    // console.log("Role query results:", results);
     res.json(results);
   });
 };
 
 // line manager
 exports.getAllLineManagers = (req, res) => {
-  console.log("getAllLineManagers route hit");
+  // console.log("getAllLineManagers route hit");
 
   const sql = `SELECT id, name FROM line_managers`;
 
@@ -190,7 +190,7 @@ exports.getAllLineManagers = (req, res) => {
       return res.status(500).json({ error: "Database error" });
     }
 
-    console.log("Line managers query results:", results);
+    // console.log("Line managers query results:", results);
 
     res.json(results);
   });
@@ -198,7 +198,7 @@ exports.getAllLineManagers = (req, res) => {
 
 //department
 exports.getAllDepartment = (req, res) => {
-  console.log(" getAllDepartment route hit");
+  // console.log(" getAllDepartment route hit");
 
   db.query("SELECT * FROM department", (err, results) => {
     if (err) {
@@ -206,7 +206,7 @@ exports.getAllDepartment = (req, res) => {
       return res.status(500).json({ error: "Database error" });
     }
 
-    console.log(" Department query results:", results);
+    // console.log(" Department query results:", results);
 
     // Always return valid JSON array
     res.json(results);

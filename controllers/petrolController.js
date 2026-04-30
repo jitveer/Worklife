@@ -79,6 +79,12 @@ exports.getPersonalInfo = (req, res) => {
 // 2. Create a new petrol conveyance
 exports.createPetrolClaim = (req, res) => {
   const { req_no, remarks, items } = req.body;
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).send({ error: "Items required" });
+  }
+
+
   const empCode = req.session.user.employee_id;
 
   const getRequesterIdSql = `SELECT id FROM employees WHERE employee_id = ?`;
@@ -104,10 +110,19 @@ exports.createPetrolClaim = (req, res) => {
         VALUES ?
       `;
       const itemValues = items.map(item => [
-        petrol_claim_id, item.date, item.start_km, item.end_km, item.total_km_travelled, item.location
+        petrol_claim_id,
+        item.date,
+        Number(item.start_km),
+        Number(item.end_km),
+        Number(item.total_km_travelled),
+        item.location || ""
       ]);
+
       db.query(itemSql, [itemValues], (err2) => {
-        if (err2) return res.status(500).send({ error: err2.message });
+        if (err2) {
+          console.error("🔥 PETROL ITEM ERROR:", err2);
+          return res.status(500).send({ error: err2.message });
+        }
 
         // 3️⃣ Get approvers from petrol_matrix
         const matrixSql = `

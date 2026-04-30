@@ -654,13 +654,13 @@ exports.getMyExpenseRequests = (req, res) => {
       ec.req_no,
       ec.total_expense AS amount,
       CONCAT(emp.first_name, ' ', emp.last_name) AS requester_name,
-      (
-        SELECT ea.status 
-        FROM expense_approvals ea 
-        WHERE ea.req_no = ec.req_no 
-        ORDER BY ea.level DESC, ea.id DESC 
-        LIMIT 1
-      ) AS status
+    COALESCE((
+      SELECT ea.status 
+      FROM expense_approvals ea 
+      WHERE ea.req_no = ec.req_no 
+      ORDER BY ea.level DESC, ea.id DESC 
+      LIMIT 1
+    ), 'Pending') AS status
     FROM 
       expense_claim ec
     JOIN 

@@ -281,6 +281,7 @@
         let selectedStartDate = "";
         let selectedEndDate = "";
 
+        
         // ✅ FIXED
         openBtn.addEventListener("click", () => {
             modal.classList.remove("hidden");
@@ -328,7 +329,7 @@
         // attendance
         async function loadAttendance(startDate = "", endDate = "") {
             try {
-                let url = "https://worklife.globesproperties.in/attendance/attendance";
+                let url = "/attendance/attendance";
 
                 // ✅ Add filter params
                 if (startDate && endDate) {
@@ -456,9 +457,9 @@
             }).then((result) => {
 
                 if (result.isConfirmed) {
-                    window.open(`https://worklife.globesproperties.in/attendance/download?start=${selectedStartDate}&end=${selectedEndDate}&type=pdf`);
+                    window.open(`/attendance/download?start=${selectedStartDate}&end=${selectedEndDate}&type=pdf`);
                 } else {
-                    window.open(`https://worklife.globesproperties.in/attendance/download?start=${selectedStartDate}&end=${selectedEndDate}&type=excel`);
+                    window.open(`/attendance/download?start=${selectedStartDate}&end=${selectedEndDate}&type=excel`);
                 }
 
             });

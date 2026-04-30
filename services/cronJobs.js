@@ -5,7 +5,7 @@ const db = require("../db"); // your MySQL connection
 function sendStageNotifications() {
     const now = new Date();
     const nowHM = now.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
-    const today = now.toISOString().slice(0, 10); // YYYY-MM-DD
+    const todayLocal = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
 
     const sql = `
         SELECT a.id AS appraisalId, a.employee_id, e.email,
@@ -18,20 +18,31 @@ function sendStageNotifications() {
            OR (DATE(a.full_year_due) = ? AND a.full_notified = 0)
     `;
 
-    db.query(sql, [today, today, today], (err, rows) => {
+    db.query(sql, [todayLocal, todayLocal, todayLocal], (err, rows) => {
         if (err) return console.error("DB error in cron:", err);
 
         rows.forEach((r) => {
             let stage = null;
 
             // Compare date & time (minute precision)
-            const startHM = r.start_date.toISOString().slice(0, 16);
-            const midHM = r.mid_year_due.toISOString().slice(0, 16);
-            const fullHM = r.full_year_due.toISOString().slice(0, 16);
+            const startDate = new Date(r.start_date).toLocaleDateString('en-CA');
+            const midDate = new Date(r.mid_year_due).toLocaleDateString('en-CA');
+            const fullDate = new Date(r.full_year_due).toLocaleDateString('en-CA');
 
-            if (nowHM === startHM && r.start_notified === 0) stage = "start_stage";
-            else if (nowHM === midHM && r.mid_notified === 0) stage = "mid_stage";
-            else if (nowHM === fullHM && r.full_notified === 0) stage = "full_stage";
+            // console.log("TODAY:", todayLocal);
+            // console.log("START:", startDate);
+            // console.log("MID:", midDate);
+            // console.log("FULL:", fullDate);
+
+            if (startDate === todayLocal && r.start_notified === 0) {
+                stage = "start_stage";
+            }
+            else if (midDate === todayLocal && r.mid_notified === 0) {
+                stage = "mid_stage";
+            }
+            else if (fullDate === todayLocal && r.full_notified === 0) {
+                stage = "full_stage";
+            }
 
             if (!stage) return;
 
@@ -71,13 +82,16 @@ function sendStageNotifications() {
 // Schedule the cron job
 function startCronJobs() {
     // For testing: every 5 minutes
-    cron.schedule("* * * * *", () => {
+    // cron.schedule("* * * * *", () => {
+    //     console.log("🔹 Running appraisal stage notifications cron...");
+    //     sendStageNotifications();
+    // });
+
+    // Production: every day at 9 AM
+    cron.schedule("0 9 * * *", () => {
         console.log("🔹 Running appraisal stage notifications cron...");
         sendStageNotifications();
     });
-
-    // Production: every day at 9 AM
-    // cron.schedule("0 9 * * *", sendStageNotifications);
 }
 
 module.exports = { startCronJobs };

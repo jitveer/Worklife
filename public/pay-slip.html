@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Pay SLip</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* ===== GLOBAL ===== */
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #eef7f2, #f9fffb);
+        }
+
+        /* ===== HEADER ===== */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, #2f8f6b, #4db68c);
+            padding: 10px 20px;
+            color: white;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            background: white;
+            color: #333;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            color: white;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* ===== LAYOUT ===== */
+        .wrapper {
+            display: flex;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 100px;
+            padding: 25px;
+            gap: 0px;
+        }
+
+        /* HOVER EFFECT */
+        .nav-tile:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .nav-tile {
+            height: 90px;
+            border-radius: 0px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .nav-tile i {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .nav-hr {
+            background: #8e7cc3;
+        }
+
+        .nav-fin {
+            background: #d48a61;
+        }
+
+        .nav-it {
+            background: #7a3f3f;
+        }
+
+        .nav-perf {
+            background: #1a9b75;
+        }
+
+        .nav-rep {
+            background: #7bbf3b;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-area {
+            flex: 1;
+            background: white;
+            margin: 15px;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            color: #2f8f6b;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* ===== FILTER BAR ===== */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .filter-group button {
+            padding: 6px 14px;
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 6px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .filter-group button:hover {
+            background: #2f8f6b;
+            color: white;
+        }
+
+        /* RIGHT TOOLS */
+        .tools {
+            display: flex;
+            gap: 10px;
+        }
+
+        .date-chip {
+            background: #1d3f91;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-style: times new roman;
+            font-size: 15px;
+        }
+
+        .report-btn {
+            border: 1px solid #1d3f91;
+            color: #1d3f91;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .search-field {
+            position: relative;
+        }
+
+        .search-field input {
+            padding: 6px 30px 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .search-field i {
+            position: absolute;
+            right: 8px;
+            top: 7px;
+            color: gray;
+        }
+
+        /* ===== TABLE ===== */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #2f8f6b;
+            color: white;
+            padding: 10px;
+        }
+
+        .data-table td {
+            padding: 12px;
+            background: #ffffff;
+            border-top: 1px solid #e8f5ef;
+            border-bottom: 1px solid #e8f5ef;
+            text-align: center;
+        }
+
+        .data-table tr:hover {
+            background: #f0f9f5;
+        }
+
+        .data-table tr:hover td {
+            background: #f0faf6;
+        }
+
+
+        td {
+            border-right: 2px solid #3a9d79;
+            /* ✅ green divider */
+        }
+
+        th {
+            border-right: 2px solid #ffffff;
+        }
+
+        /* STATUS TAG */
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .tag.ok {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .tag.bad {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .tag.wait {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* ACTION */
+        .pay-btn {
+            background: #1d3f91;
+            /* navy blue */
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        /* hover effect */
+        .pay-btn:hover {
+            background: #16357a;
+            transform: translateY(-1px);
+        }
+
+        /* click effect */
+        .pay-btn:active {
+            transform: scale(0.96);
+        }
+
+
+        /* popup */
+        .modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .payslip-modal-content {
+            background: #fff;
+            width: 900px;
+            max-width: 95vw;
+            margin: auto;
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow-y: auto;
+            max-height: 95vh;
+        }
+
+        .payslip-inner {
+            padding: 30px;
+        }
+
+        .payslip-print-area {
+            border: 2px solid #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #000;
+        }
+
+        .ps-header {
+            background: #fae5e3;
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding: 15px 10px;
+            position: relative;
+        }
+
+        .ps-logo {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+
+        .ps-company {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .ps-address {
+            background: #fae5e3;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 6px;
+            border-bottom: 2px solid #000;
+        }
+
+        .ps-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ps-table th,
+        .ps-table td {
+            border: 1px solid #000;
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+
+        .ps-table input {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .ps-table input:focus {
+            background: #f0f8ff;
+        }
+
+        .ps-actions {
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px 30px;
+            background: #f9f9f9;
+            border-top: 1px solid #ddd;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .ps-send-btn {
+            background: #1d3f91;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .ps-send-btn:hover {
+            background: #16357a;
+        }
+
+        .ps-close {
+            position: absolute;
+            top: 2px;
+            right: 3px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #d31010;
+            z-index: 10;
+            transition: color 0.2s;
+        }
+
+        .ps-close:hover {
+            color: #000;
+        }
+
+
+
+
+        /* ===== BANK MODAL ===== */
+        .bank-modal-bg {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .bank-modal-box {
+            width: 420px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.25s ease;
+        }
+
+        /* close */
+        .bank-close {
+            position: absolute;
+            right: 15px;
+            top: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            color: #df4c4c;
+        }
+
+        .bank-close:hover {
+            color: #000;
+        }
+
+        /* title */
+        .bank-title {
+            margin-bottom: 20px;
+            color: #1d3f91;
+            font-size: 20px;
+        }
+
+        /* form grid */
+        .bank-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: #444;
+        }
+
+        .form-group input {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #1d3f91;
+        }
+
+        /* full width row */
+        .form-group:nth-child(3),
+        .form-group:nth-child(4) {
+            grid-column: span 2;
+        }
+
+        /* button */
+        .bank-actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .bank-save-btn {
+            background: #1d3f91;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .bank-save-btn:hover {
+            background: #16357a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="topbar">
+        <div class="brand-box">
+            <div class="brand-logo">WL</div>
+            <strong>Worklife</strong>
+        </div>
+
+        <div class="user-section">
+            <select>
+                <option>East</option>
+                <option>West</option>
+                <option>North</option>
+                <option>South</option>
+            </select>
+            <span>English</span>
+            <span><i class="fa fa-user"></i> Loading...</span>
+            <!-- Logout Button -->
+            <div class="logout" id="logoutBtn"><i class="fas fa-power-off"></i></div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="nav-tile nav-hr" id="hrBtn">
+                <i class="fa fa-user"></i>HR
+            </div>
+
+            <div class="nav-tile nav-fin" id="financeBtn">
+                <i class="fa fa-folder"></i>Finance
+            </div>
+
+            <div class="nav-tile nav-it" id="itBtn">
+                <i class="fa fa-desktop"></i>IT
+            </div>
+
+            <div class="nav-tile nav-perf" id="performanceBtn">
+                <i class="fa fa-clock"></i>Perf
+            </div>
+
+            <div class="nav-tile nav-rep" id="reportsBtn">
+                <i class="fa fa-chart-bar"></i>Reports
+            </div>
+        </div>
+
+
+
+        <!-- MAIN -->
+        <div class="main-area">
+
+            <div class="page-title">Employee Pay Slip</div>
+
+            <!-- TOOLBAR -->
+            <div class="toolbar">
+                <div class="filter-group">
+                    <!-- <button>All</button>
+                    <button>Approved</button>
+                    <button>Pending</button>
+                    <button>Rejected</button> -->
+                </div>
+
+                <div class="tools">
+                    <div class="date-chip" id="bankBtn">Add Bank Details</div>
+                    <button class="report-btn">Generate</button>
+
+                    <div class="search-field">
+                        <input type="text" placeholder="Search...">
+                        <i class="fa fa-search"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Sl.no</th>
+                        <th>Date</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>29-4-2026</td>
+                        <td>brundha</td>
+                        <td>mnmbrundhas@gmail.com</span></td>
+                        <td><button class="pay-btn">Send Pay Slip</button></td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>30-03-2026</td>
+                        <td>Sanjana</td>
+                        <td>sanjana@gmail.com</span></td>
+                        <td><button class="pay-btn">Send Pay Slip</button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+    <!-- pay slip pop up -->
+    <div id="paySlipModal" class="modal-bg">
+        <div class="payslip-modal-content">
+            <span class="ps-close">✖</span>
+
+            <div class="payslip-inner">
+                <div class="payslip-print-area">
+
+                    <!-- HEADER -->
+                    <div class="ps-header">
+                        <div class="ps-logo">
+                            <img src="./images/mnm-logo.png" alt="MNM Logo"
+                                style="width:95%; height:95%; border-radius:50%; object-fit:contain; border:2px solid #d4af37; background:white;">
+                        </div>
+                        <h2 class="ps-company">MNM ENTERPRISES</h2>
+                    </div>
+
+                    <div class="ps-address">
+                        NO. 402, 6TH 'A' MAIN, 4TH 'D' CROSS, 2ND BLOCK, HRBR LAYOUT KALYAN NAGAR,<br>
+                        BANASWADI, BANGALORE - 560043
+                    </div>
+
+                    <!-- Basic Details -->
+                    <table class="ps-table" style="border-top: none; border-bottom: none;">
+                        <tbody>
+                            <tr>
+                                <td colspan="3" style="text-align: center; font-weight: bold; font-size: 15px;">Salary
+                                    Slip</td>
+                                <td style="font-weight: bold; text-align: center; width: 12%;">Month</td>
+                                <td style="width: 12%;"><input type="text" value="Sep-25" style="text-align: center;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 22%; font-weight: bold;">Employee Name</td>
+                                <td style="width: 28%;"><input type="text" value="Brundha S"></td>
+                                <td style="width: 26%; font-weight: bold;">Date of Joining</td>
+                                <td colspan="2"><input type="text" value="02.09.2025"></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Employee Code</td>
+                                <td><input type="text"></td>
+                                <td style="font-weight: bold;">Total Working Days</td>
+                                <td colspan="2"><input type="number" value="30"></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Designation</td>
+                                <td><input type="text" value="Back End Developer"></td>
+                                <td style="font-weight: bold;">Number of Working Days Attended</td>
+                                <td colspan="2"><input type="number" value="30"></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">PAN</td>
+                                <td><input type="text"></td>
+                                <td style="font-weight: bold; text-align: center;">Leaves</td>
+                                <td style="font-weight: bold; text-align: center;">LOP</td>
+                                <td style="font-weight: bold; text-align: center;">SL</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Bank Account Number</td>
+                                <td><input type="text"></td>
+                                <td style="font-weight: bold;">Leaves Taken</td>
+                                <td style="text-align: center;"><input type="text" value="-"></td>
+                                <td style="text-align: center;"><input type="text" value="-"></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Bank Name</td>
+                                <td><input type="text"></td>
+                                <td style="font-weight: bold;">Balance Leaves</td>
+                                <td style="text-align: center;"><input type="text"></td>
+                                <td style="text-align: center;"><input type="text"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Income & Deductions -->
+                    <table class="ps-table" style="border-top: none; border-bottom: none;">
+                        <thead>
+                            <tr>
+                                <th colspan="2"
+                                    style="width: 50%; background: #fae5e3; text-align: center; font-weight: bold;">
+                                    Income</th>
+                                <th colspan="2"
+                                    style="width: 50%; background: #fae5e3; text-align: center; font-weight: bold;">
+                                    Deductions</th>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; width: 30%;">Particulars</td>
+                                <td style="font-weight: bold; width: 20%; text-align: center;">Amount</td>
+                                <td style="font-weight: bold; width: 30%;">Particulars</td>
+                                <td style="font-weight: bold; width: 20%; text-align: center;">Amount</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Gross Salary (CTC)</td>
+                                <td><input type="text"></td>
+                                <td>PF</td>
+                                <td><input type="text"></td>
+                            </tr>
+                            <tr>
+                                <td>Basic Salary (DA)</td>
+                                <td><input type="text"></td>
+                                <td>Professional Tax</td>
+                                <td><input type="text" value="-"></td>
+                            </tr>
+                            <tr>
+                                <td>HRA</td>
+                                <td><input type="text"></td>
+                                <td>TDS</td>
+                                <td><input type="text"></td>
+                            </tr>
+                            <tr>
+                                <td>Conveyance</td>
+                                <td><input type="text"></td>
+                                <td>LOP</td>
+                                <td><input type="text" value="-"></td>
+                            </tr>
+                            <tr>
+                                <td>Medical Allowance</td>
+                                <td><input type="text"></td>
+                                <td>Salary Advance</td>
+                                <td><input type="text"></td>
+                            </tr>
+                            <tr>
+                                <td>Special Allowance</td>
+                                <td><input type="text" value="-"></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Others</td>
+                                <td><input type="text"></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold;">Total</td>
+                                <td><input type="text"></td>
+                                <td style="font-weight: bold;">Total</td>
+                                <td><input type="text" value="-"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Net Salary -->
+                    <table class="ps-table" style="border-top: none;">
+                        <tr>
+                            <td style="background: #fae5e3; text-align: center; font-weight: bold; padding: 6px;">Net
+                                Salary</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-weight: bold; padding: 15px;">
+                                Net Salary for the Month (Total Earnings- Total Deductions) = Rs <input type="text"
+                                    style="width: 100px; border-bottom: 1px dashed #000; font-weight: bold; text-align: center; display: inline-block;"
+                                    value=""> /- (Rupees <input type="text"
+                                    style="width: 250px; border-bottom: 1px dashed #000; font-weight: bold; text-align: center; display: inline-block;"
+                                    value="Fifteen thousand only">)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-style: italic; font-size: 12px; padding: 6px;">
+                                **This is system generated payslip and does not require authentication**
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="ps-actions">
+                <button class="ps-send-btn">Send <i class="fa fa-paper-plane" style="margin-left: 5px;"></i></button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Bank Details -->
+    <div id="bankModal" class="bank-modal-bg">
+        <div class="bank-modal-box">
+
+            <!-- CLOSE BUTTON -->
+            <span class="bank-close">✖</span>
+
+            <h2 class="bank-title">Employee Bank Details</h2>
+
+            <div class="bank-form">
+
+                <div class="form-group">
+                    <label>Employee ID</label>
+                    <input type="text">
+                </div>
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text">
+                </div>
+
+                <div class="form-group">
+                    <label>Bank Name</label>
+                    <input type="text">
+                </div>
+
+                <div class="form-group">
+                    <label>Account Number</label>
+                    <input type="text">
+                </div>
+
+            </div>
+
+            <div class="bank-actions">
+                <button class="bank-save-btn">Save</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ===== ELEMENTS =====
+        const slipModal = document.getElementById("paySlipModal");
+        const bankModal = document.getElementById("bankModal");
+
+        const payButtons = document.querySelectorAll(".pay-btn");
+        const bankBtn = document.getElementById("bankBtn");
+
+        const slipClose = document.querySelector(".ps-close");
+        const bankClose = document.querySelector(".bank-close");
+
+        // ===== OPEN =====
+        function openSlipForm() {
+            slipModal.style.display = "flex";
+        }
+
+        function openBankModal() {
+            bankModal.style.display = "flex";
+        }
+
+        // ===== CLOSE =====
+        function closeSlipForm() {
+            slipModal.style.display = "none";
+        }
+
+        function closeBankModal() {
+            bankModal.style.display = "none";
+        }
+
+        // ===== EVENTS =====
+
+        // open payslip
+        payButtons.forEach(btn => {
+            btn.addEventListener("click", openSlipForm);
+        });
+
+        // open bank modal
+        bankBtn.addEventListener("click", openBankModal);
+
+        // close buttons
+        slipClose.addEventListener("click", closeSlipForm);
+        bankClose.addEventListener("click", closeBankModal);
+
+        // outside click (single handler for both)
+        window.addEventListener("click", function (e) {
+            if (e.target === slipModal) closeSlipForm();
+            if (e.target === bankModal) closeBankModal();
+        });
+
+
+
+        // ==========================
+        // LEFT PANEL NAVIGATION
+        // ==========================
+        document.getElementById("hrBtn")?.addEventListener("click", () => {
+            window.location.href = "humanresource.html?section=hr-logo";
+        });
+
+        document.getElementById("financeBtn")?.addEventListener("click", () => {
+            window.location.href = "humanresource.html?section=finance-logo";
+        });
+
+        document.getElementById("itBtn")?.addEventListener("click", () => {
+            window.location.href = "humanresource.html?section=it-logo";
+        });
+
+        document.getElementById("performanceBtn")?.addEventListener("click", () => {
+            window.location.href = "humanresource.html?section=performance-logo";
+        });
+
+        document.getElementById("reportsBtn")?.addEventListener("click", () => {
+            window.location.href = "humanresource.html?section=reports-logo";
+        });
+
+        document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+
+
+
+        // logout
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out from your session.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Call logout API
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html"; // Redirect to login
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+
+</html>

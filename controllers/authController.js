@@ -127,7 +127,7 @@ exports.createUser = async (req, res) => {
         return res.status(500).send("Error creating user");
       }
 
-      console.log(" User created and linked to employeeId:", employeeId);
+      //console.log(" User created and linked to employeeId:", employeeId);
 
       res.send("User created successfully!");
     });
@@ -179,7 +179,7 @@ exports.sendUserPasscode = async (req, res) => {
                 return res.status(500).send("Email sending failed");
               }
 
-              console.log(`4-digit passcode sent to ${email}: ${plainPassword}`);
+              //console.log(`4-digit passcode sent to ${email}: ${plainPassword}`);
               res.json({ success: true, message: "Passcode sent to email" });
             });
           });

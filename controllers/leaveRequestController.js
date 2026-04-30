@@ -166,7 +166,7 @@ WHERE u.email = ?
             if (err) {
               console.error("Assignment insert error:", err);
             } else {
-              console.log("All assignments inserted successfully.");
+              // console.log("All assignments inserted successfully.");
             }
           });
         }
@@ -219,8 +219,8 @@ WHERE u.email = ?
               // Insert Level-1 approver = 11
               db.query(
                 `INSERT INTO leave_request_approvals
-       (leave_request_id, approver_user_id, level, status)
-       VALUES (?, ?, 1, 'pending')`,
+                (leave_request_id, approver_user_id, level, status)
+                VALUES (?, ?, 1, 'pending')`,
                 [leaveId, L1]
               );
 
@@ -437,10 +437,10 @@ exports.updateLeaveStatus = (req, res) => {
   // 1. CANCELLED
   if (status === "cancelled") {
     const approverSql = `
-  SELECT * FROM leave_request_approvals
-  WHERE leave_request_id = ? AND approver_user_id = ? AND status = 'pending'
-  LIMIT 1
-`;
+    SELECT * FROM leave_request_approvals
+    WHERE leave_request_id = ? AND approver_user_id = ? AND status = 'pending'
+    LIMIT 1
+    `;
 
     db.query(approverSql, [leaveRequestId, approverUserId], (err, rows) => {
       if (err) {
@@ -505,10 +505,10 @@ exports.updateLeaveStatus = (req, res) => {
 
           //  Step 3: Cancel request in main table
           const cancelSql = `
-        UPDATE leave_requests
-        SET status = ?, cancel_reason = ?, cancelled_by = ?
-        WHERE id = ?
-      `;
+          UPDATE leave_requests
+          SET status = ?, cancel_reason = ?, cancelled_by = ?
+          WHERE id = ?
+          `;
           db.query(cancelSql, ["cancelled", reason, approverUserId, leaveRequestId], (err) => {
             if (err) {
               console.error(err);

@@ -82,7 +82,7 @@ const sectionController = {
             const sql = `
             INSERT INTO appraisals 
             (req_no, employee_id, start_date, mid_year_due, full_year_due, status, created_at, updated_at)
-            VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 2 MINUTE), DATE_ADD(NOW(), INTERVAL 3 MINUTE), 'pending', NOW(), NOW())
+            VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 6 MONTH), DATE_ADD(CURDATE(), INTERVAL 12 MONTH), 'pending', NOW(), NOW())
             `;
             db.query(sql, [reqNo, employeeId], (err, result) => {
                 if (err) {
@@ -94,6 +94,12 @@ const sectionController = {
             });
         });
     },
+
+    
+//-----------------------------------------------------------------------------------------------------------------------------------
+// appraisals table notification working for every 2 minutes for testing is this line if u want to test add this line in 85----------
+// VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 2 MINUTE), DATE_ADD(NOW(), INTERVAL 3 MINUTE), 'pending', NOW(), NOW())
+//-----------------------------------------------------------------------------------------------------------------------------------
 
 
 
