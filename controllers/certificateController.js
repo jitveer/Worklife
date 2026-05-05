@@ -18,10 +18,12 @@ exports.getCertificatePersonalInfo = (req, res) => {
       e.doj AS joining_date,
       d.department_name,
       c.company_name,
-      e.email
+      e.email,
+     lm.name AS line_manager 
     FROM employees e
     JOIN department d ON e.department_id = d.id
     JOIN company_name c ON e.company_id = c.id
+    LEFT JOIN line_managers lm ON e.line_manager_id = lm.id 
     WHERE e.email = ?
     `;
 
@@ -67,7 +69,8 @@ exports.getCertificatePersonalInfo = (req, res) => {
                 department: info.department_name,
                 designation: info.designation,
                 joining_date: info.joining_date,
-                requester_id: info.requester_id
+                requester_id: info.requester_id,
+                line_manager: info.line_manager
             });
         });
     });

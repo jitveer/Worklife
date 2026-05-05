@@ -655,6 +655,10 @@
         fetch("/api/certificate/personalinfo", { credentials: "include" })
             .then(res => res.json())
             .then(data => {
+
+                console.log("FULL DATA:", data);              // 👈 ADD HERE
+                console.log("LINE MANAGER:", data.line_manager);
+
                 if (data.error) {
                     console.error(data.error);
                     return;

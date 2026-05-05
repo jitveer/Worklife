@@ -478,7 +478,7 @@
             }
 
             // ✅ NOW FETCH BACKEND DATA AFTER PANEL IS BUILT
-            fetch(`https://worklife.globesproperties.in/api/master/${type}`)
+            fetch(`/api/master/${type}`)
                 .then(res => res.json())
                 .then(data => {
 
@@ -546,7 +546,7 @@
 
                 if (!result.value) return;
 
-                fetch(`https://worklife.globesproperties.in/api/master/${type}`, {
+                fetch(`/api/master/${type}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name: result.value })
@@ -579,7 +579,7 @@
 
                 if (!result.value) return;
 
-                fetch(`https://worklife.globesproperties.in/api/master/${type}/${id}`, {
+                fetch(`/api/master/${type}/${id}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name: result.value })
@@ -614,7 +614,7 @@
 
                 if (!result.isConfirmed) return;
 
-                fetch(`https://worklife.globesproperties.in/api/master/${type}/${id}`, {
+                fetch(`/api/master/${type}/${id}`, {
                     method: "DELETE"
                 })
                     .then(res => res.json())

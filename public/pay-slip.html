@@ -306,21 +306,15 @@
         }
 
         .ps-header {
-            background: #fae5e3;
-            text-align: center;
-            border-bottom: 2px solid #000;
-            padding: 15px 10px;
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .ps-logo {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+            position: static;
+            /* ✅ VERY IMPORTANT */
         }
 
         .ps-company {
@@ -407,55 +401,60 @@
 
 
 
-        /* ===== BANK MODAL ===== */
+        /* ===== BANK MODAL BG ===== */
         .bank-modal-bg {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(3px);
             justify-content: center;
             align-items: center;
             z-index: 2000;
         }
 
+        /* ===== MODAL BOX ===== */
         .bank-modal-box {
-            width: 420px;
+            width: 460px;
             background: #ffffff;
-            border-radius: 12px;
-            padding: 25px;
+            border-radius: 14px;
+            padding: 25px 28px;
             position: relative;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
             animation: fadeIn 0.25s ease;
         }
 
-        /* close */
+        /* ===== TITLE ===== */
+        .bank-title {
+            margin-bottom: 20px;
+            color: #1d3f91;
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* ===== CLOSE BUTTON ===== */
         .bank-close {
             position: absolute;
             right: 15px;
             top: 12px;
             font-size: 18px;
             cursor: pointer;
-            color: #df4c4c;
+            color: #e74c3c;
         }
 
         .bank-close:hover {
             color: #000;
         }
 
-        /* title */
-        .bank-title {
-            margin-bottom: 20px;
-            color: #1d3f91;
-            font-size: 20px;
-        }
-
-        /* form grid */
+        /* ===== FORM GRID ===== */
         .bank-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 16px;
         }
 
+        /* ===== FORM GROUP ===== */
         .form-group {
             display: flex;
             flex-direction: column;
@@ -463,45 +462,87 @@
 
         .form-group label {
             font-size: 13px;
-            margin-bottom: 4px;
-            color: #444;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
         }
 
-        .form-group input {
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+        /* ===== INPUT + SELECT ===== */
+        .form-group input,
+        .form-group select {
+            padding: 9px 10px;
+            border-radius: 8px;
+            border: 1px solid #dcdcdc;
+            font-size: 14px;
             outline: none;
+            transition: all 0.2s ease;
         }
 
-        .form-group input:focus {
+        /* focus effect */
+        .form-group input:focus,
+        .form-group select:focus {
             border-color: #1d3f91;
+            box-shadow: 0 0 0 2px rgba(29, 63, 145, 0.15);
         }
 
-        /* full width row */
+        /* full width fields */
         .form-group:nth-child(3),
         .form-group:nth-child(4) {
             grid-column: span 2;
         }
 
-        /* button */
+        /* ===== BUTTON SECTION ===== */
         .bank-actions {
-            text-align: center;
-            margin-top: 20px;
+            grid-column: span 2;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
         }
 
-        .bank-save-btn {
+        /* ===== BUTTONS ===== */
+        #saveBankBtn {
             background: #1d3f91;
             color: white;
             border: none;
-            padding: 10px 30px;
-            border-radius: 6px;
+            padding: 10px 22px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            flex: 1;
+            margin-right: 8px;
         }
 
-        .bank-save-btn:hover {
+        #updateBankBtn {
+            background: #ffffff;
+            color: #1d3f91;
+            border: 1px solid #1d3f91;
+            padding: 10px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        /* hover */
+        #saveBankBtn:hover {
             background: #16357a;
+        }
+
+        #updateBankBtn:hover {
+            background: #f0f4ff;
+        }
+
+        /* animation */
+        @keyframes fadeIn {
+            from {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -523,9 +564,13 @@
                 <option>South</option>
             </select>
             <span>English</span>
-            <span><i class="fa fa-user"></i> Loading...</span>
-            <!-- Logout Button -->
-            <div class="logout" id="logoutBtn"><i class="fas fa-power-off"></i></div>
+            <div class="user-info">
+                <i class="fa-regular fa-user"></i>
+                <span id="userName" style="text-transform: capitalize;">Loading...</span>
+                <div id="logoutBtn" style="cursor: pointer; display: inline-block;">
+                    <i class="fa-solid fa-power-off" style="color: #fff;"></i>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -572,10 +617,10 @@
 
                 <div class="tools">
                     <div class="date-chip" id="bankBtn">Add Bank Details</div>
-                    <button class="report-btn">Generate</button>
+                    <!-- <button class="report-btn">Generate</button> -->
 
                     <div class="search-field">
-                        <input type="text" placeholder="Search...">
+                        <input type="text" id="searchInput" placeholder="Search by name...">
                         <i class="fa fa-search"></i>
                     </div>
                 </div>
@@ -593,22 +638,8 @@
                     </tr>
                 </thead>
 
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>29-4-2026</td>
-                        <td>brundha</td>
-                        <td>mnmbrundhas@gmail.com</span></td>
-                        <td><button class="pay-btn">Send Pay Slip</button></td>
-                    </tr>
-
-                    <tr>
-                        <td>2</td>
-                        <td>30-03-2026</td>
-                        <td>Sanjana</td>
-                        <td>sanjana@gmail.com</span></td>
-                        <td><button class="pay-btn">Send Pay Slip</button></td>
-                    </tr>
+                <tbody id="employeeTableBody">
+                    <!--dynamic rows from employees and payslip table-->
                 </tbody>
             </table>
 
@@ -627,8 +658,8 @@
                     <!-- HEADER -->
                     <div class="ps-header">
                         <div class="ps-logo">
-                            <img src="./images/mnm-logo.png" alt="MNM Logo"
-                                style="width:95%; height:95%; border-radius:50%; object-fit:contain; border:2px solid #d4af37; background:white;">
+                            <img src="/images/mnm-logo.png" alt="MNM Logo"
+                                style="width:50px; height:50px; border-radius:50%; object-fit:contain; border:2px solid #d4af37; background:white;">
                         </div>
                         <h2 class="ps-company">MNM ENTERPRISES</h2>
                     </div>
@@ -645,44 +676,44 @@
                                 <td colspan="3" style="text-align: center; font-weight: bold; font-size: 15px;">Salary
                                     Slip</td>
                                 <td style="font-weight: bold; text-align: center; width: 12%;">Month</td>
-                                <td style="width: 12%;"><input type="text" value="Sep-25" style="text-align: center;">
+                                <td style="width: 12%;"><input id="psMonth" type="text" style="text-align: center;">
                                 </td>
                             </tr>
                             <tr>
                                 <td style="width: 22%; font-weight: bold;">Employee Name</td>
-                                <td style="width: 28%;"><input type="text" value="Brundha S"></td>
+                                <td style="width: 28%;"><input id="psName" type="text"></td>
                                 <td style="width: 26%; font-weight: bold;">Date of Joining</td>
-                                <td colspan="2"><input type="text" value="02.09.2025"></td>
+                                <td colspan="2"><input id="psDoj" type="text"></td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold;">Employee Code</td>
-                                <td><input type="text"></td>
+                                <td><input id="psEmpCode" type="text"></td>
                                 <td style="font-weight: bold;">Total Working Days</td>
-                                <td colspan="2"><input type="number" value="30"></td>
+                                <td colspan="2"><input id="psWorkingDays" type="number"></td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold;">Designation</td>
-                                <td><input type="text" value="Back End Developer"></td>
+                                <td><input id="psDesignation" type="text"></td>
                                 <td style="font-weight: bold;">Number of Working Days Attended</td>
-                                <td colspan="2"><input type="number" value="30"></td>
+                                <td colspan="2"><input type="number"></td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold;">PAN</td>
-                                <td><input type="text"></td>
+                                <td><input id="psPan" type="text"></td>
                                 <td style="font-weight: bold; text-align: center;">Leaves</td>
                                 <td style="font-weight: bold; text-align: center;">LOP</td>
                                 <td style="font-weight: bold; text-align: center;">SL</td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold;">Bank Account Number</td>
-                                <td><input type="text"></td>
+                                <td><input id="psAccount" type="text"></td>
                                 <td style="font-weight: bold;">Leaves Taken</td>
                                 <td style="text-align: center;"><input type="text" value="-"></td>
                                 <td style="text-align: center;"><input type="text" value="-"></td>
                             </tr>
                             <tr>
                                 <td style="font-weight: bold;">Bank Name</td>
-                                <td><input type="text"></td>
+                                <td><input id="psBank" type="text"></td>
                                 <td style="font-weight: bold;">Balance Leaves</td>
                                 <td style="text-align: center;"><input type="text"></td>
                                 <td style="text-align: center;"><input type="text"></td>
@@ -715,6 +746,7 @@
                                 <td>PF</td>
                                 <td><input type="text"></td>
                             </tr>
+
                             <tr>
                                 <td>Basic Salary (DA)</td>
                                 <td><input type="text"></td>
@@ -771,8 +803,7 @@
                                 Net Salary for the Month (Total Earnings- Total Deductions) = Rs <input type="text"
                                     style="width: 100px; border-bottom: 1px dashed #000; font-weight: bold; text-align: center; display: inline-block;"
                                     value=""> /- (Rupees <input type="text"
-                                    style="width: 250px; border-bottom: 1px dashed #000; font-weight: bold; text-align: center; display: inline-block;"
-                                    value="Fifteen thousand only">)
+                                    style="width: 250px; border-bottom: 1px dashed #000; font-weight: bold; text-align: center; display: inline-block;">)
                             </td>
                         </tr>
                         <tr>
@@ -807,154 +838,497 @@
 
                 <div class="form-group">
                     <label>Employee ID</label>
-                    <input type="text">
+                    <select id="empIdSelect"></select>
                 </div>
 
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text">
+                    <select id="empNameSelect"></select>
                 </div>
 
                 <div class="form-group">
                     <label>Bank Name</label>
-                    <input type="text">
+                    <input type="text" id="bankName">
                 </div>
 
                 <div class="form-group">
                     <label>Account Number</label>
-                    <input type="text">
+                    <input type="text" id="accountNumber">
+                </div>
+
+                <div class="bank-actions">
+                    <button id="saveBankBtn">Save</button>
+                    <button id="updateBankBtn">Update</button>
                 </div>
 
             </div>
-
-            <div class="bank-actions">
-                <button class="bank-save-btn">Save</button>
-            </div>
-
         </div>
     </div>
-
-    <script>
-        // ===== ELEMENTS =====
-        const slipModal = document.getElementById("paySlipModal");
-        const bankModal = document.getElementById("bankModal");
-
-        const payButtons = document.querySelectorAll(".pay-btn");
-        const bankBtn = document.getElementById("bankBtn");
-
-        const slipClose = document.querySelector(".ps-close");
-        const bankClose = document.querySelector(".bank-close");
-
-        // ===== OPEN =====
-        function openSlipForm() {
-            slipModal.style.display = "flex";
-        }
-
-        function openBankModal() {
-            bankModal.style.display = "flex";
-        }
-
-        // ===== CLOSE =====
-        function closeSlipForm() {
-            slipModal.style.display = "none";
-        }
-
-        function closeBankModal() {
-            bankModal.style.display = "none";
-        }
-
-        // ===== EVENTS =====
-
-        // open payslip
-        payButtons.forEach(btn => {
-            btn.addEventListener("click", openSlipForm);
-        });
-
-        // open bank modal
-        bankBtn.addEventListener("click", openBankModal);
-
-        // close buttons
-        slipClose.addEventListener("click", closeSlipForm);
-        bankClose.addEventListener("click", closeBankModal);
-
-        // outside click (single handler for both)
-        window.addEventListener("click", function (e) {
-            if (e.target === slipModal) closeSlipForm();
-            if (e.target === bankModal) closeBankModal();
-        });
-
-
-
-        // ==========================
-        // LEFT PANEL NAVIGATION
-        // ==========================
-        document.getElementById("hrBtn")?.addEventListener("click", () => {
-            window.location.href = "humanresource.html?section=hr-logo";
-        });
-
-        document.getElementById("financeBtn")?.addEventListener("click", () => {
-            window.location.href = "humanresource.html?section=finance-logo";
-        });
-
-        document.getElementById("itBtn")?.addEventListener("click", () => {
-            window.location.href = "humanresource.html?section=it-logo";
-        });
-
-        document.getElementById("performanceBtn")?.addEventListener("click", () => {
-            window.location.href = "humanresource.html?section=performance-logo";
-        });
-
-        document.getElementById("reportsBtn")?.addEventListener("click", () => {
-            window.location.href = "humanresource.html?section=reports-logo";
-        });
-
-        document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
-
-
-
-        // logout
-        function logoutUser() {
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You will be logged out from your session.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, logout",
-                cancelButtonText: "Cancel"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Call logout API
-                    fetch("/api/auth/logout")
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire({
-                                    title: "Logged Out!",
-                                    text: "You have been successfully logged out.",
-                                    icon: "success",
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                });
-
-                                setTimeout(() => {
-                                    window.location.href = "index.html"; // Redirect to login
-                                }, 2000);
-                            } else {
-                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
-                            }
-                        })
-                        .catch(err => {
-                            console.error("Logout error:", err);
-                            Swal.fire("Error", "Something went wrong. Try again.", "error");
-                        });
-                }
-            });
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </body>
+<script>
+
+    fetch("http://localhost:3000/api/auth/session-check", {
+        credentials: "include"
+    })
+        .then(res => res.json())
+        .then(data => {
+
+            // ❌ Not logged in
+            if (!data.loggedIn) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            const roleId = data.user?.roleId;
+
+            // ❌ BLOCK EMPLOYEE
+            if (roleId === 4) {
+                window.location.href = "employee-dashboard.html";
+                return;
+            }
+
+            // ✅ ALLOW APPROVER (Admin / HR / Super Admin)
+
+            // show page
+            document.body.style.display = "block";
+
+            // set user name (optional)
+            const nameEl = document.getElementById("userName");
+            if (nameEl) {
+                nameEl.textContent = data.user.name;
+            }
+
+            console.log("✅ Approver session verified");
+
+        })
+        .catch(err => {
+            console.error("Session error:", err);
+            window.location.href = "index.html";
+        });
+
+
+
+
+    // ===== ELEMENTS =====
+    const slipModal = document.getElementById("paySlipModal");
+    const bankModal = document.getElementById("bankModal");
+
+    const payButtons = document.querySelectorAll(".pay-btn");
+    const bankBtn = document.getElementById("bankBtn");
+
+    const slipClose = document.querySelector(".ps-close");
+    const bankClose = document.querySelector(".bank-close");
+
+    // ===== OPEN =====
+    function openSlipForm() {
+        slipModal.style.display = "flex";
+    }
+
+    function openBankModal() {
+        bankModal.style.display = "flex";
+        loadEmployees();
+    }
+
+    // ===== CLOSE =====
+    function closeSlipForm() {
+        slipModal.style.display = "none";
+    }
+
+    function closeBankModal() {
+        bankModal.style.display = "none";
+    }
+
+    // ===== EVENTS =====
+
+    // open payslip
+    payButtons.forEach(btn => {
+        btn.addEventListener("click", openSlipForm);
+    });
+
+    // open bank modal
+    bankBtn.addEventListener("click", openBankModal);
+
+    // close buttons
+    slipClose.addEventListener("click", closeSlipForm);
+    bankClose.addEventListener("click", closeBankModal);
+
+    // outside click (single handler for both)
+    window.addEventListener("click", function (e) {
+        if (e.target === slipModal) closeSlipForm();
+        if (e.target === bankModal) closeBankModal();
+    });
+
+
+
+    // ==========================
+    // LEFT PANEL NAVIGATION
+    // ==========================
+    document.getElementById("hrBtn")?.addEventListener("click", () => {
+        window.location.href = "humanresource.html?section=hr-logo";
+    });
+
+    document.getElementById("financeBtn")?.addEventListener("click", () => {
+        window.location.href = "humanresource.html?section=finance-logo";
+    });
+
+    document.getElementById("itBtn")?.addEventListener("click", () => {
+        window.location.href = "humanresource.html?section=it-logo";
+    });
+
+    document.getElementById("performanceBtn")?.addEventListener("click", () => {
+        window.location.href = "humanresource.html?section=performance-logo";
+    });
+
+    document.getElementById("reportsBtn")?.addEventListener("click", () => {
+        window.location.href = "humanresource.html?section=reports-logo";
+    });
+
+    document.getElementById("logoutBtn")?.addEventListener("click", logoutUser);
+
+
+
+
+
+    // search bar with name
+    const searchInput = document.getElementById("searchInput");
+
+    searchInput.addEventListener("keyup", function () {
+        const searchValue = this.value.toLowerCase();
+
+        const rows = document.querySelectorAll(".data-table tbody tr");
+
+        rows.forEach(row => {
+            const nameCell = row.children[2]; // 👈 Name column (3rd column)
+            const nameText = nameCell.textContent.toLowerCase();
+
+            if (nameText.includes(searchValue)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+
+
+
+
+    //------------------------------------------------------------------------------
+    //bank popup to fill name and empl_id from employees table
+    //------------------------------------------------------------------------------
+    async function loadEmployees() {
+        const res = await fetch("http://localhost:3000/api/payslip/employees");
+        const data = await res.json();
+
+        const idSelect = document.getElementById("empIdSelect");
+        const nameSelect = document.getElementById("empNameSelect");
+
+        idSelect.innerHTML = `<option value="">Select ID</option>`;
+        nameSelect.innerHTML = `<option value="">Select Name</option>`;
+
+        data.forEach(emp => {
+            // Employee ID dropdown
+            const opt1 = document.createElement("option");
+            opt1.value = emp.id;
+            opt1.textContent = emp.employee_id;
+            idSelect.appendChild(opt1);
+
+            // Name dropdown
+            const opt2 = document.createElement("option");
+            opt2.value = emp.id;
+            opt2.textContent = emp.first_name + " " + emp.last_name;
+            nameSelect.appendChild(opt2);
+        });
+    }
+
+
+    // ID → Name
+    document.getElementById("empIdSelect").addEventListener("change", function () {
+        const selectedId = this.value;
+        document.getElementById("empNameSelect").value = selectedId;
+    });
+
+    // Name → ID
+    document.getElementById("empNameSelect").addEventListener("change", function () {
+        const selectedId = this.value;
+        document.getElementById("empIdSelect").value = selectedId;
+    });
+
+
+
+
+    // save details
+    document.getElementById("saveBankBtn").addEventListener("click", async () => {
+
+        const emp_id = document.getElementById("empIdSelect").value;
+        const bank_name = document.getElementById("bankName").value;
+        const account_number = document.getElementById("accountNumber").value;
+
+        if (!emp_id || !bank_name || !account_number) {
+            alert("Fill all fields");
+            return;
+        }
+
+        const res = await fetch("http://localhost:3000/api/payslip/bank/add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ emp_id, bank_name, account_number })
+        });
+
+        const data = await res.json();
+        alert(data.message);
+    });
+
+
+
+
+
+    // update details
+    document.getElementById("updateBankBtn").addEventListener("click", async () => {
+
+        const emp_id = document.getElementById("empIdSelect").value;
+        const bank_name = document.getElementById("bankName").value;
+        const account_number = document.getElementById("accountNumber").value;
+
+        if (!emp_id || !bank_name || !account_number) {
+            alert("Fill all fields");
+            return;
+        }
+
+        const res = await fetch("http://localhost:3000/api/payslip/bank/update", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ emp_id, bank_name, account_number })
+        });
+
+        const data = await res.json();
+        alert(data.message);
+    });
+
+
+
+
+
+    // open pay slip of each employee
+    async function openPayslip(empId) {
+
+        const res = await fetch(`http://localhost:3000/api/payslip/details/${empId}`);
+        const data = await res.json();
+
+        // console.log("DETAILS:", data);
+
+        // open modal
+        document.getElementById("paySlipModal").style.display = "flex";
+
+        // store id
+        window.selectedEmpId = empId;
+
+        // fill fields
+        document.getElementById("psName").value = data.name;
+        document.getElementById("psDesignation").value = data.designation;
+        document.getElementById("psDoj").value = new Date(data.doj).toLocaleDateString();
+        document.getElementById("psEmpCode").value = data.employee_id;
+        document.getElementById("psPan").value = data.pan_number || "";
+
+        document.getElementById("psBank").value = data.bank_name || "";
+        document.getElementById("psAccount").value = data.account_number || "";
+
+        // ===== AUTO WORKING DAYS =====
+        const now = new Date();
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+        const workingDaysInput = document.getElementById("psWorkingDays");
+        if (workingDaysInput) {
+            workingDaysInput.value = daysInMonth;
+        }
+
+        // ===== AUTO MONTH =====
+        const monthInput = document.getElementById("psMonth");
+        if (monthInput) {
+            const monthName = now.toLocaleString("default", { month: "short" });
+            const year = now.getFullYear().toString().slice(-2);
+            monthInput.value = `${monthName}-${year}`;
+        }
+    }
+
+
+
+
+    //-------------------------------------------------------
+    // payslip frontend table fetching from employees table
+    //-------------------------------------------------------
+    async function loadEmployeeTable() {
+        const res = await fetch("http://localhost:3000/api/payslip/employee-list");
+        const data = await res.json();
+
+        const tbody = document.getElementById("employeeTableBody");
+        tbody.innerHTML = "";
+
+        data.forEach((emp, index) => {
+
+            let date = "Not Sent";
+
+            if (emp.last_sent_date) {
+                const d = new Date(emp.last_sent_date);
+                date = d.toLocaleDateString();
+            }
+
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${date}</td>
+            <td>${emp.name}</td>
+            <td>${emp.email}</td>
+            <td>
+                <button class="pay-btn">Send Pay Slip</button>
+            </td>
+            `;
+
+            const btn = tr.querySelector(".pay-btn");
+
+            btn.addEventListener("click", () => {
+                openPayslip(emp.id);
+            });
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadEmployeeTable);
+
+
+
+
+
+    //-------------------------------------------
+    // current month 
+    //-------------------------------------------
+    function getDaysInCurrentMonth() {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    }
+
+
+
+
+    // send
+    document.querySelector(".ps-send-btn").addEventListener("click", async () => {
+
+        // ✅ check employee selected
+        if (!window.selectedEmpId) {
+            alert("Please click Send Pay Slip button first");
+            return;
+        }
+
+        // 🔥 STEP 1: CLONE PAYSLIP UI
+        const clone = document.querySelector(".payslip-print-area").cloneNode(true);
+
+        // 🔥 STEP 2: CONVERT INPUTS → TEXT (VERY IMPORTANT)
+        clone.querySelectorAll("input").forEach(input => {
+            const span = document.createElement("span");
+            span.innerText = input.value || "-";
+            input.parentNode.replaceChild(span, input);
+        });
+
+        // 🔥 STEP 3: GET FINAL HTML
+        const htmlContent = clone.outerHTML;
+
+        // 🔥 STEP 4: SEND EVERYTHING
+        const payload = {
+            emp_id: window.selectedEmpId,
+
+            employee_code: document.getElementById("psEmpCode").value,
+            employee_name: document.getElementById("psName").value,
+            designation: document.getElementById("psDesignation").value,
+            pan: document.getElementById("psPan").value,
+
+            bank_name: document.getElementById("psBank").value,
+            account_number: document.getElementById("psAccount").value,
+
+            doj: document.getElementById("psDoj").value,
+            total_working_days: document.getElementById("psWorkingDays").value,
+
+            basic_salary: 0,
+            net_salary: 0,
+
+            html: htmlContent   // ✅ THIS IS NEW (IMPORTANT)
+        };
+
+        try {
+            const res = await fetch("http://localhost:3000/api/payslip/save", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            alert(data.message);
+
+            // ✅ close popup
+            document.getElementById("paySlipModal").style.display = "none";
+
+            // ✅ refresh table
+            loadEmployeeTable();
+
+        } catch (err) {
+            console.error(err);
+            alert("Error while sending payslip");
+        }
+    });
+
+
+
+
+
+
+    // logout
+    function logoutUser() {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will be logged out from your session.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, logout",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Call logout API
+                fetch("/api/auth/logout")
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: "Logged Out!",
+                                text: "You have been successfully logged out.",
+                                icon: "success",
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+
+                            setTimeout(() => {
+                                window.location.href = "index.html"; // Redirect to login
+                            }, 2000);
+                        } else {
+                            Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Logout error:", err);
+                        Swal.fire("Error", "Something went wrong. Try again.", "error");
+                    });
+            }
+        });
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </html>

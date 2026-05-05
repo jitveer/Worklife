@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
   auth: {
-    user:process.env.MAIL_USER,
+    user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS
   }
 });
@@ -150,6 +150,61 @@ exports.sendEmployeeFormEmail = (to, link) => {
         "Preview URL:",
         require("nodemailer").getTestMessageUrl(info)
       );
+    }
+  });
+};
+
+
+
+
+// send pay slip through mailer 
+exports.sendPayslipEmail = (to, subject, text, pdfBuffer) => {
+
+  if (!to) {
+    console.log("❌ No email found");
+    return;
+  }
+
+
+  const htmlTemplate = `
+  <p>Dear Employee,</p>
+
+  <p>Greetings!</p>
+
+  <p>
+  Please find attached the Pay-Slip for the month of ${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}.
+  </p>
+
+  <br>
+
+  <p>Regards,</p>
+  <p>
+  HR Department<br>
+  MNM Enterprises<br>
+  askhr@mnmreality.com
+  </p>
+  `;
+
+
+
+  const mailOptions = {
+    from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_USER}>`,
+    to,
+    subject,
+    html: htmlTemplate, 
+    attachments: [
+      {
+        filename: "payslip.pdf",
+        content: pdfBuffer
+      }
+    ]
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.log("Payslip email error:", err);
+    } else {
+      console.log("Payslip email sent ✅");
     }
   });
 };

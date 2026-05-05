@@ -33,6 +33,7 @@ const certificateRoutes = require("./routes/certificateRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const pushRoutes = require("./routes/pushRoutes");
+const payslipRoutes = require("./routes/payslipRoutes");
 
 // uploads
 global.appRoot = path.resolve(__dirname, "public");
@@ -173,6 +174,9 @@ app.use("/api", interviewRoutes);
 app.use("/attendance", attendanceRoutes);
 // push notification
 app.use("/api/push", pushRoutes);
+app.use("/api/payslip", payslipRoutes);
+// payslip logo inside pdf
+app.use("/images", express.static("public/images"));
 
 // Default root
 app.get("/", (req, res) => {

@@ -20,6 +20,11 @@ const bcrypt = require("bcrypt"); // add at top if not already
 exports.verifyPasscode = (req, res) => {
   const { passcode } = req.body;
 
+  console.log("===== VERIFY PASSCODE =====");
+  console.log("Received passcode:", passcode);
+  console.log("Session before verify:", req.session);
+
+
   if (!passcode || passcode.length !== 4) {
     return res.status(400).json({ success: false, message: "Enter 4-digit passcode" });
   }
@@ -27,16 +32,19 @@ exports.verifyPasscode = (req, res) => {
   const sql = "SELECT * FROM employees"; // get all employees with hashed passcode
 
   db.query(sql, (err, employees) => {
+    console.log("Employees fetched:", employees.length);
     if (err) return res.status(500).json({ success: false, message: "DB error" });
 
     // 🔑 Find employee by bcrypt
     const emp = employees.find(emp => bcrypt.compareSync(passcode, emp.passcode));
+    console.log("Matched employee:", emp ? emp.id : "NO MATCH");
 
     if (!emp) {
       return res.status(401).json({ success: false, message: "Invalid passcode" });
     }
 
     req.session.employee = emp;
+    console.log("Session employee saved:", req.session.employee.id);
 
     const today = new Date().toISOString().split("T")[0];
 
@@ -47,6 +55,7 @@ exports.verifyPasscode = (req, res) => {
     `;
 
     db.query(checkSql, [emp.id, today], (err, rows) => {
+      console.log("Attendance check rows:", rows);
       if (err) return res.status(500).json({ success: false, message: "DB error" });
 
       if (rows.length > 0 && !rows[0].logout_time) {
@@ -132,14 +141,22 @@ exports.verifyPasscode = (req, res) => {
 
 /* ---------- LOGIN OPTIONS PAGE ---------- */
 exports.loginOptions = (req, res) => {
+  console.log("===== LOGIN OPTIONS =====");
+  console.log("Session employee:", req.session.employee);
+
   if (!req.session.employee) {
+    console.log("No session -> redirect passcode");
     return res.redirect("/attendance/passcode.html");
   }
+  console.log("Session exists -> redirect login-options");
   res.redirect("/attendance/login-options.html");
 };
 
 /* ---------- OFFICE LOGIN ---------- */
 exports.officeLogin = (req, res) => {
+  console.log("===== OFFICE LOGIN =====");
+  console.log("Session:", req.session);
+  console.log("Session employee:", req.session.employee);
 
   const emp = req.session.employee;
 
@@ -162,6 +179,9 @@ exports.officeLogin = (req, res) => {
     late_minutes = Math.floor(diff / 60);
     late_seconds = diff % 60;
   }
+  console.log("Late minutes:", late_minutes);
+  console.log("Late seconds:", late_seconds);
+
 
   const sql = `
     INSERT INTO attendance
@@ -185,12 +205,14 @@ exports.officeLogin = (req, res) => {
     req.headers["user-agent"],
     late_minutes,
     late_seconds
-  ], (err) => {
+  ], (err, result) => {
 
     if (err) {
+      console.error("OFFICE LOGIN DB ERROR:", err);
       return res.status(500).json({ success: false });
     }
-
+    console.log("Attendance inserted successfully");
+    console.log("Inserted attendance id:", result.insertId);
     res.json({ success: true });
 
   });

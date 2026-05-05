@@ -120,6 +120,7 @@
 
             fetch('/attendance/office-login', {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' }
             })
                 .then(res => res.json())

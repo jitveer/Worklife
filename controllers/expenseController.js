@@ -262,7 +262,7 @@ exports.updateExpenseApproval = (req, res) => {
 
 
     if (status.toLowerCase() === "approved") {
-      console.log("Updating approval with:", { req_no, approver_id, status, comments });
+     // console.log("Updating approval with:", { req_no, approver_id, status, comments });
 
       //  Find next pending approver for this request
       //  Get current level
@@ -547,25 +547,25 @@ exports.getExpenseApprovals = (req, res) => {
 
   // ---- BASE QUERY ----
   let sql = `
-    SELECT 
-      ec.id,
-      ec.req_no,
-      ec.created_at,
+SELECT 
+  ec.id,
+  ec.req_no,
+  ec.created_at,
+  SUM(DISTINCT ei.amount) AS amount,
+   ea.status AS approver_status,
+  ec.status AS final_status,
+  CONCAT(emp.first_name, ' ', emp.last_name) AS requester_name,
+  GROUP_CONCAT(DISTINCT ei.expense_type) AS expense_type
 
-      ei.amount,
-      ea.status,
-      ec.status AS final_status, 
+FROM expense_claim ec
 
-      CONCAT(emp.first_name, ' ', emp.last_name) AS requester_name,
-      ei.expense_type
+JOIN expense_approvals ea 
+  ON ec.req_no = ea.req_no 
+ AND ea.approver_id = ?
 
-    FROM expense_claim ec
-    JOIN expense_approvals ea ON ec.req_no = ea.req_no
-    JOIN employees emp ON ec.requester_id = emp.id
-    JOIN expense_items ei ON ei.claim_id = ec.id
-
-    WHERE ea.approver_id = ?
-  `;
+JOIN employees emp ON ec.requester_id = emp.id
+JOIN expense_items ei ON ei.claim_id = ec.id
+`;
 
   const params = [approverId];
 

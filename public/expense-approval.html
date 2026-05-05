@@ -690,8 +690,8 @@
                     <td>${row.expense_type}</td>
                     <td>₹${row.amount}</td>
                     <td>
-                        <span class="status-box small ${row.status.toLowerCase()}">
-                            ${row.status}
+                        <span class="status-box small ${(row.approver_status || 'pending').toLowerCase()}">
+                            ${row.approver_status || 'Pending'}
                         </span>
                     </td>
                     <td>
@@ -725,7 +725,7 @@
                         renderExpenseClaims(allExpenseClaims);
                     } else {
                         const filtered = allExpenseClaims.filter(row =>
-                            row.status && row.status.toLowerCase() === filter
+                            (row.approver_status || '').toLowerCase() === filter
                         );
                         renderExpenseClaims(filtered);
                     }
@@ -848,9 +848,9 @@
                             console.log("🔍 Status Field:", data.status);
                             // Set status tag
                             const statusTag = document.getElementById("expenseStatusTag");
-                            statusTag.textContent = data.status || "N/A";
+                            statusTag.textContent = data.approver_status || data.status || "N/A";
                             statusTag.classList.remove("approved", "pending", "rejected");
-                            const statusClass = (data.status || "").toLowerCase();
+                            const statusClass = (data.approver_status || data.status || "").toLowerCase();
                             if (statusClass) {
                                 statusTag.classList.add(statusClass);
                             }
@@ -889,15 +889,15 @@
                             document.getElementById("expenseModal").style.display = "flex";
 
                             // Enable buttons if still pending
-                            const approveBtn = document.querySelector(".approve-btn");
-                            const cancelBtn = document.querySelector(".cancel-btn");
+                            const approveBtn = document.getElementById("approveBtn");
+                            const cancelBtn = document.getElementById("rejectBtn");
                             const approvalMessage = document.getElementById("approvalMessage");
 
                             // Always show buttons first
                             approveBtn.style.display = "inline-block";
                             cancelBtn.style.display = "inline-block";
 
-                            const status = (data.user_status || "").toLowerCase(); //  only check current approver's own status
+                            const status = (data.user_status || data.approver_status || "").toLowerCase(); //  only check current approver's own status
 
                             if (status === "approved") {
                                 approveBtn.disabled = true;
