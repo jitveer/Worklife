@@ -179,6 +179,13 @@ exports.savePayslip = (req, res) => {
         net_salary
     } = req.body;
 
+    let formattedDoj = doj;
+
+    if (doj && doj.includes("/")) {
+        const [month, day, year] = doj.split("/");
+        formattedDoj = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    }
+
     const sqlFetch = `
         SELECT email 
         FROM employees 
@@ -223,7 +230,7 @@ exports.savePayslip = (req, res) => {
             pan,
             bank_name,
             account_number,
-            doj,
+            formattedDoj,
             total_working_days,
             basic_salary,
             net_salary
@@ -334,7 +341,7 @@ async function generatePayslipPDF(html) {
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"]
     });
-    
+
     const page = await browser.newPage();
 
     await page.setContent(html, { waitUntil: "networkidle0" });
