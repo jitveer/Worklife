@@ -262,7 +262,7 @@ exports.updateExpenseApproval = (req, res) => {
 
 
     if (status.toLowerCase() === "approved") {
-     // console.log("Updating approval with:", { req_no, approver_id, status, comments });
+      // console.log("Updating approval with:", { req_no, approver_id, status, comments });
 
       //  Find next pending approver for this request
       //  Get current level
@@ -530,7 +530,6 @@ exports.getExpenseClaimsByUser = (req, res) => {
 
 
 // approver fronted table with filtration 
-
 exports.getExpenseApprovals = (req, res) => {
   if (!req.session.user || !req.session.user.user_id) {
     return res.status(403).json({ success: false, message: "Not authorized" });
@@ -551,10 +550,10 @@ SELECT
   ec.id,
   ec.req_no,
   ec.created_at,
-  SUM(DISTINCT ei.amount) AS amount,
-   ea.status AS approver_status,
-  ec.status AS final_status,
-  CONCAT(emp.first_name, ' ', emp.last_name) AS requester_name,
+  SUM(ei.amount) AS amount,
+  MAX(ea.status) AS approver_status,
+  MAX(ec.status) AS final_status,
+  MAX(CONCAT(emp.first_name, ' ', emp.last_name)) AS requester_name,
   GROUP_CONCAT(DISTINCT ei.expense_type) AS expense_type
 
 FROM expense_claim ec
@@ -563,8 +562,13 @@ JOIN expense_approvals ea
   ON ec.req_no = ea.req_no 
  AND ea.approver_id = ?
 
-JOIN employees emp ON ec.requester_id = emp.id
-JOIN expense_items ei ON ei.claim_id = ec.id
+JOIN employees emp 
+  ON ec.requester_id = emp.id
+
+JOIN expense_items ei 
+  ON ei.claim_id = ec.id
+
+WHERE 1=1
 `;
 
   const params = [approverId];
@@ -594,9 +598,9 @@ JOIN expense_items ei ON ei.claim_id = ec.id
   }
 
   sql += `
-    GROUP BY ec.id
-    ORDER BY ec.id DESC;
-  `;
+  GROUP BY ec.id, ec.req_no, ec.created_at
+  ORDER BY ec.id DESC
+`;
 
   // ---- RUN QUERY ----
   db.query(sql, params, (err, results) => {
@@ -620,7 +624,7 @@ JOIN expense_items ei ON ei.claim_id = ec.id
           `"${r.requester_name}"`,
           `"${r.expense_type}"`,
           r.amount,
-          `"${r.status}"`,
+          `"${r.approver_status}"`,
           `"${r.final_status}"`
         ].join(","))
       ].join("\n");

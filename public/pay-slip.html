@@ -867,7 +867,7 @@
 </body>
 <script>
 
-    fetch("http://localhost:3000/api/auth/session-check", {
+    fetch("/api/auth/session-check", {
         credentials: "include"
     })
         .then(res => res.json())
@@ -1016,7 +1016,7 @@
     //bank popup to fill name and empl_id from employees table
     //------------------------------------------------------------------------------
     async function loadEmployees() {
-        const res = await fetch("http://localhost:3000/api/payslip/employees");
+        const res = await fetch("/api/payslip/employees");
         const data = await res.json();
 
         const idSelect = document.getElementById("empIdSelect");
@@ -1068,7 +1068,7 @@
             return;
         }
 
-        const res = await fetch("http://localhost:3000/api/payslip/bank/add", {
+        const res = await fetch("/api/payslip/bank/add", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -1096,7 +1096,7 @@
             return;
         }
 
-        const res = await fetch("http://localhost:3000/api/payslip/bank/update", {
+        const res = await fetch("/api/payslip/bank/update", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -1115,7 +1115,7 @@
     // open pay slip of each employee
     async function openPayslip(empId) {
 
-        const res = await fetch(`http://localhost:3000/api/payslip/details/${empId}`);
+        const res = await fetch(`/api/payslip/details/${empId}`);
         const data = await res.json();
 
         // console.log("DETAILS:", data);
@@ -1161,7 +1161,7 @@
     // payslip frontend table fetching from employees table
     //-------------------------------------------------------
     async function loadEmployeeTable() {
-        const res = await fetch("http://localhost:3000/api/payslip/employee-list");
+        const res = await fetch("/api/payslip/employee-list");
         const data = await res.json();
 
         const tbody = document.getElementById("employeeTableBody");
@@ -1259,7 +1259,7 @@
         };
 
         try {
-            const res = await fetch("http://localhost:3000/api/payslip/save", {
+            const res = await fetch("/api/payslip/save", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
