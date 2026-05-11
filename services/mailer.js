@@ -56,7 +56,7 @@ exports.sendPasscodeEmail = (to, passcode, callback) => {
 exports.sendInterviewInviteEmail = (to, examLink, roleName) => {
 
   const mailOptions = {
-    from: "WorkLife HR <mnmbrundhas@gmail.com>",
+    from: "WorkLife HR<worklife@luminarsapphire.com>",
     to: to,
     subject: "Invitation to 2nd Round Interview",
     html: `
@@ -113,7 +113,7 @@ exports.sendInterviewInviteEmail = (to, examLink, roleName) => {
 // send link to fill employee form 
 exports.sendEmployeeFormEmail = (to, link) => {
   const mailOptions = {
-    from: "WorkLife HR <mnmbrundhas@gmail.com>",
+    from: "WorkLife HR <worklife@luminarsapphire.com>",
     to,
     subject: "Fill Employee Details",
     html: `
