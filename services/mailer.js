@@ -22,8 +22,8 @@ const transporter = nodemailer.createTransport({
 
 // Callback-based version
 exports.sendPasscodeEmail = (to, passcode, callback) => {
-  const mailOptions = {
-    from: "WorkLife <mnmbrundhas@gmail.com>",
+  const mailOptions = { 
+    from: "WorkLife <worklife@luminarsapphire.com>",
     to,
     subject: "Your WorkLife Login Passcode",
     html: `
