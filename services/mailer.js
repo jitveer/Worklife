@@ -12,17 +12,21 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,
+  secure: true,
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS
-  }
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
 
 
 // Callback-based version
 exports.sendPasscodeEmail = (to, passcode, callback) => {
-  const mailOptions = { 
+  const mailOptions = {
     from: "WorkLife <worklife@luminarsapphire.com>",
     to,
     subject: "Your WorkLife Login Passcode",
@@ -31,7 +35,11 @@ exports.sendPasscodeEmail = (to, passcode, callback) => {
       <p>Your WorkLife login passcode is:</p>
       <h2>${passcode}</h2>
       <p>Please log in and change your password after first login.</p>
-    `
+    `,
+    headers: {
+      "Message-ID": `<${Date.now()}@luminarsapphire.com>`,
+      "X-Mailer": "NodeMailer",
+    }
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
@@ -145,7 +153,7 @@ exports.sendEmployeeFormEmail = (to, link) => {
     if (err) {
       console.log("Employee form email error:", err);
     } else {
-      console.log("Employee form email sent" , info);
+      console.log("Employee form email sent", info);
       // console.log(
       //   "Preview URL:",
       //   require("nodemailer").getTestMessageUrl(info)
@@ -191,7 +199,7 @@ exports.sendPayslipEmail = (to, subject, text, pdfBuffer) => {
     from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_USER}>`,
     to,
     subject,
-    html: htmlTemplate, 
+    html: htmlTemplate,
     attachments: [
       {
         filename: "payslip.pdf",
