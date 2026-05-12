@@ -27,7 +27,7 @@ const transporter = nodemailer.createTransport({
 // Callback-based version
 exports.sendPasscodeEmail = (to, passcode, callback) => {
   const mailOptions = {
-    from: "WorkLife <worklife@luminarsapphire.com>",
+    from: `WorkLife <${process.env.MAIL_FROM}>`,
     to,
     subject: "Your WorkLife Login Passcode",
     html: `
@@ -35,11 +35,7 @@ exports.sendPasscodeEmail = (to, passcode, callback) => {
       <p>Your WorkLife login passcode is:</p>
       <h2>${passcode}</h2>
       <p>Please log in and change your password after first login.</p>
-    `,
-    headers: {
-      "Message-ID": `<${Date.now()}@luminarsapphire.com>`,
-      "X-Mailer": "NodeMailer",
-    }
+    `
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
@@ -64,7 +60,7 @@ exports.sendPasscodeEmail = (to, passcode, callback) => {
 exports.sendInterviewInviteEmail = (to, examLink, roleName) => {
 
   const mailOptions = {
-    from: "WorkLife HR<worklife@luminarsapphire.com>",
+    from: `WorkLife HR<${process.env.MAIL_FROM}>`,
     to: to,
     subject: "Invitation to 2nd Round Interview",
     html: `
@@ -121,7 +117,7 @@ exports.sendInterviewInviteEmail = (to, examLink, roleName) => {
 // send link to fill employee form 
 exports.sendEmployeeFormEmail = (to, link) => {
   const mailOptions = {
-    from: "WorkLife HR <worklife@luminarsapphire.com>",
+    from: `WorkLife HR <${process.env.MAIL_FROM}>`,
     to,
     subject: "Fill Employee Details",
     html: `
