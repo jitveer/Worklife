@@ -192,7 +192,7 @@ exports.sendPayslipEmail = (to, subject, text, pdfBuffer) => {
 
 
   const mailOptions = {
-    from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_USER}>`,
+    from: `WorkLife HR <${process.env.MAIL_FROM}>`,
     to,
     subject,
     html: htmlTemplate,
