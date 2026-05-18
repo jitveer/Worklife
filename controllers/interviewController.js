@@ -48,7 +48,7 @@ exports.sendInvite = (req, res) => {
             }
         );
 
-        console.log("Exam Link:", examLink);
+        // console.log("Exam Link:", examLink);
 
         res.json({ message: "Invite sent" });
     });

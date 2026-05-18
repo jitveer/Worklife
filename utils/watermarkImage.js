@@ -9,7 +9,7 @@ module.exports = async function watermarkImage(imagePath, text) {
     imagePath
   );
 
-  console.log("WATERMARK PATH:", absolutePath);
+  // console.log("WATERMARK PATH:", absolutePath);
 
   if (!fs.existsSync(absolutePath)) {
     throw new Error("Image not found: " + absolutePath);

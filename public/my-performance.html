@@ -495,12 +495,12 @@
     <script>
         // table data
         async function loadMyPerformanceRequests(filter = "all") {
-            console.log("🔹 Calling /api/section/my-performance-requests");
+            // console.log("🔹 Calling /api/section/my-performance-requests");
 
             try {
                 const response = await fetch("/api/section/my-performance-requests");
                 const data = await response.json();
-                console.log("🔍 API Response Data:", data);
+                // console.log("🔍 API Response Data:", data);
 
                 const tableBody = document.querySelector("#performanceTable tbody");
                 tableBody.innerHTML = "";
@@ -553,7 +553,7 @@
 
         // popup modal open
         function openPerformancePopup(id, stage) {
-            console.log("🔹 Open popup for request ID:", id);
+            // console.log("🔹 Open popup for request ID:", id);
 
             // show propr tracker based on condition
             document.getElementById("performanceFlowStartStage").innerHTML = "";
@@ -573,7 +573,7 @@
                     document.getElementById("perfReqNo").textContent = data.req_no || "-";
 
                     const statusTag = document.getElementById("performanceStatusTag");
-                    console.log("🧪 statusTag element:", statusTag);
+                    // console.log("🧪 statusTag element:", statusTag);
 
                     let stageStatus = "Pending";
                     let rejectedByName = null;
@@ -635,7 +635,7 @@
 
 
         function closePerformanceModal() {
-            console.log("🔹 Closing popup modal");
+            // console.log("🔹 Closing popup modal");
             document.getElementById("performanceModal").style.display = "none";
         }
 
@@ -712,7 +712,7 @@
             const stage = urlParams.get("stage");
 
             if (appraisalId) {
-                console.log("🔔 Opening popup directly from notification, ID:", appraisalId);
+                // console.log("🔔 Opening popup directly from notification, ID:", appraisalId);
                 openPerformancePopup(appraisalId, stage);
             } else {
                 // Normal flow → load all requests into table

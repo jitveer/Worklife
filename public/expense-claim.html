@@ -777,7 +777,6 @@
         fetch('/api/expense/get-new-req-no')
           .then(res => res.json())
           .then(data => {
-            console.log("New req_no:", data.req_no);
             // Set to hidden input
             document.getElementById('req_no_input').value = data.req_no;
             // Show in Personal Info box
@@ -987,7 +986,6 @@
       fetch("/api/expense/personalinfo", { credentials: "include" })
         .then(res => res.json())
         .then(data => {
-          console.log("Fetched personal info:", data);
           if (data.error) {
             console.error(data.error);
             return;

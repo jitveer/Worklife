@@ -43,7 +43,7 @@ exports.sendPasscodeEmail = (to, passcode, callback) => {
       console.log("Email error:", err);
       if (callback) callback(err);
     } else {
-      console.log("Email sent:", info);
+      // console.log("Email sent:", info);
       if (callback) callback(null, info);
     }
   });
@@ -107,7 +107,7 @@ exports.sendInterviewInviteEmail = (to, examLink, roleName) => {
     if (err) {
       console.log("Interview mail error:", err);
     } else {
-      console.log("Interview mail sent (TEST)", info);
+      // console.log("Interview mail sent (TEST)", info);
       // console.log("Preview URL:", require("nodemailer").getTestMessageUrl(info));
     }
   });
@@ -147,9 +147,9 @@ exports.sendEmployeeFormEmail = (to, link) => {
 
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
-      console.log("Employee form email error:", err);
+      // console.log("Employee form email error:", err);
     } else {
-      console.log("Employee form email sent", info);
+      // console.log("Employee form email sent", info);
       // console.log(
       //   "Preview URL:",
       //   require("nodemailer").getTestMessageUrl(info)
@@ -208,7 +208,7 @@ exports.sendPayslipEmail = (to, subject, text, pdfBuffer) => {
     if (err) {
       console.log("Payslip email error:", err);
     } else {
-      console.log("Payslip email sent ✅", info);
+      // console.log("Payslip email sent ✅", info);
     }
   });
 };

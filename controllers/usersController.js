@@ -107,7 +107,7 @@ exports.sendUserPasscode = (req, res) => {
     const passcode = Math.floor(100000 + Math.random() * 900000);
 
     // You would replace this with actual email sending logic (e.g. nodemailer)
-    console.log(`Passcode ${passcode} sent to ${email}`);
+    // console.log(`Passcode ${passcode} sent to ${email}`);
 
     res.json({ message: `Passcode ${passcode} sent to ${email}` });
   });

@@ -1,5 +1,4 @@
 self.addEventListener("push", event => {
-  console.log("🔥 Push received");
 
   let data = {};
 
@@ -7,7 +6,6 @@ self.addEventListener("push", event => {
     try {
       data = event.data.json(); // try JSON
     } catch (e) {
-      console.log("⚠️ Not JSON, fallback to text");
 
       data = {
         title: "Test Notification",

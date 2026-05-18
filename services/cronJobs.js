@@ -61,7 +61,7 @@ function sendStageNotifications() {
                     `;
                     db.query(insertSql, [r.email, message, link], (errInsert) => {
                         if (errInsert) return console.error("Insert notif error:", errInsert);
-                        console.log(`✅ Notification sent to ${r.email} for ${stage}`);
+                        // console.log(`✅ Notification sent to ${r.email} for ${stage}`);
 
                         // Update the corresponding notified column
                         let updateSql = "";

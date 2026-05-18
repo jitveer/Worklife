@@ -141,7 +141,7 @@ WHERE u.email = ?
         const leaveId = result.insertId;
 
 
-        console.log("assignments", data.assignments)
+        // console.log("assignments", data.assignments)
 
 
         // Optional: Insert assignment info if provided
@@ -171,7 +171,7 @@ WHERE u.email = ?
           });
         }
 
-        console.log(`Leave request inserted. ID: ${leaveId}`);
+        // console.log(`Leave request inserted. ID: ${leaveId}`);
 
         const approverSql = `
           SELECT approver_role_id, specific_user_id, level
@@ -1075,7 +1075,7 @@ exports.getMyApprovalStatus = (req, res) => {
   const leaveRequestId = req.params.id;
   const approverUserId = req.session.user?.user_id;
 
-  console.log("Approver user ID from session:", approverUserId);
+  // console.log("Approver user ID from session:", approverUserId);
 
   if (!approverUserId) {
     return res.status(401).json({ status: "unauthorized" });

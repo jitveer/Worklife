@@ -763,7 +763,7 @@
 
         // view button functionality
         function viewRequest(appraisalId, stage) {
-            console.log("🔍 Viewing request:", appraisalId, "Stage:", stage);
+            // console.log("🔍 Viewing request:", appraisalId, "Stage:", stage);
 
             // Optionally store for later use
             sessionStorage.setItem("currentAppraisalId", appraisalId);
@@ -904,7 +904,7 @@
                 } else {
                     sessionStorage.setItem("user_id", data.user.user_id);
                     document.getElementById("userName").textContent = data.user.name;
-                    console.log("✅ Session loaded. user_id:", data.user.user_id);
+                    // console.log("✅ Session loaded. user_id:", data.user.user_id);
 
                 }
             })

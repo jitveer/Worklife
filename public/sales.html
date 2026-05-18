@@ -992,8 +992,6 @@
                     uploadedIncentiveFiles.push(data.filePath);
                 }
             }
-
-            console.log("Uploaded incentive files:", uploadedIncentiveFiles);
         });
 
 
@@ -1003,7 +1001,6 @@
             fetch("/api/sales/dropdown-data")
                 .then(res => res.json())
                 .then(data => {
-                    console.log("Dropdown Data:", data);
 
                     window.dropdownData = data; // ⭐ STORE HERE
 
@@ -1119,8 +1116,6 @@
         // onclick
         document.addEventListener("DOMContentLoaded", () => {
 
-            console.log("Page ready ✅");
-
             // HEADER
             document.getElementById("headerLogo")?.addEventListener("click", () => {
                 location.href = "dashboard.html";
@@ -1145,7 +1140,6 @@
         fetch("/api/sales/personal-info")
             .then(res => res.json())
             .then(data => {
-                console.log("Sales Personal Info:", data);
 
                 document.getElementById("info-employee-id").textContent = data.employee_id || "-";
                 document.getElementById("info-name").textContent = data.employee_name || "-";

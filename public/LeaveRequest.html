@@ -848,7 +848,6 @@
       fetch("/api/leave/personalinfo", { credentials: "include" })
         .then(res => res.json())
         .then(info => {
-          console.log("info", info)
           if (info.error) {
             console.error("No personal info:", info.error);
             return;

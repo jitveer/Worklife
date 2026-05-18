@@ -679,7 +679,6 @@
     }
 
     const type = getQueryParam("type");
-    console.log("TYPE:", type);
 
 
     // Session check + user name
@@ -691,7 +690,6 @@
         } else {
           document.getElementById("userName").textContent = data.user.name;
           userRole = data.user.roleId;
-          console.log("ROLE:", userRole);
 
 
           // ✅ ADD THIS BLOCK HERE
@@ -1021,7 +1019,6 @@
         .then(res => res.json())
         .then(data => {
 
-          console.log('data', data)
           const fromDate = new Date(data.from_date).toLocaleDateString("en-GB", {
             day: "2-digit",
             month: "short",
@@ -1147,7 +1144,6 @@
     // update status
     function updateStatus(newStatus) {
       if (!currentRequestId) return;
-      console.log("Status clicked:", newStatus);
 
       if (newStatus === "cancelled") {
         Swal.fire({

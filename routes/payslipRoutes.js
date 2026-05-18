@@ -2,7 +2,7 @@ const db = require('../db');
 const express = require('express');
 const router = express.Router();
 
-console.log("✅ Payslip Routes Loaded");
+// console.log("✅ Payslip Routes Loaded");
 
 const payslipController = require("../controllers/payslipController");
 

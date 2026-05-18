@@ -1,4 +1,4 @@
-console.log("JS loaded ✅");
+// console.log("JS loaded ✅");
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -148,14 +148,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (id) {
         sessionStorage.setItem("currentAppraisalId", id);
         if (hiddenInput) hiddenInput.value = id;
-        console.log("✅ Appraisal ID set from URL:", id);
+        // console.log("✅ Appraisal ID set from URL:", id);
     }
     // 🔹 Else try from storage
     else {
         const storedId = sessionStorage.getItem("currentAppraisalId");
         if (storedId && hiddenInput) {
             hiddenInput.value = storedId;
-            console.log("✅ Appraisal ID loaded from sessionStorage:", storedId);
+            // console.log("✅ Appraisal ID loaded from sessionStorage:", storedId);
         } else {
             console.warn("⚠️ No appraisalId found in URL or storage");
         }
@@ -224,7 +224,7 @@ if (appraisalId) {
 // Fetch Stage Details
 // ==========================
 function fetchStageDetails(appraisalId, stage) {
-    console.log("👉 Fetching stage details for appraisalId:", appraisalId, "stage:", stage);
+    // console.log("👉 Fetching stage details for appraisalId:", appraisalId, "stage:", stage);
 
     let url = `/api/section/appraisals/stage-info?id=${appraisalId}`;
     if (stage) {
@@ -234,9 +234,9 @@ function fetchStageDetails(appraisalId, stage) {
     fetch(url)
         .then(res => res.json())
         .then(result => {
-            console.log("Parsed JSON:", result);
-            console.log("✅ Full stage-info response:", result);
-            console.log("✅ Approvals array received:", result.approvals);
+            // console.log("Parsed JSON:", result);
+            // console.log("✅ Full stage-info response:", result);
+            // console.log("✅ Approvals array received:", result.approvals);
 
             if (!result.success) {
                 alert(result.message);
@@ -453,7 +453,7 @@ function fetchStageDetails(appraisalId, stage) {
                 // ✅ NEW: Store mid_item ID for update
                 if (document.getElementById("midItemId")) {
                     document.getElementById("midItemId").value = midData.id || midData.item_id || "";
-                    console.log("💾 Prefilled midItemId:", midData.id || midData.item_id);
+                    // console.log("💾 Prefilled midItemId:", midData.id || midData.item_id);
                 }
 
                 // Update totals safely
@@ -502,7 +502,7 @@ function fetchStageDetails(appraisalId, stage) {
                 if (document.getElementById("fullItemId")) {
                     const fullItemId = fullData.full_item_id || fullData.item_id || fullData.id || "";
                     document.getElementById("fullItemId").value = fullItemId;
-                    console.log("💾 Prefilled fullItemId:", fullItemId);
+                    // console.log("💾 Prefilled fullItemId:", fullItemId);
                 }
 
 
@@ -521,9 +521,9 @@ function fetchStageDetails(appraisalId, stage) {
 
             // 🟢 Prefill Approval History Section (Section 8)
             const approvalRows = document.querySelectorAll(".approval-table tbody tr");
-            console.log("✅ Full stage response (check Section 8):", result);
-            console.log("✅ section8Approvals:", result.section8Approvals);
-            console.log("✅ approvals:", result.approvals);
+            // console.log("✅ Full stage response (check Section 8):", result);
+            // console.log("✅ section8Approvals:", result.section8Approvals);
+            // console.log("✅ approvals:", result.approvals);
 
             // Prefer stage_approvals if available (Section 8)
             const approvalsData = Array.isArray(result.section8Approvals) && result.section8Approvals.length > 0
@@ -531,7 +531,7 @@ function fetchStageDetails(appraisalId, stage) {
                 : result.approvals;
 
             if (Array.isArray(approvalsData) && approvalsData.length > 0 && approvalRows.length > 0) {
-                console.log("🧾 Prefilling Approval History Section (Section 8):", approvalsData);
+                // console.log("🧾 Prefilling Approval History Section (Section 8):", approvalsData);
 
                 approvalsData.forEach(a => {
                     const approverType = (a.approver_type || "").trim().toLowerCase();
@@ -597,7 +597,7 @@ function fetchStageDetails(appraisalId, stage) {
                 });
             }
 
-            console.log("Approvals for this stage:", approvals);
+            // console.log("Approvals for this stage:", approvals);
 
         })
         .catch(err => console.error("Error fetching stage details:", err));
@@ -679,17 +679,17 @@ function collectMidStageUpdates(appraisalId) {
 // COLLECT FULL STAGE THEN TAKE ACTION
 function collectFullStageUpdates() {
 
-    console.log("🟢 Function collectFullStageUpdates() called");
+    // console.log("🟢 Function collectFullStageUpdates() called");
 
-    console.log("Business span text:", document.getElementById("business_score")?.innerText);
-    console.log("Professional span text:", document.getElementById("professional_score")?.innerText);
-    console.log("Behavioral span text:", document.getElementById("behavioral_score")?.innerText);
-    console.log("Overall span text:", document.getElementById("overall_score")?.innerText);
+    // console.log("Business span text:", document.getElementById("business_score")?.innerText);
+    // console.log("Professional span text:", document.getElementById("professional_score")?.innerText);
+    // console.log("Behavioral span text:", document.getElementById("behavioral_score")?.innerText);
+    // console.log("Overall span text:", document.getElementById("overall_score")?.innerText);
 
-    console.log("Business hidden value:", document.getElementById("business_score_input")?.value);
-    console.log("Professional hidden value:", document.getElementById("professional_score_input")?.value);
-    console.log("Behavioral hidden value:", document.getElementById("behavioral_score_input")?.value);
-    console.log("Overall hidden value:", document.getElementById("overall_score_input")?.value);
+    // console.log("Business hidden value:", document.getElementById("business_score_input")?.value);
+    // console.log("Professional hidden value:", document.getElementById("professional_score_input")?.value);
+    // console.log("Behavioral hidden value:", document.getElementById("behavioral_score_input")?.value);
+    // console.log("Overall hidden value:", document.getElementById("overall_score_input")?.value);
 
 
     let appraisalId =
@@ -702,14 +702,14 @@ function collectFullStageUpdates() {
     if (!appraisalId && window.currentAppraisalId)
         appraisalId = Number(window.currentAppraisalId);
 
-    console.log("▶ collectFullStageUpdates() - resolved appraisalId:", appraisalId);
+    // console.log("▶ collectFullStageUpdates() - resolved appraisalId:", appraisalId);
 
     // -----------------------------
     // Section 2: Business Targets (start_items)
     // -----------------------------
     const startItems = [];
     const targetRows = Array.from(document.querySelectorAll("#targetsBody tr")).filter(r => !r.hasAttribute("data-total-row"));
-    console.log("▶ Number of target rows found:", targetRows.length);
+    // console.log("▶ Number of target rows found:", targetRows.length);
 
     targetRows.forEach((row, index) => {
         // support both dataset.itemId or dataset.id
@@ -735,7 +735,7 @@ function collectFullStageUpdates() {
             score
         };
 
-        console.log(`▶ start row #${index + 1}:`, item);
+        // console.log(`▶ start row #${index + 1}:`, item);
         startItems.push(item);
     });
 
@@ -745,7 +745,7 @@ function collectFullStageUpdates() {
         total_weight: parseFloat(document.getElementById("totalWeight")?.textContent.replace('%', '')) || 0,
         total_score: parseFloat(document.getElementById("totalScore")?.textContent) || 0
     };
-    console.log("▶ startStage:", startStage);
+    // console.log("▶ startStage:", startStage);
 
     // -----------------------------
     // MID STAGE (core/behavioral)
@@ -780,7 +780,7 @@ function collectFullStageUpdates() {
         manager_comments: midStage.manager_comments,
         employee_comments: midStage.employee_comments
     }];
-    console.log("▶ midStage:", midStage, "midItems:", midItems);
+    // console.log("▶ midStage:", midStage, "midItems:", midItems);
 
     // -----------------------------
     // FULL STAGE
@@ -804,7 +804,7 @@ function collectFullStageUpdates() {
         strengths: document.getElementById("fullStrengths")?.value?.trim() || "",
         training_needs: document.getElementById("fullTraining")?.value?.trim() || ""
     }];
-    console.log("▶ fullStage:", fullStage, "fullItems:", fullItems);
+    // console.log("▶ fullStage:", fullStage, "fullItems:", fullItems);
 
     // ----- Section 3: Approval History (Section 8) -----
     const approvalRows = document.querySelectorAll(".approval-table tbody tr");
@@ -823,7 +823,7 @@ function collectFullStageUpdates() {
     // ✅ Attach approvals correctly inside fullStage
     fullStage.section8Approvals = approvals;
 
-    console.log("🟢 Collected Section 8 Approvals:", approvals);
+    // console.log("🟢 Collected Section 8 Approvals:", approvals);
 
     const payload = {
         appraisalId,
@@ -846,7 +846,7 @@ function collectFullStageUpdates() {
         fullItems
     });
 
-    console.log("🟢 Collected approvals:", approvals);
+    // console.log("🟢 Collected approvals:", approvals);
     return payload;
 }
 
@@ -879,7 +879,7 @@ function updateApproval(newStatus, stage, appraisalId) {
         updateUrl = "/api/section/appraisals/mid-stage/update-fields";
     } else if (stage === "full_stage") {
         const allUpdates = collectFullStageUpdates(appraisalId);
-        console.log("🟢 FULL STAGE COLLECTED DATA:", allUpdates);
+        // console.log("🟢 FULL STAGE COLLECTED DATA:", allUpdates);
 
         updates = {
             appraisalId: allUpdates.appraisalId,
@@ -1263,7 +1263,7 @@ document.getElementById("targetsBody").addEventListener("click", async function 
         row.getAttribute("data-item-id") ||
         null;
 
-    console.log("Deleting item with id:", id);
+    // console.log("Deleting item with id:", id);
 
     if (!confirm("Delete this row?")) return;
 

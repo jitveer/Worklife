@@ -40,5 +40,5 @@ async function subscribeUser(email) {
     })
   });
 
-  console.log("✅ Subscribed!");
+  // console.log("✅ Subscribed!");
 }

@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    console.log("👉 Opening Appraisal:", appraisalId, "Stage:", stage);
+    // console.log("👉 Opening Appraisal:", appraisalId, "Stage:", stage);
 
     // ✅ All section IDs
     const allSections = [
@@ -331,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== Mid-Stage Initialization =====
     if (stage === "mid_stage") {
-        console.log("✅ Mid-stage initialization running");
+        // console.log("✅ Mid-stage initialization running");
 
         const midSections = ["sectionCompetencies", "sectionBehavioral", "sectionMidYear"];
         midSections.forEach(id => {
@@ -349,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ===== Full Stage Initialization (if needed) =====
     if (stage === "full_stage") {
-        console.log("✅ Full-stage initialization running");
+        // console.log("✅ Full-stage initialization running");
 
         const appraisalId = new URLSearchParams(window.location.search).get("id");
 
@@ -574,7 +574,7 @@ document.getElementById("targetsBody").addEventListener("click", async function 
         row.getAttribute("data-item-id") ||
         null;
 
-    console.log("Deleting item with id:", id);
+    // console.log("Deleting item with id:", id);
 
     if (!confirm("Delete this row?")) return;
 
@@ -694,7 +694,7 @@ function submitMidStage() {
         overallComments: document.getElementById("midComments")?.value || ""
     };
 
-    console.log("Submitting mid-stage:", payload);
+    // console.log("Submitting mid-stage:", payload);
 
     fetch("/api/section/submit-mid-stage", {
         method: "POST",
@@ -942,7 +942,7 @@ function setTableEditable() {
 
 
 function prefillMidStage(stageData, midItemsObj = {}) {
-    console.log("🔹 Prefilling Mid Stage");
+    // console.log("🔹 Prefilling Mid Stage");
 
     // ----------------------
     // Section 3: Core Competencies
@@ -1030,7 +1030,7 @@ function prefillMidStage(stageData, midItemsObj = {}) {
         if (midItemsObj.id) empCommentsEl.dataset.id = midItemsObj.id;
     }
 
-    console.log("✅ Mid Stage prefilling complete");
+    // console.log("✅ Mid Stage prefilling complete");
 
     // Recalculate Core & Behavioral totals
     calculateAverage(".tech-rating", "#coreTotal");
@@ -1199,7 +1199,7 @@ function submitFullStage() {
         approvals: data.approvals
     };
 
-    console.log("Full stage payload to submit:", payload);
+    // console.log("Full stage payload to submit:", payload);
 
     fetch("/api/section/employee/submit-full-stage", {
         method: "POST",
@@ -1241,7 +1241,7 @@ function submitFullStage() {
 // onclick
 document.addEventListener("DOMContentLoaded", () => {
 
-    console.log("JS working ✅");
+    // console.log("JS working ✅");
 
     // ==========================
     // LOGOUT
@@ -1291,7 +1291,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (addRowBtn) {
         addRowBtn.addEventListener("click", () => {
-            console.log("Add Row Clicked ✅");
+            // console.log("Add Row Clicked ✅");
             addBusinessTargetRow();
         });
     }

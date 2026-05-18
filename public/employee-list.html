@@ -1609,7 +1609,7 @@
 
         //company depatment role
         function getCompanyDeptRoleNames(data) {
-          console.log("data", data)
+          // console.log("data", data)
           fetch("/api/employees/getCompanyDeptRoleNames ", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1618,7 +1618,7 @@
           })
             .then(res => res.json())
             .then(result => {
-              console.log("Names:", result);
+              // console.log("Names:", result);
               document.getElementById("companyId").value = result.company_name || "";
               document.getElementById("departmentId").value = result.department_name || "";
               document.getElementById("roleId").value = result.role || "";
@@ -1649,7 +1649,7 @@
           // const password = document.getElementById("userpassword").value.trim();
           // const confirmpassword = document.getElementById("confirmpassword").value.trim();
 
-          console.log({ first_name, last_name, email, employeeId });
+          // console.log({ first_name, last_name, email, employeeId });
 
           if (!first_name || !last_name || !email || !employeeId) {
             alert("Please fill all fields!");
@@ -1773,7 +1773,7 @@
             .then(res => res.json())
             .then(emp => {
 
-              console.log("emp", emp)
+              // console.log("emp", emp)
               // Open the modal
               document.getElementById("addModal").style.display = "block";
 
@@ -1984,11 +1984,11 @@
             });
 
             const data = await res.json();
-            console.log("Upload response:", data);
+            // console.log("Upload response:", data);
 
             if (data.success) {
               uploadedPhotoPath = data.filePath;
-              console.log("Saved uploaded photo path:", uploadedPhotoPath);
+              // console.log("Saved uploaded photo path:", uploadedPhotoPath);
             } else {
               alert("Photo upload failed!");
             }

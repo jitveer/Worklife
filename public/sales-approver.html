@@ -998,7 +998,6 @@
             fetch("/api/sales/dropdown-data")
                 .then(res => res.json())
                 .then(data => {
-                    console.log("Dropdown Loaded:", data);
                     window.dropdownData = data;
                     callback(); // ✅ continue after loading
                 })
@@ -1064,11 +1063,9 @@
                 fetch(`/api/sales/view/${reqNo}`)
                     .then(res => res.json())
                     .then(data => {
-                        console.log("Sales Approver Data:", data);
 
                         // SAVE ATTACHMENTS (array of file paths)
                         window.saleAttachments = data.sale.attachments || [];
-                        console.log("Attachments:", window.saleAttachments);
 
                         const sale = data.sale;
                         const items = data.items;
@@ -1460,8 +1457,6 @@
 
         // onclick
         document.addEventListener("DOMContentLoaded", () => {
-
-            console.log("Buttons working ✅");
 
             // ==========================
             // LEFT PANEL NAVIGATION

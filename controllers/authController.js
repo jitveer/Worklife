@@ -1,6 +1,6 @@
 const db = require("../db");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto"); 
+const crypto = require("crypto");
 const { sendPasscodeEmail } = require("../services/mailer");
 
 function generate4DigitPassword() {
@@ -12,62 +12,212 @@ function md5(password) {
 }
 
 exports.login = (req, res) => {
+
   const { company, role, email, password } = req.body;
 
+  // DEVICE IP
+  const ip =
+    req.headers["x-forwarded-for"] ||
+    req.socket.remoteAddress;
+
   const sql = `
-    SELECT * FROM users 
+    SELECT * FROM users
     WHERE email = ? AND company_id = ? AND role_id = ?
   `;
 
   db.query(sql, [email, company, role], async (err, results) => {
+
     if (err) {
+
       console.error("DB Error:", err.message);
-      return res.status(500).json({ success: false, message: "Server error" });
+
+      return res.status(500).json({
+        success: false,
+        message: "Server error"
+      });
     }
 
     if (results.length === 0) {
-      return res.json({ success: false, message: "Invalid credentials." });
+
+      return res.json({
+        success: false,
+        message: "Invalid credentials."
+      });
     }
 
     const user = results[0];
 
-    // 🔄 STEP 1: check if old MD5 password
-    if (user.password.length === 32) {
-      // old MD5
-      if (md5(password) === user.password) {
-        // ✅ convert to bcrypt
-        const newHash = await bcrypt.hash(password, 10);
-        db.query("UPDATE users SET password=? WHERE id=?", [newHash, user.id]);
+    // =========================
+    // CHECK DEVICE LOCK
+    // =========================
 
-        console.log("Password upgraded to bcrypt");
-      } else {
-        return res.json({ success: false, message: "Invalid credentials." });
+    db.query(
+      `SELECT * FROM login_attempts
+       WHERE ip_address = ? AND email = ?`,
+      [ip, email],
+      async (err, attemptRows) => {
+
+        if (attemptRows.length > 0) {
+
+          const attemptData = attemptRows[0];
+
+          if (
+            attemptData.lock_until &&
+            new Date(attemptData.lock_until) > new Date()
+          ) {
+
+            return res.json({
+              success: false,
+              message:
+                "Too many failed attempts from this device. Try again after 30 minutes."
+            });
+          }
+        }
+
+        // =========================
+        // MD5 PASSWORD SUPPORT
+        // =========================
+
+        if (user.password.length === 32) {
+
+          if (md5(password) === user.password) {
+
+            const newHash = await bcrypt.hash(password, 10);
+
+            db.query(
+              "UPDATE users SET password=? WHERE id=?",
+              [newHash, user.id]
+            );
+
+            console.log("Password upgraded to bcrypt");
+
+          } else {
+
+            return handleFailedAttempt();
+          }
+        }
+
+        // =========================
+        // BCRYPT CHECK
+        // =========================
+
+        const isMatch = await bcrypt.compare(
+          password,
+          user.password
+        );
+
+        if (!isMatch) {
+
+          return handleFailedAttempt();
+        }
+
+        // =========================
+        // RESET ATTEMPTS AFTER SUCCESS
+        // =========================
+
+        db.query(
+          `DELETE FROM login_attempts
+           WHERE ip_address=? AND email=?`,
+          [ip, email]
+        );
+
+        // =========================
+        // SESSION
+        // =========================
+
+        req.session.user = {
+
+          email: user.email,
+          companyId: user.company_id,
+          roleId: user.role_id,
+          departmentId: user.department_id,
+          name: `${user.first_name} ${user.last_name}`,
+          employee_id: user.employee_id || null,
+          user_id: user.id || null
+        };
+
+        return res.json({
+          success: true,
+          message: "Login successful"
+        });
+
+        // =========================
+        // FAILED ATTEMPT FUNCTION
+        // =========================
+
+        function handleFailedAttempt() {
+
+          db.query(
+            `SELECT * FROM login_attempts
+             WHERE ip_address=? AND email=?`,
+            [ip, email],
+            (err, rows) => {
+
+              if (rows.length === 0) {
+
+                db.query(
+                  `INSERT INTO login_attempts
+                   (ip_address, email, attempts)
+                   VALUES (?, ?, 1)`,
+                  [ip, email]
+                );
+
+                return res.json({
+                  success: false,
+                  message: "Invalid credentials. 4 attempts left."
+                });
+
+              } else {
+
+                const attempts =
+                  rows[0].attempts + 1;
+
+                // LOCK AFTER 5 ATTEMPTS
+                if (attempts >= 5) {
+
+                  const lockUntil = new Date(
+                    Date.now() + 30 * 60 * 1000
+                  );
+
+                  db.query(
+                    `UPDATE login_attempts
+                     SET attempts=?,
+                         lock_until=?
+                     WHERE ip_address=? AND email=?`,
+                    [attempts, lockUntil, ip, email]
+                  );
+
+                  return res.json({
+                    success: false,
+                    message:
+                      "Too many failed attempts. Device locked for 30 minutes."
+                  });
+
+                } else {
+
+                  db.query(
+                    `UPDATE login_attempts
+                     SET attempts=?
+                     WHERE ip_address=? AND email=?`,
+                    [attempts, ip, email]
+                  );
+
+                  return res.json({
+                    success: false,
+                    message:
+                      `${5 - attempts} attempts left.`
+                  });
+                }
+              }
+            }
+          );
+        }
+
       }
-    }
+    );
 
-    // ✅ bcrypt compare (THIS IS MAIN CHANGE)
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.json({ success: false, message: "Invalid credentials." });
-    }
-
-    // session
-    req.session.user = {
-      email: user.email,
-      companyId: user.company_id,
-      roleId: user.role_id,
-      departmentId: user.department_id,
-      name: `${user.first_name} ${user.last_name}`,
-      employee_id: user.employee_id || null,
-      user_id: user.id || null
-    };
-
-    return res.json({
-      success: true,
-      message: "Login successful"
-    });
   });
+
 };
 
 

@@ -764,7 +764,6 @@
             fetch("/api/petrol/personalinfo", { credentials: "include" })
                 .then(res => res.json())
                 .then(data => {
-                    console.log("Fetched personal info:", data);
 
                     if (data.error) {
                         console.error(data.error);

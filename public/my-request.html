@@ -606,7 +606,7 @@
       fetch(`/api/leave/my-requests`, { credentials: "include" })
         .then(res => res.json())
         .then(data => {
-          console.log("data", data);
+          
 
           const tbody = document.querySelector("#requestsTable tbody");
           tbody.innerHTML = "";
@@ -739,7 +739,7 @@
               });
 
               const uniqueSteps = Array.from(roleMap.values());
-              console.log(uniqueSteps);
+              // console.log(uniqueSteps);
 
               // 2. Render approval flow by role
               let html = `<div style="display: flex; justify-content: center; align-items: center; flex-wrap: nowrap; overflow-x: auto;">`;

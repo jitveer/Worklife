@@ -79,7 +79,7 @@ router.get('/personalinfo', (req, res) => {
 });
 
 router.post('/assign-leave-task', (req, res) => {
-  console.log(req.body)
+  // console.log(req.body)
   const { leave_request_id, assigned_employee_id, task_description } = req.body;
 
   const sql = `

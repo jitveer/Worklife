@@ -559,14 +559,12 @@
                 // VIEW
                 if (viewBtn) {
                     const reqNo = viewBtn.dataset.req;
-                    console.log("View clicked:", reqNo);
                     viewSale(reqNo);
                 }
 
                 // DELETE
                 if (deleteBtn) {
                     const saleId = deleteBtn.dataset.id;
-                    console.log("Delete clicked:", saleId);
 
                     if (!saleId) {
                         console.error("sale_id missing");
@@ -584,8 +582,6 @@
             // onclick
             //----------------------------------
             document.addEventListener("DOMContentLoaded", () => {
-
-                console.log("Page ready ✅");
 
                 // HEADER
                 document.getElementById("headerLogo")?.addEventListener("click", () => {
@@ -681,7 +677,6 @@
 
 
             function deleteSale(saleId) {
-                console.log("Deleting sale:", saleId);
 
                 fetch(`/api/sales/delete/${saleId}`, {
                     method: "DELETE"
@@ -715,7 +710,6 @@
                     } else {
                         sessionStorage.setItem("user_id", data.user.user_id);
                         document.getElementById("userName").textContent = data.user.name;
-                        console.log("✅ Session loaded. user_id:", data.user.user_id);
 
                     }
                 })
