@@ -44,14 +44,23 @@ module.exports = async function watermarkImage(imagePath, text) {
   });
 
   const svg = `
-<svg width="${metadata.width}" height="140">
+<svg width="${width}" height="140">
   <rect x="0" y="0" width="${metadata.width}" height="140" fill="black" opacity="0.6"/>
   
   ${addressText}
 
-  <text x="20" y="120" font-size="18" fill="white">
-    ${new Date().toLocaleString()}
-  </text>
+<text x="20" y="120" font-size="18" fill="white">
+  ${new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  })}
+</text>
 </svg>
 `;
 

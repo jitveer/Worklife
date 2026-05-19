@@ -212,7 +212,7 @@ WHERE u.email = ?
 
             const requesterUserId = rqRows[0].id;
 
-            if (requesterUserId == 31 || requesterUserId == 50) {
+            if ([31, 50].includes(Number(requesterUserId))) {
 
               const L1 = 11;  // first approver
 
@@ -612,8 +612,9 @@ exports.updateLeaveStatus = (req, res) => {
 
 
       /**************************************************
-       ✅ SELF SEQUENTIAL APPROVAL (for requester 31 / 50)
-      **************************************************/
+ ✅ SELF SEQUENTIAL APPROVAL (for requester 31 / 50)
+**************************************************/
+
       const getRequesterInfo = `
   SELECT 
     u.id AS requester_user_id,
@@ -625,169 +626,288 @@ exports.updateLeaveStatus = (req, res) => {
 `;
 
       db.query(getRequesterInfo, [leaveRequestId], (err, rqRows) => {
+
         if (err || rqRows.length === 0) {
-          return res.status(500).json({ success: false, message: "Requester lookup failed" });
+          return res.status(500).json({
+            success: false,
+            message: "Requester lookup failed"
+          });
         }
 
         const requesterUserId = rqRows[0].requester_user_id;
         const requesterName = rqRows[0].requester_name;
 
-        if (requesterUserId == 31 || requesterUserId == 50) {
+        if ([31, 50].includes(Number(requesterUserId))) {
 
-
-          /*******************************
+          /****************************************
            ✅ STEP-1 → L1(11) approves → L2(12)
-          *******************************/
-          if (current.level == 1) {
+          ****************************************/
+          if (Number(current.level) === 1) {
 
-            // ✅ Mark current approver approved
             db.query(
               `UPDATE leave_request_approvals
          SET status='approved'
-         WHERE id = ?`,
-              [current.id]
-            );
-
-            // ✅ Update approver notification
-            db.query(
-              `UPDATE notifications
-         SET message = ?
-         WHERE email = ? AND link = ?`,
-              [
-                `✅ You approved leave request from ${requesterName}`,
-                req.session.user.email,
-                `/leave-requests-approval.html?leaveId=${leaveRequestId}`
-              ]
-            );
-
-            // ✅ Remove any old L2
-            db.query(
-              `DELETE FROM leave_request_approvals 
-         WHERE leave_request_id=? AND level=2`,
-              [leaveRequestId]
-            );
-
-            // ✅ Insert next approver → 12
-            db.query(
-              `INSERT INTO leave_request_approvals 
-               (leave_request_id, approver_user_id, level, status)
-               VALUES (?, ?, ?, 'pending')`,
-              [leaveRequestId, 12, 2],
+         WHERE id=?`,
+              [current.id],
               (err) => {
+
                 if (err) {
-                  console.error("L2 insert error:", err);
-                  return res.status(500).json({ success: false, message: "Error inserting next approver" });
-                }
-              }
-            );
+                  console.error(err);
 
-            notifyLevel(12, leaveRequestId, requesterName);
-
-            return res.status(200).json({
-              success: true,
-              message: "Moved L1(11) → L2(12)"
-            });
-          }
-
-
-          /*******************************
-           ✅ STEP-2 → L2(12) approves → L3(13)
-          *******************************/
-          if (current.level == 2) {
-
-            // ✅ Mark current approver approved
-            db.query(
-              `UPDATE leave_request_approvals
-               SET status='approved'
-               WHERE id = ?`,
-              [current.id]
-            );
-
-            // ✅ Update notification
-            db.query(
-              `UPDATE notifications
-                SET message = ?
-                WHERE email = ? AND link = ?`,
-              [
-                `✅ You approved leave request from ${requesterName}`,
-                req.session.user.email,
-                `/leave-requests-approval.html?leaveId=${leaveRequestId}`
-              ]
-            );
-
-            // ✅ Remove old L3
-            db.query(
-              `DELETE FROM leave_request_approvals 
-                WHERE leave_request_id=? AND level=3`,
-              [leaveRequestId]
-            );
-
-            // ✅ Insert next approver → 13
-            db.query(
-              `INSERT INTO leave_request_approvals
-              (leave_request_id, approver_user_id, level, status)
-               VALUES (?, ?, ?, 'pending')`,
-              [leaveRequestId, 13, 3],
-              (err) => {
-                if (err) {
-                  console.error("L3 insert error:", err);
                   return res.status(500).json({
                     success: false,
-                    message: "Error inserting L3"
+                    message: "Level-1 update failed"
                   });
                 }
 
-                // 🔔 ONLY AFTER SUCCESS
-                notifyLevel(13, leaveRequestId, requesterName);
+                // ✅ Update notification
+                db.query(
+                  `UPDATE notifications
+                  SET message = ?
+                  WHERE email = ?
+                  AND link = ?`,
+                  [
+                    `✅ You approved leave request from ${requesterName}`,
+                    req.session.user.email,
+                    `/leave-requests-approval.html?leaveId=${leaveRequestId}`
+                  ]
+                );
+
+                db.query(
+                  `INSERT INTO leave_request_approvals
+             (leave_request_id, approver_user_id, level, status)
+             SELECT ?, ?, ?, 'pending'
+             WHERE NOT EXISTS (
+               SELECT 1 FROM leave_request_approvals
+               WHERE leave_request_id = ?
+               AND level = ?
+             )`,
+                  [leaveRequestId, 12, 2, leaveRequestId, 2],
+                  (err, result) => {
+
+                    if (err) {
+
+                      console.error("L2 INSERT ERROR:", err);
+
+                      return res.status(500).json({
+                        success: false,
+                        message: "L2 insert failed"
+                      });
+                    }
+
+                    if (result.affectedRows === 0) {
+
+                      return res.status(200).json({
+                        success: true,
+                        message: "Level-2 already exists"
+                      });
+                    }
+
+                    notifyLevel(12, leaveRequestId, requesterName);
+
+                    return res.status(200).json({
+                      success: true,
+                      message: "Moved to Level-2"
+                    });
+                  }
+                );
               }
             );
+
+            return;
           }
 
 
 
-          /*******************************
-           ✅ STEP-3 → L3(13) approves → DONE
-          *******************************/
-          if (current.level == 3) {
+          /****************************************
+           ✅ STEP-2 → L2(12) approves → L3(13)
+          ****************************************/
+          if (Number(current.level) === 2) {
 
-            // ✅ Mark level-3 approved
             db.query(
               `UPDATE leave_request_approvals
          SET status='approved'
-         WHERE id = ?`,
-              [current.id]
-            );
-
-            // ✅ Update notification
-            db.query(
-              `UPDATE notifications
-         SET message = ?
-         WHERE email = ? AND link = ?`,
-              [
-                `✅ You approved leave request from ${requesterName}`,
-                req.session.user.email,
-                `/leave-requests-approval.html?leaveId=${leaveRequestId}`
-              ]
-            );
-
-            // ✅ Close leave request
-            db.query(
-              `UPDATE leave_requests 
-         SET status='approved'
          WHERE id=?`,
-              [leaveRequestId]
+              [current.id],
+              (err) => {
+
+                if (err) {
+
+                  console.error(err);
+
+                  return res.status(500).json({
+                    success: false,
+                    message: "Level-2 update failed"
+                  });
+                }
+
+                // ✅ Update notification
+                db.query(
+                  `UPDATE notifications
+                  SET message = ?
+                  WHERE email = ?
+                  AND link = ?`,
+                  [
+                    `✅ You approved leave request from ${requesterName}`,
+                    req.session.user.email,
+                    `/leave-requests-approval.html?leaveId=${leaveRequestId}`
+                  ]
+                );
+
+                db.query(
+                  `INSERT INTO leave_request_approvals
+             (leave_request_id, approver_user_id, level, status)
+             SELECT ?, ?, ?, 'pending'
+             WHERE NOT EXISTS (
+               SELECT 1 FROM leave_request_approvals
+               WHERE leave_request_id = ?
+               AND level = ?
+             )`,
+                  [leaveRequestId, 13, 3, leaveRequestId, 3],
+                  (err, result) => {
+
+                    if (err) {
+
+                      console.error("L3 INSERT ERROR:", err);
+
+                      return res.status(500).json({
+                        success: false,
+                        message: "L3 insert failed"
+                      });
+                    }
+
+                    if (result.affectedRows === 0) {
+
+                      return res.status(200).json({
+                        success: true,
+                        message: "Level-3 already exists"
+                      });
+                    }
+
+                    notifyLevel(13, leaveRequestId, requesterName);
+
+                    return res.status(200).json({
+                      success: true,
+                      message: "Moved to HR approval"
+                    });
+                  }
+                );
+              }
             );
 
-            return res.status(200).json({
-              success: true,
-              message: "Leave fully approved ✅"
-            });
+            return;
           }
 
-          return; // ✅ stop normal flow
+
+
+          /****************************************
+           ✅ STEP-3 → L3(13) FINAL APPROVAL
+          ****************************************/
+          if (Number(current.level) === 3) {
+
+            db.query(
+              `UPDATE leave_request_approvals
+         SET status='approved'
+         WHERE id=?`,
+              [current.id],
+              (err) => {
+
+                if (err) {
+
+                  console.error(err);
+
+                  return res.status(500).json({
+                    success: false,
+                    message: "Final approval failed"
+                  });
+                }
+
+                // ✅ Update approver notification
+                db.query(
+                  `UPDATE notifications
+                  SET message = ?
+                  WHERE email = ?
+                  AND link = ?`,
+                  [
+                    `✅ You approved leave request from ${requesterName}`,
+                    req.session.user.email,
+                    `/leave-requests-approval.html?leaveId=${leaveRequestId}`
+                  ]
+                );
+
+                db.query(
+                  `UPDATE leave_requests
+             SET status='approved'
+             WHERE id=?`,
+                  [leaveRequestId],
+                  (err) => {
+
+                    if (err) {
+
+                      console.error(err);
+
+                      return res.status(500).json({
+                        success: false,
+                        message: "Leave update failed"
+                      });
+                    }
+
+                    db.query(
+                      `SELECT requester_email
+   FROM leave_requests
+   WHERE id=?`,
+                      [leaveRequestId],
+                      (err, leaveRows) => {
+
+                        if (err || leaveRows.length === 0) {
+
+                          return res.status(500).json({
+                            success: false,
+                            message: "Requester lookup failed"
+                          });
+                        }
+
+                        const requesterEmail = leaveRows[0].requester_email;
+
+                        // ✅ Update requester notification
+                        db.query(
+                          `UPDATE notifications
+       SET message = ?, created_at = NOW()
+       WHERE email = ?
+       AND link = ?`,
+                          [
+                            "Your leave request approved ✅",
+                            requesterEmail,
+                            `/my-request.html?view=${leaveRequestId}`
+                          ],
+                          (err) => {
+
+                            if (err) {
+                              console.error("Notification update error:", err);
+                            }
+
+                            return res.status(200).json({
+                              success: true,
+                              message: "Leave fully approved ✅"
+                            });
+                          }
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            );
+
+            return;
+          }
+
+          return;
         }
 
-
+        /****************************************
+         ✅ NORMAL FLOW CONTINUES BELOW
+        ****************************************/
 
         // normal flow for other employees
         db.query(
