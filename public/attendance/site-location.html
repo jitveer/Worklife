@@ -140,29 +140,14 @@
             localStorage.setItem('site_lat', lat);
             localStorage.setItem('site_lng', lng);
 
-            // Convert to address using OpenStreetMap
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                .then(res => res.json())
-                .then(data => {
+            showStatus(
+                "Location captured successfully!",
+                "success"
+            );
 
-                    const address = data.display_name;
-
-                    showStatus(
-                        "Location captured successfully!<br><b>" + address + "</b>",
-                        "success"
-                    );
-
-                    // Save address also
-                    localStorage.setItem("site_address", address);
-
-                    setTimeout(() => {
-                        window.location.href = '/attendance/site-selfie.html';
-                    }, 1500);
-
-                })
-                .catch(() => {
-                    showStatus("Address lookup failed", "error");
-                });
+            setTimeout(() => {
+                window.location.href = '/attendance/site-selfie.html';
+            }, 1000);
         }
 
         function errorLocation(error) {

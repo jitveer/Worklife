@@ -38,35 +38,83 @@
     </header>
 
     <!-- ================= MAIN ================= -->
-    <div class="flex pt-3">
+    <div class="flex flex-col md:flex-row pt-3">
 
         <!-- ========== LEFT PANEL ========== -->
-        <aside id="sidePanel" class="w-[125px] px-3 flex flex-col">
-            <button id="hrBtn"
-                class="h-[100px] bg-[#a493b9] text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
-                <i class="fa-regular fa-user text-2xl mb-1"></i>HR
+        <div id="sidePanel" class="flex flex-row md:flex-col
+            justify-center md:justify-start
+            items-center
+            w-full md:w-[120px]
+            shrink-0
+            gap-0
+            order-first md:order-none">
+
+            <!-- HR -->
+            <button id="hrBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#a493b9] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-regular fa-user text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">HR</span>
             </button>
 
-            <button id="financeBtn"
-                class="h-[100px] bg-[#c78864] text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
-                <i class="fa-regular fa-folder text-2xl mb-1"></i>Finance
+            <!-- Finance -->
+            <button id="financeBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#c78864] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-regular fa-folder text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">Finance</span>
             </button>
 
-            <button id="itBtn"
-                class="h-[100px] bg-red-800 text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
-                <i class="fa-solid fa-desktop text-2xl mb-1"></i>IT
+            <!-- IT -->
+            <button id="itBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#863f33] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-solid fa-desktop text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">IT</span>
             </button>
 
-            <button id="performanceBtn"
-                class="h-[100px] bg-emerald-600 text-white text-sm font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
-                <i class="fa-solid fa-clock text-2xl mb-1"></i>Performance
+            <!-- Performance -->
+            <button id="performanceBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#15ac7f] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-solid fa-clock text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">Performance</span>
             </button>
 
-            <button id="reportsBtn"
-                class="h-[100px] bg-lime-600 text-sm text-white font-bold flex flex-col justify-center items-center shadow-md hover:-translate-y-2 hover:shadow-xl transition">
-                <i class="fa-solid fa-chart-bar text-2xl mb-1"></i>Reports
+            <!-- Reports -->
+            <button id="reportsBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#82b435] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-solid fa-chart-bar text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">Reports</span>
             </button>
-        </aside>
+
+        </div>
 
         <!-- ========== CONTENT ========== -->
         <main class="flex-1 bg-white m-3 p-6 rounded-xl shadow-lg">
@@ -76,7 +124,7 @@
             </h1>
 
             <!-- FILTER BAR (ONLY STATUS FILTERS) -->
-            <div class="flex gap-3 mb-6">
+            <div class="flex flex-wrap gap-2 mb-6">
                 <button id="allBtn"
                     class="border-2 px-5 py-2 rounded-lg font-semibold hover:bg-emerald-600 hover:text-white transition">
                     All
@@ -99,7 +147,7 @@
             </div>
 
             <!-- TABLE -->
-            <table id="certificateTable" class="w-full border-separate border-spacing-y-3">
+            <table id="certificateTable" class="hidden lg:table w-full border-separate border-spacing-y-3">
                 <thead>
                     <tr class="bg-emerald-600 text-white text-sm">
                         <th class="p-3">ID</th>
@@ -114,8 +162,12 @@
                 </tbody>
             </table>
 
+            <!-- MOBILE CARDS -->
+            <div id="mobileCards" class="flex flex-col gap-4 lg:hidden"></div>
         </main>
     </div>
+
+
     <script>
         // ===============================
         // Employee - My Certificate Requests JS
@@ -140,6 +192,8 @@
                 .then(data => {
                     const tbody = document.querySelector("#certificateTable tbody");
                     tbody.innerHTML = "";
+                    const mobileCards = document.getElementById("mobileCards");
+                    mobileCards.innerHTML = "";
 
                     const filteredData =
                         statusFilter === "all"
@@ -154,11 +208,18 @@
                                 </td>
                                 </tr>
                                 `;
+
+                        mobileCards.innerHTML = `
+                        <div class="bg-white rounded-xl shadow p-4 text-center text-gray-500">
+                            No records found
+                            </div>
+                            `;
                         return;
                     }
 
                     filteredData.forEach(row => {
                         tbody.appendChild(createRow(row));
+                        mobileCards.appendChild(createCard(row));
                     });
                 })
                 .catch(err => {
@@ -202,13 +263,85 @@
             return tr;
         }
 
+
+
+
+
+
+        // -------------------------------
+        // card in mobile 
+        // -------------------------------
+        function createCard(row) {
+
+            const card = document.createElement("div");
+
+            card.className =
+                "bg-white rounded-2xl shadow-md p-4 border border-gray-100";
+
+            card.innerHTML = `
+    
+    <div class="flex justify-between items-start mb-3">
+        <div>
+            <h2 class="font-bold text-emerald-700 text-lg">
+                ${row.name}
+            </h2>
+
+            <p class="text-xs text-gray-500">
+                ID: ${row.employee_id}
+            </p>
+        </div>
+
+        ${getStatusBadge(row.status)}
+    </div>
+
+    <div class="space-y-2 text-sm">
+
+        <div class="flex justify-between">
+            <span class="font-semibold text-gray-600">
+                Certificate
+            </span>
+
+            <span class="text-right">
+                ${row.certificate_type_name}
+            </span>
+        </div>
+
+    </div>
+
+    <div class="mt-4 flex justify-end">
+        <button class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm">
+            View
+        </button>
+    </div>
+    `;
+
+            card.querySelector("button")
+                .addEventListener("click", () => {
+
+                    viewTracking(
+                        row.name,
+                        row.req_no,
+                        row.status,
+                        row.rejection_reason || ""
+                    );
+
+                });
+
+            return card;
+        }
+
+
+
+
+
+
         // -------------------------------
         // Status Badge
         // -------------------------------
         function getStatusBadge(status) {
             if (status === "approved") {
                 return `
-                <span class="px-3 py-1 rounded-full text-xs font-bold
+                <span class="px-3 py-3 rounded-full text-xs font-bold
                 bg-green-100 text-green-700 capitalize">
                 approved
                 </span>
@@ -217,7 +350,7 @@
 
             if (status === "pending") {
                 return `
-                <span class="px-3 py-1 rounded-full text-xs font-bold
+                <span class="px-3 py-3 rounded-full text-xs font-bold
                 bg-yellow-100 text-yellow-700 capitalize">
                 pending
                 </span>
@@ -225,7 +358,7 @@
             }
 
             return `
-            <span class="px-3 py-1 rounded-full text-xs font-bold
+            <span class="px-3 py-3 rounded-full text-xs font-bold
             bg-red-100 text-red-700 capitalize">
             rejected
             </span>
@@ -372,36 +505,88 @@
                     if (panel) {
                         panel.innerHTML = `
 
-            <button id="leaveBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#a493b9] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
-                <i class="fa-solid fa-calendar-check"></i>
-                <span>Leave</span>
+            <!-- Leave -->
+            <button id="leaveBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#a493b9] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-solid fa-calendar-check text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">Leave</span>
             </button>
 
-            <button id="expenseBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#c78864] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
-                <i class="fa-solid fa-money-bill"></i>
-                <span>Expense</span>
+            <!-- Expense -->
+            <button id="expenseBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#c78864] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-solid fa-money-bill text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">Expense</span>
             </button>
 
-            <button id="petrolBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#863f33] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
-                <i class="fa-solid fa-gas-pump"></i>
-                <span>Petrol</span>
+
+            <!-- Performance -->
+            <button id="performanceBtn2" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#82b435] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-solid fa-chart-column text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">Performance</span>
             </button>
 
-            <button id="salesBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#15ac7f] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Incentive</span>
+            <!-- Petrol -->
+            <button id="petrolBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#863f33] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-solid fa-gas-pump text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">Petrol</span>
             </button>
 
-            <button id="performanceBtn2" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#82b435] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
-                <i class="fa-solid fa-chart-column"></i>
-                <span>Performance</span>
+            <!-- Incentive -->
+            <button id="salesBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#15ac7f] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-solid fa-chart-line text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">Incentive</span>
             </button>
 
-            <button id="certificateBtn" class="w-[55px] h-[55px] md:w-[110px] md:h-[100px] p-[6px] md:p-0 bg-[#6c63ff] text-white flex flex-col justify-center items-center hover:-translate-y-1 hover:shadow-xl">
-                <i class="fa-solid fa-certificate"></i>
-                <span>Certificate</span>
+
+            <!-- Certificate -->
+            <button id="certificateBtn" class="w-[55px] h-[55px]
+               md:w-[110px] md:h-[100px]
+               p-[6px] md:p-0
+               bg-[#6c63ff] text-white
+               flex flex-col justify-center items-center
+               transition-all duration-200
+               hover:-translate-y-1 hover:shadow-xl">
+
+                <i class="fa-solid fa-certificate text-[16px] md:text-xl"></i>
+                <span class="text-[8px] md:text-sm leading-none">Certificate</span>
             </button>
+
             `;
+
 
 
                         // ⭐ ADD HERE EXACTLY

@@ -1,8 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const MySQLStore = require('express-mysql-session')(session);
 const dbPool = require('./db.js');
+const rateLimit = require('express-rate-limit');
+const checkAuth = require('./middlewares/authMiddleware');
 
 
 
@@ -18,7 +21,7 @@ const path = require('path');
 const cronJobs = require("./services/cronJobs"); // timer
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const authController = require("./controllers/authController");
 const dashboardRoutes = require('./routes/dashboardRoutes');
@@ -41,6 +44,28 @@ global.appRoot = path.resolve(__dirname, "public");
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ✅ CORS Configuration: Secure access control while allowing session sharing
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : [
+      'https://worklife.globesproperties.in', // Production domain
+      'http://localhost:3000',               // Local development
+      'http://127.0.0.1:3000'
+    ];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, postman, or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // Allow cookies to be sent back and forth
+}));
 
 
 const helmet = require("helmet");
@@ -82,7 +107,9 @@ app.use(
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com",
           "https://fonts.gstatic.com"
-        ]
+        ],
+
+        frameAncestors: ["'self'"] // ✅ Anti-Clickjacking: Prevents other domains from framing this website in iframes
       }
     }
   })
@@ -92,17 +119,39 @@ app.use(
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ✅ Rate Limiting: Prevent brute-force/DDoS attacks on API/attendance endpoints
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in headers
+  legacyHeaders: false, // Disable older X-RateLimit-* headers
+  message: {
+    success: false,
+    message: "Too many requests from this IP. Please try again after a minute."
+  }
+});
+
 // Session middleware
 app.use(session({
-  secret: 'my_secret_key_12345', // use a strong secret in production!
+  name: 'worklife.sid', // ✅ Session Stealth: Hide express identification cookie name (connect.sid) from hacker probes
+  secret: process.env.SESSION_SECRET || 'my_secret_key_12345_fallback', // Dynamic session secret
   store: sessionStore,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,
+    secure: process.env.NODE_ENV === 'production', // ✅ HTTPS secure cookie enabled dynamically in production
+    httpOnly: true, // ✅ XSS cookie defense: Prevents client-side JS from accessing the session cookie
     sameSite: "lax",
-  } // change to true if using HTTPS
+  }
 }));
+
+// ✅ Apply Rate Limiter to API and Attendance routes
+app.use('/api', apiLimiter);
+app.use('/attendance', apiLimiter);
+
+// ✅ Apply central authentication middleware to API and Attendance routes
+app.use('/api', checkAuth);
+app.use('/attendance', checkAuth);
 
 
 // not showing leave page to employee
@@ -182,9 +231,21 @@ app.use("/images", express.static("public/images"));
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-// app.get("/", (req, res) => {
-//   res.sendFile(path.join(__dirname, './public/index.html'));
-// });
+
+// ✅ Global Error Handler (Hides internal database structure and formats upload filter errors)
+app.use((err, req, res, next) => {
+  console.error("Global Error Caught:", err.message);
+
+  if (err.name === 'MulterError') {
+    return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
+  }
+
+  if (err.message && (err.message.includes("Only images") || err.message.includes("allowed"))) {
+    return res.status(400).json({ success: false, message: err.message });
+  }
+
+  res.status(500).json({ success: false, message: "Internal Server Error" });
+});
 
 // Start server
 app.listen(PORT, "0.0.0.0", () => {

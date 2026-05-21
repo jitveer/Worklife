@@ -19,9 +19,25 @@ const storage = multer.diskStorage({
   }
 });
 
+// ✅ Secure File Filter: Only allow safe image formats for attendance selfies
+const fileFilter = (req, file, cb) => {
+  const allowedExtensions = ['.png', '.jpg', '.jpeg'];
+  const allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+
+  const ext = path.extname(file.originalname).toLowerCase();
+  const mime = file.mimetype.toLowerCase();
+
+  if (allowedExtensions.includes(ext) && allowedMimeTypes.includes(mime)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only images (.png, .jpg, .jpeg) are allowed for attendance selfies!"), false);
+  }
+};
+
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
 module.exports = upload;

@@ -94,7 +94,7 @@ exports.addEmployee = (req, res) => {
     db.query(sql, values, (err, result) => {
       if (err) {
         console.error("Add employee error:", err);
-        return res.status(500).send("Error saving employee: " + err.sqlMessage);
+        return res.status(500).send("Internal Server Error");
       }
       // perfomance
       // Get new employee ID

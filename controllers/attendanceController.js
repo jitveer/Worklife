@@ -31,11 +31,20 @@ exports.verifyPasscode = (req, res) => {
 
   const sql = "SELECT * FROM employees"; // get all employees with hashed passcode
 
-  db.query(sql, (err, employees) => {
+  db.query(sql, async (err, employees) => {
     if (err) return res.status(500).json({ success: false, message: "DB error" });
 
-    // 🔑 Find employee by bcrypt
-    const emp = employees.find(emp => bcrypt.compareSync(passcode, emp.passcode));
+    // 🔑 Find employee by bcrypt asynchronously to prevent event loop blocking
+    let emp = null;
+    for (const e of employees) {
+      if (e.passcode) {
+        const match = await bcrypt.compare(passcode, e.passcode);
+        if (match) {
+          emp = e;
+          break;
+        }
+      }
+    }
 
     if (!emp) {
       return res.status(401).json({ success: false, message: "Invalid passcode" });
@@ -734,7 +743,7 @@ exports.downloadReport = (req, res) => {
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"]
       });
-      
+
       const page = await browser.newPage();
 
       await page.setContent(html, { waitUntil: "domcontentloaded" });
