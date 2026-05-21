@@ -18,7 +18,9 @@ const PUBLIC_ROUTES = [
   '/api/employees/linemanagers',
   '/api/exam/start',
   '/api/exam/submit',
-  '/api/roles'
+  '/api/roles',
+  '/attendance/passcode',
+  '/attendance/verify-passcode'
 ];
 
 /**
@@ -34,8 +36,8 @@ function checkAuth(req, res, next) {
     return next();
   }
 
-  // Otherwise, verify session user
-  if (req.session && req.session.user) {
+  // Otherwise, verify session user or employee (for attendance clock-in)
+  if (req.session && (req.session.user || req.session.employee)) {
     return next(); // ✅ Authenticated
   }
 
