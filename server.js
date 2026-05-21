@@ -21,6 +21,7 @@ const path = require('path');
 const cronJobs = require("./services/cronJobs"); // timer
 
 const app = express();
+app.set('trust proxy', 1); // ✅ Trust first reverse proxy (Nginx, PM2, Cloudflare) to read real client IP correctly
 const PORT = process.env.PORT || 3000;
 
 const authController = require("./controllers/authController");
