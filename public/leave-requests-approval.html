@@ -630,6 +630,7 @@
         <thead>
           <tr>
             <th>ID</th>
+            <th>Date</th>
             <th>Requested By</th>
             <th>Type</th>
             <th>Admin Status</th>
@@ -769,6 +770,7 @@
             // ✅ normal columns
             tr.innerHTML = `
     <td>${index + 1}</td>
+     <td>${new Date(req.created_at).toLocaleDateString('en-GB')}</td>
     <td>${req.requester_name || req.requester_email || 'N/A'}</td>
     <td>${req.leave_type}</td>
     <td>

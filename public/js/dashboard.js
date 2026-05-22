@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     nameEl.textContent = data.user.name;
   }
 
+  userRole = roleId;
   loadNotifications(data.user.email, roleId);
   loadCalendar();
 
@@ -170,6 +171,7 @@ fetch('/api/dashboard/pending-count', {
 
 
 
+let userRole = null;
 let currentMonth = new Date().getMonth(); // 0–11
 let currentYear = new Date().getFullYear();
 
@@ -234,14 +236,14 @@ async function loadCalendar() {
     // ✅ CREATE div (THIS LINE WAS MISSING)
     const div = document.createElement("div");
 
-    div.className = "day " + (greenDates.includes(date) ? "green" : "");
+    div.className = "day " + (greenDates.includes(date) ? "green has-event" : "");
     div.textContent = day;
 
     // ✅ add event listener
     div.addEventListener("click", () => {
       if (greenDates.includes(date)) {
         viewEvent(date);
-      } else {
+      } else if (userRole !== 4) {
         openForm(date);
       }
     });
@@ -254,6 +256,13 @@ async function loadCalendar() {
 
 function openForm(date) {
   document.getElementById("picked-date").innerText = date;
+  document.getElementById("event-title").value = "";
+
+  const descEl = document.getElementById("event-description");
+  if (descEl) descEl.value = "";
+
+  document.getElementById("event-image").value = "";
+  document.getElementById("file-display").value = "";
 
   calendarModal.classList.add("hidden");
   eventForm.classList.remove("hidden");
@@ -263,11 +272,14 @@ function openForm(date) {
 async function saveCalendarEvent() {
   const date = document.getElementById("picked-date").innerText;
   const title = document.getElementById("event-title").value;
+  const descEl = document.getElementById("event-description");
+  const description = descEl ? descEl.value : "";
   const image = document.getElementById("event-image").files[0];
 
   const form = new FormData();
   form.append("event_date", date);
   form.append("title", title);
+  form.append("description", description);
   form.append("image", image);
 
   await fetch("/api/dashboard/calendar-event", {
@@ -314,7 +326,7 @@ async function viewEvent(date) {
 
   const readEvents = getReadEvents();
 
-  const eventKey = event.event_date.slice(0, 10); // YYYY-MM-DD
+  const eventKey = date; // Since date is already in 'YYYY-MM-DD' format and timezone independent
 
   if (!readEvents.includes(eventKey)) {
     readEvents.push(eventKey);
@@ -337,8 +349,8 @@ async function viewEvent(date) {
 
   /* TEXT ALWAYS */
   textBox.innerHTML = `
-    <strong>${event.title || "Event"}</strong><br><br>
-    ${event.description || ""}
+    <h3 class="event-view-title">${event.title || "Event"}</h3>
+    <p class="event-view-desc">${event.description || ""}</p>
   `;
 
   /* IMAGE ONLY IF EXISTS */

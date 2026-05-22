@@ -41,15 +41,15 @@ exports.getDashboardTiles = (req, res) => {
 
 
 exports.addCalendarEvent = (req, res) => {
-  const { event_date, title } = req.body;
+  const { event_date, title, description } = req.body;
   const image = req.file ? req.file.filename : null;
 
   const sql = `
-    INSERT INTO calendar_events (event_date, title, image, created_by)
-    VALUES (?, ?, ?, 1)
+    INSERT INTO calendar_events (event_date, title, description, image, created_by)
+    VALUES (?, ?, ?, ?, 1)
   `;
 
-  db.query(sql, [event_date, title, image], (err) => {
+  db.query(sql, [event_date, title, description, image], (err) => {
     if (err) return res.status(500).json(err);
     res.json({ success: true });
   });

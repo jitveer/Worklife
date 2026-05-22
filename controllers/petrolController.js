@@ -507,7 +507,7 @@ exports.getPetrolApprovals = (req, res) => {
   }
 
   sql += `
-    GROUP BY pc.req_no, pc.remarks, pc.status, e.first_name, e.last_name
+    GROUP BY pc.req_no, pc.remarks, pc.status, pc.created_at, e.first_name, e.last_name
     ORDER BY pc.created_at DESC;
   `;
 

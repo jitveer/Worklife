@@ -180,6 +180,8 @@
             color: white;
             padding: 12px;
             font-size: 15px;
+            border-right: 1px solid #ffffff;
+
         }
 
         td {
@@ -461,6 +463,7 @@
                 <thead>
                     <tr>
                         <th>Sl-no</th>
+                        <th>Date</th>
                         <th>Name</th>
                         <th>My Status</th>
                         <th>Final Status</th>
@@ -507,7 +510,7 @@
                         tbody.innerHTML = "";
 
                         if (data.data.length === 0) {
-                            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No records found</td></tr>`;
+                            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No records found</td></tr>`;
                             return;
                         }
 
@@ -515,6 +518,7 @@
                             const tr = `
                     <tr>
                         <td>${index + 1}</td>
+                        <td>${new Date(row.created_at).toLocaleDateString('en-GB')}</td>
                         <td>${row.requester_name || "-"}</td>
                         <td>
                             <span class="status-box ${row.approver_status ? row.approver_status.toLowerCase() : ''}">

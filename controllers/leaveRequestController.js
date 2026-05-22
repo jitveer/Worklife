@@ -1125,7 +1125,7 @@ exports.updateLeaveStatus = (req, res) => {
 };
 
 
-
+// approver own table with filters 
 exports.getLeaveRequests = (req, res) => {
   const approverUserId = req.session.user?.user_id;
 

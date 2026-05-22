@@ -3409,7 +3409,8 @@ const sectionController = {
             s.Stage AS Stage,
             pa.status AS MyStatus,
             s.Status AS OverallStatus,
-            DATE(a.created_at) AS CreatedDate
+            DATE(a.created_at) AS CreatedDate,
+            DATE(s.created_at) AS StageCreatedDate
         FROM appraisals a
         JOIN employees e ON a.employee_id = e.id
         JOIN (
