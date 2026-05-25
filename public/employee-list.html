@@ -1219,7 +1219,8 @@
           document.getElementById("lastName").value = lastName;
 
           const formData = {
-            passcode: "WL" + Math.floor(Math.random() * 100000),
+            passcode: "0000",
+            password: "TEMP123",
             first_name: document.getElementById("firstName").value.trim(),
             middle_name: document.getElementById("middleName").value.trim(),
             last_name: document.getElementById("lastName").value.trim(),
@@ -1247,7 +1248,6 @@
             emergency_contact_name: document.getElementById("emergencyName").value.trim(),
             emergency_contact_number: document.getElementById("emergencyNumber").value.trim(),
             emergency_contact_relationship: document.getElementById("emergencyRelation").value.trim(),
-            password: "123456",
             badge_count: 0,
             notification_message: "",
             unread: 1,
@@ -1356,8 +1356,6 @@
               });
           } else {
             // ADD MODE
-            formData.passcode = "WL" + Math.floor(Math.random() * 100000);
-            formData.password = "123456";
             formData.badge_count = 0;
             formData.notification_message = "";
             formData.unread = 1;

@@ -25,28 +25,72 @@ const transporter = nodemailer.createTransport({
 
 
 // Callback-based version
-exports.sendPasscodeEmail = (to, passcode, callback) => {
+exports.sendCredentialsEmail = (
+  to,
+  loginPassword,
+  attendancePasscode,
+  callback
+) => {
+
   const mailOptions = {
     from: `WorkLife <${process.env.MAIL_FROM}>`,
     to,
-    subject: "Your WorkLife Login Passcode",
+    subject: "Your WorkLife Login Credentials",
+
     html: `
-      <p>Hello,</p>
-      <p>Your WorkLife login passcode is:</p>
-      <h2>${passcode}</h2>
-      <p>Please log in and change your password after first login.</p>
+      <div style="font-family: Arial;">
+
+        <h2>Welcome to WorkLife</h2>
+
+        <p>Your account has been created successfully.</p>
+
+        <hr>
+
+        <h3>Login Credentials</h3>
+
+        <p>
+          <b>Email:</b> ${to}
+        </p>
+
+        <p>
+          <b>Login Password:</b>
+          ${loginPassword}
+        </p>
+
+        <hr>
+
+        <h3>Attendance Passcode</h3>
+
+        <p>
+          <b>4-Digit Attendance Code:</b>
+          ${attendancePasscode}
+        </p>
+
+        <hr>
+
+        <p>
+          Please change your login password after first login.
+        </p>
+
+      </div>
     `
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
+
     if (err) {
       console.log("Email error:", err);
+
       if (callback) callback(err);
+
     } else {
-      // console.log("Email sent:", info);
+
       if (callback) callback(null, info);
+
     }
+
   });
+
 };
 
 

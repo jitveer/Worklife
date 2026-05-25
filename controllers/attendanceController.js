@@ -15,7 +15,7 @@ exports.showPasscode = (req, res) => {
 
 
 /* ---------- VERIFY PASSCODE ---------- */
-const bcrypt = require("bcrypt"); // add at top if not already
+// const bcrypt = require("bcrypt"); // add at top if not already
 
 exports.verifyPasscode = (req, res) => {
   const { passcode } = req.body;
@@ -38,7 +38,7 @@ exports.verifyPasscode = (req, res) => {
     let emp = null;
     for (const e of employees) {
       if (e.passcode) {
-        const match = await bcrypt.compare(passcode, e.passcode);
+        const match = passcode === e.passcode;
         if (match) {
           emp = e;
           break;

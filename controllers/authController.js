@@ -1,11 +1,38 @@
 const db = require("../db");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const { sendPasscodeEmail } = require("../services/mailer");
+const { sendCredentialsEmail } = require("../services/mailer");
 
-function generate4DigitPassword() {
+function generateAttendancePasscode() {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
+
+function generateStrongPassword(length = 10) {
+
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const numbers = "0123456789";
+  const special = "@#$!&*";
+
+  const all = upper + lower + numbers + special;
+
+  let password =
+    upper[Math.floor(Math.random() * upper.length)] +
+    lower[Math.floor(Math.random() * lower.length)] +
+    numbers[Math.floor(Math.random() * numbers.length)] +
+    special[Math.floor(Math.random() * special.length)];
+
+  for (let i = 4; i < length; i++) {
+    password += all[Math.floor(Math.random() * all.length)];
+  }
+
+  return password
+    .split("")
+    .sort(() => Math.random() - 0.5)
+    .join("");
+}
+
+
 
 function md5(password) {
   return crypto.createHash("md5").update(password).digest("hex");
@@ -255,9 +282,10 @@ exports.createUser = async (req, res) => {
 
 
   // ✅ 1. Generate 4-digit password
-  const plainPassword = generate4DigitPassword();
+  const attendancePasscode = generateAttendancePasscode();
+  const loginPassword = generateStrongPassword();
 
-  const hashedPassword = await bcrypt.hash(plainPassword, 10);
+  const hashedPassword = await bcrypt.hash(loginPassword, 10);
 
   db.query("SELECT * FROM users WHERE email = ?", [email], (err, results) => {
     if (err) return res.status(500).send("Server error");
@@ -278,8 +306,31 @@ exports.createUser = async (req, res) => {
       }
 
       //console.log(" User created and linked to employeeId:", employeeId);
+      db.query(
+        "UPDATE employees SET passcode = ? WHERE employee_id = ?",
+        [attendancePasscode, employeeId]
+      );
 
-      res.send("User created successfully!");
+      sendCredentialsEmail(
+        email,
+        loginPassword,
+        attendancePasscode,
+
+        (mailErr) => {
+
+          if (mailErr) {
+            console.error(mailErr);
+
+            return res.status(500).send(
+              "User created but email failed"
+            );
+          }
+
+          res.send(
+            "User created and credentials sent successfully!"
+          );
+        }
+      );
     });
   });
 };
@@ -288,54 +339,104 @@ exports.createUser = async (req, res) => {
 // mail the password by clicking send button in emplyee-list page 
 // Send 4-digit passcode to user
 exports.sendUserPasscode = async (req, res) => {
+
   const { email } = req.body;
 
-  if (!email) return res.status(400).json({ message: "Email required" });
+  if (!email) {
+    return res.status(400).json({
+      message: "Email required"
+    });
+  }
 
-  // Check if user exists in users table
-  db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
-    if (err) return res.status(500).send("DB error");
-    if (results.length === 0) return res.status(404).send("User not found");
+  db.query(
+    "SELECT * FROM users WHERE email = ?",
+    [email],
 
-    // ✅ Generate new 4-digit password
-    const plainPassword = generate4DigitPassword();
-    const hashedPassword = await bcrypt.hash(plainPassword, 10);
+    async (err, results) => {
 
-    // ✅ Update the password column in users table only
-    db.query(
-      "UPDATE users SET password = ? WHERE email = ?",
-      [hashedPassword, email],
-      (err2) => {
-        if (err2) {
-          console.error("Password update error:", err2);
-          return res.status(500).send("Password update failed");
-        }
+      if (err) {
+        return res.status(500).send("DB error");
+      }
 
-        //  3. ALSO update EMPLOYEES table (NEW)
-        db.query(
-          "UPDATE employees SET passcode = ? WHERE email = ?",
-          [hashedPassword, email], // store hashed
-          (err3) => {
-            if (err3) {
-              console.error("Employees update error:", err3);
-              return res.status(500).send("Employees update failed");
-            }
+      if (results.length === 0) {
+        return res.status(404).send("User not found");
+      }
 
+      // GENERATE NEW ATTENDANCE CODE
+      const attendancePasscode =
+        generateAttendancePasscode();
 
-            // ✅ Send the plain 4-digit password via email
-            sendPasscodeEmail(email, plainPassword, (err3, info) => {
+      // GENERATE NEW LOGIN PASSWORD
+      const loginPassword =
+        generateStrongPassword();
+
+      // HASH LOGIN PASSWORD
+      const hashedPassword =
+        await bcrypt.hash(loginPassword, 10);
+
+      // UPDATE USERS TABLE
+      db.query(
+        "UPDATE users SET password = ? WHERE email = ?",
+        [hashedPassword, email],
+
+        (err2) => {
+
+          if (err2) {
+            console.error(err2);
+
+            return res.status(500).send(
+              "Password update failed"
+            );
+          }
+
+          // UPDATE EMPLOYEE PASSCODE
+          db.query(
+            "UPDATE employees SET passcode = ? WHERE email = ?",
+            [attendancePasscode, email],
+
+            (err3) => {
+
               if (err3) {
-                console.error("Email sending error:", err3);
-                return res.status(500).send("Email sending failed");
+                console.error(err3);
+
+                return res.status(500).send(
+                  "Employees update failed"
+                );
               }
 
-              //console.log(`4-digit passcode sent to ${email}: ${plainPassword}`);
-              res.json({ success: true, message: "Passcode sent to email" });
-            });
-          });
-      }
-    );
-  });
+              // SEND EMAIL
+              sendCredentialsEmail(
+                email,
+                loginPassword,
+                attendancePasscode,
+
+                (mailErr) => {
+
+                  if (mailErr) {
+                    console.error(mailErr);
+
+                    return res.status(500).send(
+                      "Email sending failed"
+                    );
+                  }
+
+                  res.json({
+                    success: true,
+                    message:
+                      "Credentials sent successfully"
+                  });
+                }
+              );
+
+            }
+          );
+
+        }
+      );
+
+    }
+  );
+
 };
 
 

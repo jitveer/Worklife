@@ -656,7 +656,8 @@
            SEARCH BAR
         ---------------------------------------- */
         document.getElementById("perfSearch").addEventListener("input", () => {
-            filterName = document.getElementById("perfSearch").value.trim();
+            filterName = document.getElementByI
+            d("perfSearch").value.trim();
 
             document.getElementById("clearPerfSearch").style.display =
                 filterName.length > 0 ? "block" : "none";
