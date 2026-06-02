@@ -119,7 +119,7 @@ exports.addEmployee = (req, res) => {
 };
 
 
-
+// fetch employees and show in frontend  
 exports.getEmployees = (req, res) => {
 
   const sql = `
@@ -130,6 +130,7 @@ exports.getEmployees = (req, res) => {
       employees e
     LEFT JOIN 
       department d ON e.department_id = d.id
+      WHERE e.is_deleted = 0
     ORDER BY e.id DESC
   `;
 
@@ -141,6 +142,53 @@ exports.getEmployees = (req, res) => {
     res.json(results);
   });
 };
+
+
+// trash records
+exports.getTrashEmployees = (req, res) => {
+
+  const sql = `
+    SELECT
+      e.*,
+      d.department_name AS departmentName
+    FROM employees e
+    LEFT JOIN department d
+      ON e.department_id = d.id
+    WHERE e.is_deleted = 1
+    ORDER BY e.id DESC
+  `;
+
+  db.query(sql, (err, results) => {
+
+    if (err) {
+      return res.status(500).send("Database error");
+    }
+
+    res.json(results);
+  });
+};
+
+
+
+// if deleted by mistake restore back to table 
+exports.restoreEmployee = (req, res) => {
+  const id = req.params.id;
+
+  db.query(
+    "UPDATE employees SET is_deleted = 0 WHERE id = ?",
+    [id],
+    (err, result) => {
+
+      if (err) {
+        return res.status(500).send("Restore failed");
+      }
+
+      res.send("Employee restored successfully");
+    }
+  );
+};
+
+
 
 exports.getEmployeeById = (req, res) => {
   const id = req.params.id;
@@ -224,12 +272,29 @@ exports.updateEmployee = (req, res) => {
   });
 };
 
+// exports.deleteEmployee = (req, res) => {
+//   const id = req.params.id;
+//   db.query("DELETE FROM employees WHERE id = ?", [id], (err) => {
+//     if (err) return res.status(500).send("Failed to delete employee.");
+//     res.send("Employee deleted successfully.");
+//   });
+// };
+
+
 exports.deleteEmployee = (req, res) => {
   const id = req.params.id;
-  db.query("DELETE FROM employees WHERE id = ?", [id], (err) => {
-    if (err) return res.status(500).send("Failed to delete employee.");
-    res.send("Employee deleted successfully.");
-  });
+
+  db.query(
+    "UPDATE employees SET is_deleted = 1 WHERE id = ?",
+    [id],
+    (err) => {
+      if (err) {
+        return res.status(500).send("Failed to move employee to trash.");
+      }
+
+      res.send("Employee moved to trash successfully.");
+    }
+  );
 };
 
 

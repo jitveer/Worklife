@@ -8,6 +8,8 @@ const uploadPhoto = upload("photos");
 router.post('/add', emp.addEmployee);
 router.post('/getCompanyDeptRoleNames', emp.getCompanyDeptRoleNames);
 router.get('/', emp.getEmployees);
+router.get('/trash', emp.getTrashEmployees);
+router.put('/restore/:id', emp.restoreEmployee);
 router.get("/linemanagers", emp.getAllLineManagers);
 router.get('/getAllCompanies', emp.getAllCompanies);
 router.get('/getAllRoles', emp.getAllRoles);
@@ -16,6 +18,7 @@ router.get('/:id', emp.getEmployeeById);
 router.put('/update/:id', emp.updateEmployee);
 router.delete('/delete/:id', emp.deleteEmployee);
 router.post('/send-form-link', emp.sendEmployeeFormLink);
+
 
 
 

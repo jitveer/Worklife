@@ -838,6 +838,11 @@
           <input type="text" class="search-input" id="searchInput" placeholder="Search by name or department">
           <button class="add-btn" id="addEmployeeBtn">+ Add
             Employee</button>
+
+          <button class="add-btn" id="trashBtn" style="background:#ff5722;">
+            Trash
+          </button>
+
           <button class="add-btn" style="background-color: #4caf50;" id="createUserBtn">+ Create
             User</button>
           <a href="create-users.html" class="add-btn"
@@ -2036,8 +2041,8 @@
 
 
         /* ===============================
-   AUTO OPEN ADD EMPLOYEE FORM
-================================ */
+         AUTO OPEN ADD EMPLOYEE FORM
+        ================================ */
 
         window.addEventListener("DOMContentLoaded", () => {
           const params = new URLSearchParams(window.location.search);
@@ -2048,6 +2053,68 @@
             document.getElementById("employeeForm").reset();
           }
         });
+
+
+        // trash record after delete
+        document.getElementById("trashBtn").addEventListener("click", () => {
+
+          fetch("/api/employees/trash")
+            .then(res => res.json())
+            .then(data => {
+
+              const employeeBody =
+                document.getElementById("employeeBody");
+
+              employeeBody.innerHTML = "";
+
+              data.forEach((emp, index) => {
+
+                employeeBody.innerHTML += `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${emp.first_name} ${emp.last_name}</td>
+            <td>${emp.departmentName || ""}</td>
+            <td>${emp.designation || ""}</td>
+            <td>${formatDate(emp.dob)}</td>
+            <td>${formatDate(emp.doj)}</td>
+            <td>${emp.mobile || ""}</td>
+            <td>
+              <button class="restore-btn" data-id="${emp.id}">
+                Restore
+                </button>
+              </td>
+
+              </tr >
+                  `;
+              });
+
+            });
+
+        });
+
+
+
+
+
+        // restore data if deleted by mistake 
+        function restoreEmployee(id) {
+
+          fetch(`/api/employees/restore/${id}`, {
+            method: "PUT"
+          })
+            .then(res => res.text())
+            .then(msg => {
+
+              Swal.fire(
+                "Success",
+                msg,
+                "success"
+              );
+
+              fetchEmployeeList();
+            });
+
+        }
 
       </script>
 
@@ -2119,6 +2186,19 @@
               document.getElementById("createUserModal").style.display = "none";
             });
         });
+
+        document.addEventListener("click", function (e) {
+
+          if (e.target.classList.contains("restore-btn")) {
+
+            const id = e.target.dataset.id;
+
+            restoreEmployee(id);
+          }
+
+        });
+
+
 
 
 
