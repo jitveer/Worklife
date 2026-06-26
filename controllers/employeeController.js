@@ -4,9 +4,8 @@ const sectionController = require('./sectionController'); // performance
 const crypto = require("crypto");
 const { sendEmployeeFormEmail } = require("../services/mailer.js");
 
-function generateNewEmployeeId(lastIdNumber) {
-  const nextNumber = lastIdNumber + 1;
-  return `EMP${String(nextNumber).padStart(4, '0')}`;
+function generateRandomEmployeeId() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
 exports.addEmployee = (req, res) => {
@@ -15,47 +14,52 @@ exports.addEmployee = (req, res) => {
 
   // console.log("Incoming data:", data);
 
-  // Get last employee_id
-  const getLastIdSql = `
-    SELECT employee_id FROM employees 
-    WHERE employee_id IS NOT NULL 
-    ORDER BY id DESC LIMIT 1
-  `;
 
-  db.query(getLastIdSql, (err, results) => {
+  // generate 4 digit random employee id 
+  const generateUniqueEmployeeId = (callback) => {
+    const employeeId = generateRandomEmployeeId();
+
+    db.query(
+      "SELECT id FROM employees WHERE employee_id = ?",
+      [employeeId],
+      (err, results) => {
+        if (err) return callback(err);
+
+        if (results.length > 0) {
+          // Already exists, generate another
+          return generateUniqueEmployeeId(callback);
+        }
+
+        callback(null, employeeId);
+      }
+    );
+  };
+
+  generateUniqueEmployeeId((err, newEmployeeId) => {
     if (err) {
-      console.error("Error fetching last employee_id:", err);
-      return res.status(500).send("Error generating employee ID");
+      console.error(err);
+      return res.status(500).send("Error generating Employee ID");
     }
-
-    let lastNumber = 0;
-    if (results.length > 0 && results[0].employee_id) {
-      const match = results[0].employee_id.match(/\d+/);
-      lastNumber = match ? parseInt(match[0], 10) : 0;
-    }
-
-    const newEmployeeId = generateNewEmployeeId(lastNumber);
-    // console.log("Generated employee_id:", newEmployeeId);
 
     const sql = `
-      INSERT INTO employees (
-        passcode, first_name, middle_name, last_name, employee_id,
-        line_manager_id, company_id, role_id, 
-        department_id, designation, email, adhar_number, pan_number,
-        mobile, dob, doj, gender, blood_group, marital_status,
-        pincode, present_address, permanent_address,
-        permanent_country_name, permanent_state_name, permanent_city_name,
-        emergency_contact_name, emergency_contact_number, emergency_contact_relationship,
-        password, badge_count, notification_message, unread, token, image, islogged_in
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
-    `;
+    INSERT INTO employees (
+      passcode, first_name, middle_name, last_name, employee_id,
+      line_manager_id, company_id, role_id,
+      department_id, designation, email, adhar_number, pan_number,
+      mobile, dob, doj, gender, blood_group, marital_status,
+      pincode, present_address, permanent_address,
+      permanent_country_name, permanent_state_name, permanent_city_name,
+      emergency_contact_name, emergency_contact_number, emergency_contact_relationship,
+      password, badge_count, notification_message, unread, token, image, islogged_in
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
 
     const values = [
       data.passcode,
       data.first_name,
       data.middle_name,
       data.last_name,
-      newEmployeeId,
+      newEmployeeId,   // Random unique 4-digit ID
       data.line_manager_id || null,
       data.company_id,
       data.role_id,
@@ -88,22 +92,16 @@ exports.addEmployee = (req, res) => {
       data.islogged_in
     ];
 
-    // console.log("Values length:", values.length);
-    // console.log("Values:", values);
-
     db.query(sql, values, (err, result) => {
       if (err) {
-        console.error("Add employee error:", err);
+        console.error(err);
         return res.status(500).send("Internal Server Error");
       }
-      // perfomance
-      // Get new employee ID
+
       const newDbId = result.insertId;
 
-      // ✅ Trigger appraisal creation using callback
       sectionController.createInitialAppraisal(newDbId, (err2, appraisalId) => {
         if (err2) {
-          console.error("Appraisal creation error:", err2);
           return res.status(500).send("Employee saved, but appraisal creation failed.");
         }
 
@@ -111,9 +109,9 @@ exports.addEmployee = (req, res) => {
           success: true,
           message: "Employee added successfully and appraisal started.",
           employeeId: newDbId,
-          appraisalId: appraisalId
+          appraisalId
         });
-      })
+      });
     });
   });
 };
@@ -264,14 +262,23 @@ exports.getAllDepartment = (req, res) => {
 
 exports.updateEmployee = (req, res) => {
   const id = req.params.id;
-  const data = req.body;
 
-  db.query("UPDATE employees SET ? WHERE id = ?", [data, id], (err) => {
-    if (err) return res.status(500).send("Update failed");
-    res.send("Employee updated successfully");
-  });
+  db.query(
+    "UPDATE employees SET ? WHERE id = ?",
+    [req.body, id],
+    (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send("Update failed");
+      }
+
+      res.json({
+        success: true,
+        message: "Employee updated successfully"
+      });
+    }
+  );
 };
-
 // exports.deleteEmployee = (req, res) => {
 //   const id = req.params.id;
 //   db.query("DELETE FROM employees WHERE id = ?", [id], (err) => {

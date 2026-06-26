@@ -473,8 +473,21 @@
       /* required */
     }
 
-
-
+    /*send mail button*/
+    #sendMailBtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      background: #2563eb;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid #2563eb;
+    }
 
 
 
@@ -857,6 +870,7 @@
           <thead>
             <tr>
               <th>ID</th>
+              <th>Employee ID</th>
               <th>Name</th>
               <th>Department</th>
               <th>Designation</th>
@@ -1333,15 +1347,15 @@
 
             // EDIT MODE
             fetch(`/api/employees/update/${editingEmployeeId}`, {
-              method: "PUT",
+              method: "PATCH",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(formData)
             })
-              .then(res => res.text())
-              .then(msg => {
+              .then(res => res.json())
+              .then(data => {
                 Swal.fire({
                   title: "Updated!",
-                  text: msg,
+                  text: data.message,
                   icon: "success",
                   confirmButtonText: "OK"
                 }).then(() => {
@@ -1374,11 +1388,11 @@
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(formData)
             })
-              .then(res => res.text())
-              .then(msg => {
+              .then(res => res.json())
+              .then(data => {
                 Swal.fire({
                   title: "Success!",
-                  text: msg,
+                  text: data.message,
                   icon: "success",
                   confirmButtonText: "OK"
                 }).then(() => {
@@ -1413,6 +1427,7 @@
 
                 row.innerHTML = `
   <td>${index + 1}</td>
+  <td>${emp.employee_id || ""}</td>
   <td>${fullName}</td>
   <td>${emp.departmentName || ""}</td>
   <td>${emp.designation || ""}</td>
@@ -1771,44 +1786,70 @@
         }
 
         function editEmployee(id) {
-          // Fetch data of the selected employee
+
+          currentMode = "edit";
+          editingEmployeeId = id;
+
           fetch(`/api/employees/${id}`)
             .then(res => res.json())
             .then(emp => {
 
-              // console.log("emp", emp)
-              // Open the modal
               document.getElementById("addModal").style.display = "block";
 
-              // Set global mode
-              currentMode = "edit";
-              editingEmployeeId = id;
+              document.getElementById("fullName").value =
+                `${emp.first_name || ""} ${emp.last_name || ""}`.trim();
 
-              // Fill form values
-              document.getElementById("fullName").value = emp.first_name + ' ' + emp.last_name;
-              document.getElementById("empId").value = emp.employee_Id || "";
-              document.getElementById("companySelect").value = emp.company_id || "";
-              document.getElementById("roleSelect").value = emp.role_id || "";
-              document.getElementById("departmentSelect").value = emp.department_id || "";
               document.getElementById("designation").value = emp.designation || "";
               document.getElementById("email").value = emp.email || "";
               document.getElementById("aadhar").value = emp.adhar_number || "";
               document.getElementById("pan").value = emp.pan_number || "";
               document.getElementById("mobile").value = emp.mobile || "";
-              document.getElementById("dob").value = emp.dob?.split("T")[0] || "";
-              document.getElementById("doj").value = emp.doj?.split("T")[0] || "";
+
+              document.getElementById("dob").value = emp.dob
+                ? emp.dob.split("T")[0]
+                : "";
+
+              document.getElementById("doj").value = emp.doj
+                ? emp.doj.split("T")[0]
+                : "";
+
               document.getElementById("gender").value = emp.gender || "";
               document.getElementById("blood").value = emp.blood_group || "";
               document.getElementById("marital").value = emp.marital_status || "";
+
               document.getElementById("pincode").value = emp.pincode || "";
-              document.getElementById("presentAddress").value = emp.present_address || "";
-              document.getElementById("permanentAddress").value = emp.permanent_address || "";
-              document.getElementById("country").value = emp.permanent_country_name || "";
-              document.getElementById("state").value = emp.permanent_state_name || "";
-              document.getElementById("city").value = emp.permanent_city_name || "";
-              document.getElementById("emergencyName").value = emp.emergency_contact_name || "";
-              document.getElementById("emergencyNumber").value = emp.emergency_contact_number || "";
-              document.getElementById("emergencyRelation").value = emp.emergency_contact_relationship || "";
+
+              document.getElementById("presentAddress").value =
+                emp.present_address || "";
+
+              document.getElementById("permanentAddress").value =
+                emp.permanent_address || "";
+
+              document.getElementById("country").value =
+                emp.permanent_country_name || "";
+
+              document.getElementById("state").value =
+                emp.permanent_state_name || "";
+
+              document.getElementById("city").value =
+                emp.permanent_city_name || "";
+
+              document.getElementById("emergencyName").value =
+                emp.emergency_contact_name || "";
+
+              document.getElementById("emergencyNumber").value =
+                emp.emergency_contact_number || "";
+
+              document.getElementById("emergencyRelation").value =
+                emp.emergency_contact_relationship || "";
+
+              // wait a little so dropdown options are loaded
+              setTimeout(() => {
+                document.getElementById("linemanagersSelect").value = emp.line_manager_id || "";
+                document.getElementById("companySelect").value = emp.company_id || "";
+                document.getElementById("departmentSelect").value = emp.department_id || "";
+                document.getElementById("roleSelect").value = emp.role_id || "";
+              }, 100);
             });
         }
 
@@ -2072,6 +2113,7 @@
                 employeeBody.innerHTML += `
           <tr>
             <td>${index + 1}</td>
+            <td>${emp.employee_id || ""}</td>
             <td>${emp.first_name} ${emp.last_name}</td>
             <td>${emp.departmentName || ""}</td>
             <td>${emp.designation || ""}</td>

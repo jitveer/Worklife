@@ -15,7 +15,7 @@ router.get('/getAllCompanies', emp.getAllCompanies);
 router.get('/getAllRoles', emp.getAllRoles);
 router.get('/department', emp.getAllDepartment);
 router.get('/:id', emp.getEmployeeById);
-router.put('/update/:id', emp.updateEmployee);
+router.patch('/update/:id', emp.updateEmployee);
 router.delete('/delete/:id', emp.deleteEmployee);
 router.post('/send-form-link', emp.sendEmployeeFormLink);
 
