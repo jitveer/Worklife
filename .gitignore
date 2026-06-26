@@ -9,10 +9,6 @@
 .env.production
 .env.development
 
-# Local User Uploads (Prevents bloated commits & data leaks of medical certificates/photos)
-uploads/
-public/uploads/
-
 # Node Package Dependencies
 node_modules/
 jspm_packages/
