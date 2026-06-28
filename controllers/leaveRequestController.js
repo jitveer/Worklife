@@ -1,5 +1,14 @@
 const db = require('../db');
 const { sendNotificationToUser } = require("../services/pushService");
+const emptyToNull = (v) => {
+  if (v === undefined || v === null) return null;
+
+  if (typeof v === "string" && v.trim() === "") {
+    return null;
+  }
+
+  return v;
+};
 
 function generateReqNo() {
   const now = new Date();
@@ -111,22 +120,22 @@ WHERE u.email = ?
       const values = [
         reqNo,
         data.leave_type,
-        data.total_available_leaves,
-        data.last_year_carried_forward_days,
-        data.carried_forward_lapse_date,
-        data.extended_lapsed_days,
-        data.extended_lapsed_date,
+        emptyToNull(data.total_available_leaves),
+        emptyToNull(data.last_year_carried_forward_days),
+        emptyToNull(data.carried_forward_lapse_date),
+        emptyToNull(data.extended_lapsed_days),
+        emptyToNull(data.extended_lapsed_date),
         data.from_date,
         data.to_date,
         data.requested_days,
-        data.remaining_days,
-        data.location,
-        data.destination,
+        emptyToNull(data.remaining_days),
+        emptyToNull(data.location),
+        emptyToNull(data.destination),
         data.contact_info_1,
-        data.contact_info_2,
-        data.contact_info_3,
+        emptyToNull(data.contact_info_2),
+        emptyToNull(data.contact_info_3),
         filePath,
-        data.requester_comments,
+        emptyToNull(data.requester_comments),
         userEmail,
         departmentId,
         requesterName,
