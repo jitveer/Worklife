@@ -50,10 +50,10 @@ app.use(express.urlencoded({ extended: true }));
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
   : [
-      'https://worklife.globesproperties.in', // Production domain
-      'http://localhost:3000',               // Local development
-      'http://127.0.0.1:3000'
-    ];
+    'https://worklife-ems.mnmreality.com', // Production domain
+    'http://localhost:3000',               // Local development
+    'http://127.0.0.1:3000'
+  ];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -98,7 +98,7 @@ app.use(
 
         connectSrc: [
           "'self'",
-          "https://worklife.globesproperties.in",
+          "https://worklife-ems.mnmreality.com",
           "https://cdn.jsdelivr.net",
           "https://nominatim.openstreetmap.org"
         ],

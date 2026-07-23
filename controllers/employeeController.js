@@ -352,7 +352,7 @@ exports.sendEmployeeFormLink = (req, res) => {
   const token = crypto.randomBytes(16).toString("hex");
 
   // SAME PAGE link + auto-open form
-  const formLink = `https://worklife.globesproperties.in/employee-form.html?openForm=1&token=${token}`;
+  const formLink = `${process.env.BASE_URL}/employee-form.html?openForm=1&token=${token}`;
 
   // Send email
   sendEmployeeFormEmail(email, formLink);

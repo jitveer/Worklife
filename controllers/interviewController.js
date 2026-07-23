@@ -34,7 +34,7 @@ exports.sendInvite = (req, res) => {
     db.query(query, [email, role_id, token], (err) => {
         if (err) return res.status(500).json(err);
 
-        const examLink = `https://worklife.globesproperties.in/questions.html?token=${token}`;
+        const examLink = `${process.env.BASE_URL}/questions.html?token=${token}`;
 
         // Get role name
         db.query(
