@@ -390,6 +390,11 @@
             transform: translateY(-1px);
         }
 
+        .attach-selected {
+            background: #198754 !important;
+            color: #fff;
+        }
+
 
 
 
@@ -766,6 +771,8 @@
                         <th>*Applied Date</th>
                         <th>*Date of Booking</th>
                         <th>*Representative Name</th>
+                        <th>*Client Name</th>
+                        <th>*Flat No</th>
                         <th>*Project</th>
                         <th>*Typo</th>
                         <th>*Status</th>
@@ -788,6 +795,14 @@
                             <select class="form-control representative">
                                 <option disabled selected>Select</option>
                             </select>
+                        </td>
+
+                        <td data-label="*Client Name">
+                            <input type="text" class="form-control client_name">
+                        </td>
+
+                        <td data-label="*Flat No">
+                            <input type="text" class="form-control flat_no">
                         </td>
 
                         <td data-label="*Project">
@@ -844,6 +859,14 @@
                             </select>
                         </td>
 
+                        <td data-label="*Client Name">
+                            <input type="text" class="form-control client_name" placeholder="">
+                        </td>
+
+                        <td data-label="*Flat No">
+                            <input type="text" class="form-control flat_no" placeholder="">
+                        </td>
+
                         <td data-label="*Project">
                             <select class="form-control project">
                                 <option disabled selected>Select</option>
@@ -890,12 +913,38 @@
             </table>
 
             <div class="sales-actions-top">
-                <p><a href="#" id="addSalesRow"><strong>+ Add Row</strong></a></p>
 
-                <button type="button" class="view-files-btn" id="downloadBtn">
-                    View / Download
-                </button>
+                <p>
+                    <a href="#" id="addSalesRow">
+                        <strong>+ Add Row</strong>
+                    </a>
+                </p>
+
+                <div style="display:flex; gap:10px; align-items:center;">
+
+                    <button type="button" class="view-files-btn" id="downloadBtn">
+                        View / Download
+                    </button>
+
+                    <button type="button" class="view-files-btn" id="replaceAttachmentBtn" style="display:none;">
+                        Attach
+                    </button>
+
+                    <input type="file" id="replacementAttachment" accept=".png,.jpg,.jpeg,.pdf,.xls,.xlsx"
+                        style="display:none;">
+
+                </div>
+
             </div>
+
+            <div class="requester-comments-section mt-3">
+                <label for="remarks" class="form-label fw-bold">
+                    Requester Comments:
+                </label>
+
+                <textarea id="remarks" class="form-control" rows="4" placeholder="Requester comments..."></textarea>
+            </div>
+
 
             <button id="approveBtn" class="btn btn-success btn-sm" id="approveBtn">
                 Approve
@@ -1066,9 +1115,17 @@
 
                         // SAVE ATTACHMENTS (array of file paths)
                         window.saleAttachments = data.sale.attachments || [];
+                        // console.log("sale.attachments:", data.sale.attachments);
 
                         const sale = data.sale;
+
+                        const attachBtn = document.getElementById("replaceAttachmentBtn");
+                        // Temporary testing
+                        attachBtn.style.display = "inline-block";
+
                         const items = data.items;
+
+                        document.getElementById("remarks").value = sale.remarks || "";
 
                         // 3️⃣ Fill RIGHT PANEL details
                         document.getElementById("info-employee-id").textContent = sale.employee_id;
@@ -1097,6 +1154,13 @@
                             <select class="form-control representative" data-selected="${item.representative_id}">
                                 <option>Select</option>
                             </select>
+                        </td>
+                        <td data-label="*Client Name">
+                            <input type="text" class="form-control client_name" value="${item.client_name || ''}">
+                        </td>
+
+                        <td data-label="*Flat No">
+                            <input type="text" class="form-control flat_no" value="${item.flat_no || ''}">
                         </td>
                         <td>
                             <select class="form-control project" data-selected="${item.project_id}">
@@ -1228,6 +1292,39 @@
         }
 
 
+        // reattachement from HR 
+        let replacementFile = null;
+
+        document
+            .getElementById("replaceAttachmentBtn")
+            .addEventListener("click", () => {
+
+                document
+                    .getElementById("replacementAttachment")
+                    .click();
+
+            });
+
+        document
+            .getElementById("replacementAttachment")
+            .addEventListener("change", function () {
+
+                if (this.files.length > 0) {
+
+                    replacementFile = this.files[0];
+
+                    document.getElementById("replaceAttachmentBtn").innerText =
+                        replacementFile.name;
+
+                    document
+                        .getElementById("replaceAttachmentBtn")
+                        .classList.add("attach-selected");
+
+                }
+
+            });
+
+
         // Add Row 
         document.getElementById("addSalesRow").addEventListener("click", function (e) {
             e.preventDefault(); // stop page jump
@@ -1246,6 +1343,14 @@
                     <option disabled selected>Select</option>
                     </select>
             </td>
+            <td data-label="*Client Name">
+                <input type="text" class="form-control client_name" placeholder="">
+            </td>
+
+            <td data-label="*Flat No"> 
+                <input type="text" class="form-control flat_no" placeholder="">
+            </td>
+
             <td data-label="*Project">
                 <select class="form-control project">
                     <option disabled selected>Select</option>
@@ -1351,6 +1456,8 @@
                     applied_date: row.querySelector(".applied_date").value,
                     date_of_booking: row.querySelector(".booking_date").value,
                     representative_id: row.querySelector(".representative").value,
+                    client_name: row.querySelector(".client_name").value,
+                    flat_no: row.querySelector(".flat_no").value,
                     project_id: row.querySelector(".project").value,
                     typo_id: row.querySelector(".typo").value,
                     status_id: row.querySelector(".status").value,
@@ -1391,18 +1498,26 @@
                         ? "You have approved this request."
                         : "You have rejected this request.";
 
+                const formData = new FormData();
+
+                formData.append("req_no", currentSalesRequestId);
+                formData.append("status", newStatus);
+                formData.append("comments", comments);
+                formData.append("remarks", document.getElementById("remarks").value);
+                formData.append("approver_id", sessionStorage.getItem("user_id"));
+
+                formData.append("updatedItems", JSON.stringify(updatedItems));
+                formData.append("approvalHistory", JSON.stringify(approvalHistory));
+
+                // Upload replacement attachment if selected
+                if (replacementFile) {
+                    formData.append("replacementAttachment", replacementFile);
+                }
+
                 fetch(`/api/sales/update-approval`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
                     credentials: "include",
-                    body: JSON.stringify({
-                        req_no: currentSalesRequestId,
-                        status: newStatus,
-                        comments: comments,
-                        approver_id: sessionStorage.getItem("user_id"), // must exist after session-check
-                        updatedItems: updatedItems,
-                        approvalHistory: approvalHistory
-                    })
+                    body: formData
                 })
                     .then(res => res.json())
                     .then(data => {

@@ -28,8 +28,8 @@ function createUploader(folderName) {
 
   // ✅ Secure File Filter: Only allow safe image formats and PDFs to prevent RCE
   const fileFilter = (req, file, cb) => {
-    const allowedExtensions = ['.png', '.jpg', '.jpeg', '.pdf'];
-    const allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
+    const allowedExtensions = ['.png', '.jpg', '.jpeg', '.pdf', '.xls', '.xlsx'];
+    const allowedMimeTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
 
     const ext = path.extname(file.originalname).toLowerCase();
     const mime = file.mimetype.toLowerCase();
@@ -37,7 +37,7 @@ function createUploader(folderName) {
     if (allowedExtensions.includes(ext) && allowedMimeTypes.includes(mime)) {
       cb(null, true);
     } else {
-      cb(new Error("Only images (.png, .jpg, .jpeg) and PDFs (.pdf) are allowed!"), false);
+      cb(new Error("Only images (.png, .jpg, .jpeg), Excel files (.xls, .xlsx) and PDFs (.pdf) are allowed!"), false);
     }
   };
 

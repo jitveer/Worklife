@@ -299,7 +299,25 @@
         }
 
 
+        .requester-comments-section {
+            width: 100%;
+        }
 
+        .requester-comments-section label {
+            font-weight: 600;
+            color: #165c42;
+            margin-bottom: 6px;
+        }
+
+        .requester-comments-section textarea {
+            width: 100%;
+            min-height: 100px;
+            resize: vertical;
+            border: 1px solid #34383b;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 14px;
+        }
 
 
 
@@ -509,6 +527,11 @@
                 /* 🔥 reduce label text */
             }
 
+            .requester-comments-section textarea {
+                min-height: 90px;
+                font-size: 13px;
+            }
+
         }
 
 
@@ -555,7 +578,7 @@
             /* Main container becomes 2 columns only */
             .main-container {
                 display: grid;
-                grid-template-columns:  2fr 1fr;
+                grid-template-columns: 2fr 1fr;
                 gap: 14px;
                 padding: 15px;
                 align-items: flex-start;
@@ -789,6 +812,8 @@
                         <th>*Applied Date</th>
                         <th>*Date of Booking</th>
                         <th>*Representative Name</th>
+                        <th>*Client Name</th>
+                        <th>*Flat No</th>
                         <th>*Project</th>
                         <th>*Typo</th>
                         <th>*Status</th>
@@ -808,6 +833,14 @@
                             <select class="form-control representative">
                                 <option disabled selected>Select</option>
                             </select>
+                        </td>
+
+                        <td data-label="*Client Name">
+                            <input type="text" class="form-control client-name">
+                        </td>
+
+                        <td data-label="*Flat No">
+                            <input type="text" class="form-control flat-no">
                         </td>
 
                         <td data-label="*Project">
@@ -847,6 +880,14 @@
                             <select class="form-control representative">
                                 <option disabled selected>Select</option>
                             </select>
+                        </td>
+
+                        <td data-label="*Client Name">
+                            <input type="text" class="form-control client-name">
+                        </td>
+
+                        <td data-label="*Flat No">
+                            <input type="text" class="form-control flat-no">
                         </td>
 
                         <td data-label="*Project">
@@ -890,7 +931,14 @@
                 <input type="file" id="incentiveFilesInput" multiple style="display:none">
             </div>
 
+            <div class="requester-comments-section mt-3">
+                <label for="remarks" class="form-label fw-bold">
+                    Requester Comments:
+                </label>
 
+                <textarea id="remarks" class="form-control" rows="4"
+                    placeholder="Enter your comments here..."></textarea>
+            </div>
 
             <button type="button" id="submitSalesForm" class="btn btn-success mt-2">
                 Submit
@@ -942,6 +990,8 @@
                     applied_date: row.querySelector('input[type="date"]').value,
                     date_of_booking: row.querySelectorAll('input[type="date"]')[1].value,
                     representative_id: row.querySelector('.representative').value,
+                    client_name: row.querySelector(".client-name").value,
+                    flat_no: row.querySelector(".flat-no").value,
                     project_id: row.querySelector('.project').value,
                     typo_id: row.querySelector('.typo').value,
                     status_id: row.querySelector('.status').value,
@@ -974,6 +1024,17 @@
 
 
         document.getElementById("incentiveFilesInput").addEventListener("change", async function () {
+            // attache butto changes to attached file name 
+            const attachBtn = document.getElementById("attachBtn");
+
+            if (this.files.length === 1) {
+                attachBtn.innerHTML = `<i class="fa-solid fa-file"></i> ${this.files[0].name}`;
+            } else if (this.files.length > 1) {
+                attachBtn.innerHTML = `<i class="fa-solid fa-folder-open"></i> ${this.files.length} Files Selected`;
+            } else {
+                attachBtn.innerHTML = "Attach Files";
+            }
+
             const files = this.files;
             if (!files.length) return;
 
@@ -1045,6 +1106,14 @@
             <select class="form-control representative">
                 <option disabled selected>Select</option>
             </select>
+        </td>
+
+        <td data-label="*Client Name">
+            <input type="text" class="form-control client_name" placeholder="">
+        </td>
+
+        <td data-label="*Flat No">
+            <input type="text" class="form-control flat_no" placeholder="">
         </td>
 
         <td data-label="*Project">

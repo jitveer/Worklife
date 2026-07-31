@@ -6,7 +6,7 @@ const uploadIncentive = upload("incentive_files");
 
 router.get("/personal-info", controller.getSalesPersonalInfo);
 router.post("/submit", controller.submitSalesRequest);
-router.post("/update-approval", controller.updateSalesApproval);
+router.post("/update-approval", uploadIncentive.array("replacementAttachment"), controller.updateSalesApproval);
 router.get("/dropdown-data", controller.getDropdownData);
 
 router.delete("/delete-item/:item_id", controller.deleteSalesItem);

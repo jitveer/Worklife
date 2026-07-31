@@ -90,10 +90,10 @@ exports.submitSalesRequest = (req, res) => {
 
     // 2️⃣ Insert into sales (same as petrol_claim)
     const insertSalesSql = `
-      INSERT INTO sales (req_no, requester_id, status, attachments, created_at, updated_at)
-      VALUES (?, ?, 'Pending', ?, NOW(), NOW())
+      INSERT INTO sales (req_no, requester_id, status, attachments, remarks, created_at, updated_at)
+      VALUES (?, ?, 'Pending', ?, ?, NOW(), NOW())
     `;
-    db.query(insertSalesSql, [req_no, requester_id, JSON.stringify(attachments)], (err1, result) => {
+    db.query(insertSalesSql, [req_no, requester_id, JSON.stringify(attachments), remarks], (err1, result) => {
       if (err1) return res.status(500).send({ error: err1.message });
 
       const sale_id = result.insertId;
@@ -101,7 +101,7 @@ exports.submitSalesRequest = (req, res) => {
       // 3️⃣ Insert sales_items (same style as petrol_items)
       const itemSql = `
         INSERT INTO sales_items 
-        (sale_id, applied_date, date_of_booking, representative_id, project_id, typo_id, status_id, dimension_sqft)
+        (sale_id, applied_date, date_of_booking, representative_id, client_name, flat_no, project_id, typo_id, status_id, dimension_sqft)
         VALUES ?
       `;
 
@@ -110,6 +110,8 @@ exports.submitSalesRequest = (req, res) => {
         i.applied_date,
         i.date_of_booking,
         i.representative_id,
+        i.client_name,
+        i.flat_no,
         i.project_id,
         i.typo_id,
         i.status_id,
@@ -207,7 +209,28 @@ exports.submitSalesRequest = (req, res) => {
 
 // Update Sales Approval (approve / reject)
 exports.updateSalesApproval = (req, res) => {
-  const { req_no, approver_id, status, comments } = req.body;
+  const { req_no, approver_id, status, comments, remarks } = req.body;
+
+  // Parse FormData JSON fields
+  if (typeof req.body.updatedItems === "string") {
+    req.body.updatedItems = JSON.parse(req.body.updatedItems);
+  }
+
+  if (typeof req.body.approvalHistory === "string") {
+    req.body.approvalHistory = JSON.parse(req.body.approvalHistory);
+  }
+
+  // console.log(Array.isArray(req.body.updatedItems));      // true
+  // console.log(Array.isArray(req.body.approvalHistory));
+
+  //new attachements from approver for incetive
+  let newAttachments = null;
+
+  if (req.files && req.files.length > 0) {
+    newAttachments = JSON.stringify(
+      req.files.map(file => `/uploads/incentive_files/${file.filename}`)
+    );
+  }
 
   // Pre-check (same petrol logic)
   db.query(
@@ -227,15 +250,17 @@ exports.updateSalesApproval = (req, res) => {
           if (!item.id || item.id === "" || item.id === null) {
             db.query(`
         INSERT INTO sales_items 
-          (sale_id, applied_date, date_of_booking, representative_id, project_id, typo_id, status_id, dimension_sqft, incentive_type, earned_incentive, total_incentive, created_at)
+          (sale_id, applied_date, date_of_booking, representative_id, client_name, flat_no, project_id, typo_id, status_id, dimension_sqft, incentive_type, earned_incentive, total_incentive, created_at)
         VALUES
-          ((SELECT id FROM sales WHERE req_no=?), ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+          ((SELECT id FROM sales WHERE req_no=?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
           `,
               [
                 req.body.req_no,                   // sale_id (via req_no)
                 item.applied_date,
                 item.date_of_booking,
                 item.representative_id,
+                item.client_name,
+                item.flat_no,
                 item.project_id,
                 item.typo_id,
                 item.status_id,
@@ -253,6 +278,8 @@ exports.updateSalesApproval = (req, res) => {
             applied_date = ?,
             date_of_booking = ?,
             representative_id = ?,
+            client_name = ?,
+            flat_no = ?,
             project_id = ?,
             typo_id = ?,
             status_id = ?,
@@ -267,6 +294,8 @@ exports.updateSalesApproval = (req, res) => {
                 item.applied_date,
                 item.date_of_booking,
                 item.representative_id,
+                item.client_name,
+                item.flat_no,
                 item.project_id,
                 item.typo_id,
                 item.status_id,
@@ -306,6 +335,32 @@ exports.updateSalesApproval = (req, res) => {
         });
       }
 
+      if (newAttachments) {
+        db.query(
+          `UPDATE sales
+         SET remarks = ?,
+             attachments = ?,
+             updated_at = NOW()
+         WHERE req_no = ?`,
+          [remarks, newAttachments, req_no],
+          (err, result) => {
+            if (err) {
+              //console.log("Attachment update error:", err);
+            } else {
+              // console.log("Attachment updated successfully");
+              // console.log(result);
+            }
+          }
+        );
+      } else {
+        db.query(
+          `UPDATE sales
+         SET remarks = ?,
+             updated_at = NOW()
+         WHERE req_no = ?`,
+          [remarks, req_no]
+        );
+      }
 
       // 1️⃣ Update current approver
       const updateSql = `
@@ -509,6 +564,7 @@ exports.getSalesByReqNo = (req, res) => {
             s.req_no,
             s.status,
             s.attachments,
+            s.remarks,
             s.rejection_reason,
             s.rejected_by,
             CONCAT(u2.first_name, ' ', u2.last_name) AS rejected_by_name,
@@ -547,19 +603,33 @@ exports.getSalesByReqNo = (req, res) => {
 
     // 🔥 Corrected items query
     const itemsSql = `
-            SELECT 
-                si.*,
-                CONCAT(rep.first_name, ' ', rep.last_name) AS representative_name,
-                p.project_name,
-                t.typo_name,
-                st.status_name
-            FROM sales_items si
-            LEFT JOIN employees rep ON si.representative_id = rep.id
-            LEFT JOIN projects p ON si.project_id = p.id
-            LEFT JOIN typo t ON si.typo_id = t.id
-            LEFT JOIN project_status st ON si.status_id = st.id
-            WHERE si.sale_id = ?
-        `;
+    SELECT
+        si.id,
+        DATE_FORMAT(si.applied_date, '%Y-%m-%d') AS applied_date,
+        DATE_FORMAT(si.date_of_booking, '%Y-%m-%d') AS date_of_booking,
+        si.representative_id,
+        si.client_name,
+        si.flat_no,
+        si.project_id,
+        si.typo_id,
+        si.status_id,
+        si.dimension_sqft,
+        si.incentive_type,
+        si.earned_incentive,
+        si.total_incentive,
+
+        CONCAT(rep.first_name, ' ', rep.last_name) AS representative_name,
+        p.project_name,
+        t.typo_name,
+        st.status_name
+
+    FROM sales_items si
+    LEFT JOIN employees rep ON si.representative_id = rep.id
+    LEFT JOIN projects p ON si.project_id = p.id
+    LEFT JOIN typo t ON si.typo_id = t.id
+    LEFT JOIN project_status st ON si.status_id = st.id
+    WHERE si.sale_id = ?
+`;
 
     db.query(itemsSql, [sale.sale_id], (err2, itemsRes) => {
       if (err2) return res.status(500).json({ error: err2 });
@@ -701,7 +771,7 @@ exports.deleteSale = (req, res) => {
     return res.status(400).json({ error: "sale_id missing" });
   }
 
-  console.log("Deleting sale:", id);
+  //console.log("Deleting sale:", id);
 
   // Step 1: delete items
   db.query("DELETE FROM sales_items WHERE sale_id = ?", [id], (err1) => {
