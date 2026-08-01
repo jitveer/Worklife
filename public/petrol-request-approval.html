@@ -195,15 +195,6 @@
         }
 
         /* Attach button ui */
-        .petrol-actions-top {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            align-items: center;
-            column-gap: 10px;
-            width: 100%;
-            margin: 12px 0;
-        }
-
         #add-petrol-row {
             justify-self: start;
             font-weight: 600;
@@ -237,6 +228,74 @@
             background-color: #198754 !important;
             color: white;
         }
+
+
+        /* All buttons UI  */
+        .petrol-actions-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+        }
+
+        .petrol-file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .approval-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .approve-btn,
+        .cancel-btn {
+            font-size: 15px;
+            /* Change to 12px if you want even smaller */
+            font-weight: bold;
+        }
+
+
+        /* Approve Button */
+        .approve-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: 1px solid #28a745;
+            transition: 0.2s ease;
+        }
+
+        .approve-btn:hover {
+            background-color: #218838;
+            border-color: #218838;
+            color: #fff;
+        }
+
+        /* Reject Button */
+        .cancel-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: 1px solid #dc3545;
+            transition: 0.2s ease;
+        }
+
+        .cancel-btn:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+            color: #fff;
+        }
+
+        /* Disabled State */
+        .approve-btn:disabled,
+        .cancel-btn:disabled {
+            background: #b5b5b5 !important;
+            border-color: #b5b5b5 !important;
+            color: #fff;
+            cursor: not-allowed;
+            opacity: .7;
+        }
+
+
 
 
 
@@ -404,6 +463,35 @@
             .label {
                 font-size: 11px;
                 font-weight: 600;
+            }
+
+
+            /* 3 buttons */
+            .petrol-actions-top {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: nowrap;
+                gap: 6px;
+            }
+
+            #add-petrol-row {
+                font-size: 14px;
+                white-space: nowrap;
+                margin: 0;
+            }
+
+            .petrol-file-actions {
+                display: flex;
+                gap: 5px;
+                align-items: center;
+            }
+
+            .petrol-file-actions .view-files-btn {
+                padding: 4px 8px;
+                font-size: 10px;
+                min-width: auto;
+                white-space: nowrap;
             }
 
         }
@@ -585,8 +673,8 @@
         <div class="header">
             <!-- Left Section -->
             <div id="headerLogo" class="header-left" style="cursor: pointer;">
-                <div class="logo-box">WL</div>
-                <div class="worklife-text">Worklife</div>
+                <div class="logo-box" id="headerLogo">WL</div>
+                <div class="worklife-text" id="headerLogo">Worklife</div>
             </div>
 
             <!-- Right Section -->
@@ -684,13 +772,23 @@
             </table>
 
             <div class="petrol-actions-top">
+
                 <a href="#" id="add-petrol-row">+ Add Row</a>
 
-                <button type="button" class="view-files-btn" id="attachPetrolBtn">
-                    Attach Files
-                </button>
+                <div class="petrol-file-actions">
 
-                <input type="file" id="petrolAttachment" hidden>
+                    <button type="button" class="view-files-btn" id="downloadPetrolBtn">
+                        <i class="fa fa-download"></i> Download Files
+                    </button>
+
+                    <button type="button" class="view-files-btn" id="attachPetrolBtn">
+                        Attach Files
+                    </button>
+
+                    <input type="file" id="petrolAttachment" multiple hidden>
+
+                </div>
+
             </div>
 
             <div class="mb-3">
@@ -698,8 +796,19 @@
                 <textarea class="form-control" id="remarks"></textarea>
             </div>
 
-            <button class="btn btn-success">Submit</button>
-            <button class="btn btn-danger">Close</button>
+            <!-- Approve / Reject Buttons -->
+            <div class="approval-buttons">
+                <button type="button" id="approveBtn" class="approve-btn">
+                    Approve
+                </button>
+
+                <button type="button" id="rejectBtn" class="cancel-btn">
+                    Reject
+                </button>
+            </div>
+
+            <p id="approvalMessage" style="display:none; color:red; font-weight:bold; margin-top:10px;">
+            </p>
         </form>
 
 
@@ -762,6 +871,260 @@
         </div>
 
         <script>
+            // Read req no and fetch all data of that employee 
+            const urlParams = new URLSearchParams(window.location.search);
+            const reqNo = urlParams.get("reqNo");
+
+            let currentPetrolRequestId = reqNo;
+
+            if (!reqNo) {
+                Swal.fire("Error", "Request Number not found.", "error");
+            }
+
+
+            function loadPetrolApproval() {
+
+                fetch(`/api/petrol/claims/${reqNo}`, { credentials: "include" })
+                    .then(res => res.json())
+                    .then(data => {
+                        // Attachements
+                        window.currentAttachments = data.attachments || [];
+                        // Fill Claim Details
+                        document.getElementById("info-name").textContent = data.requester_name || "-";
+
+                        document.getElementById("info-request-number").textContent = data.requester_no || "-";
+
+                        document.getElementById("info-email").textContent = data.email || "-";
+
+                        document.getElementById("info-request-date").textContent = data.request_date || "-";
+
+                        document.getElementById("info-department").textContent = data.department_name || "-";
+
+                        document.getElementById("remarks").value = data.remarks || "";
+
+                        // Fill petrol items
+                        const tbody = document.getElementById("petrol-table-body");
+                        tbody.innerHTML = "";
+
+                        if (data.items && data.items.length > 0) {
+
+                            data.items.forEach(item => {
+
+                                const row = document.createElement("tr");
+                                row.dataset.id = item.id;
+
+                                row.innerHTML = `
+                                <td data-label="*Date">
+                                    <input type="date" value="${item.date || ""}">
+                                </td>
+
+                                <td data-label="*Start Km">
+                                    <input type="text" value="${item.start_km || ""}">
+                                </td>
+
+                                <td data-label="*End Km">
+                                    <input type="text" value="${item.end_km || ""}">
+                                </td>
+
+                                <td data-label="*Total Km Travelled">
+                                    <input type="text" value="${item.total_km_travelled || ""}">
+                                </td>
+
+                                <td data-label="*Location">
+                                    <input type="text" value="${item.location || ""}">
+                                </td>
+
+                                <td data-label="Delete">
+                                    <button type="button" class="btn btn-sm btn-danger delete-row">
+                                          X
+                                    </button>
+                                </td>
+                            `;
+
+                                tbody.appendChild(row);
+                            });
+
+                        }
+
+
+                        // personal info
+                        document.getElementById("info-employee-id").textContent =
+                            data.employee_id || "-";
+
+                        document.getElementById("info-company").textContent =
+                            data.company_name || "-";
+
+                        document.getElementById("info-designation").textContent =
+                            data.designation || "-";
+
+                        document.getElementById("info-line-manager").textContent =
+                            data.line_manager || "-";
+
+                        document.getElementById("info-joining-date").textContent =
+                            data.joining_date || "-";
+
+
+
+                        // Approve/Reject buttons and message
+                        const approveBtn = document.getElementById("approveBtn");
+                        const rejectBtn = document.getElementById("rejectBtn");
+                        const approvalMessage = document.getElementById("approvalMessage");
+
+                        const myStatus = (data.approval_status || "pending").toLowerCase();
+
+                        if (myStatus === "approved") {
+                            approveBtn.disabled = true;
+                            rejectBtn.disabled = true;
+                            approvalMessage.style.display = "block";
+                            approvalMessage.style.color = "green";
+                            approvalMessage.textContent = "You have already approved this request.";
+                        } else if (myStatus === "rejected") {
+                            approveBtn.disabled = true;
+                            rejectBtn.disabled = true;
+                            approvalMessage.style.display = "block";
+                            approvalMessage.style.color = "red";
+                            approvalMessage.textContent = "You have already rejected this request.";
+                        } else if (myStatus === "pending") {
+                            approveBtn.disabled = false;
+                            rejectBtn.disabled = false;
+                            approvalMessage.style.display = "none";
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching petrol claim:", err);
+                        Swal.fire("Error", "Unable to load petrol claim details.", "error");
+                    });
+            }
+
+            // Approve/Reject handler
+            function updatePetrolStatus(newStatus) {
+                if (!currentPetrolRequestId) return;
+
+                const handleFetch = (comments = "") => {
+                    const approveBtn = document.getElementById("approveBtn");
+                    const rejectBtn = document.getElementById("rejectBtn");
+                    const approvalMessage = document.getElementById("approvalMessage");
+
+                    // Disable buttons immediately after click
+                    approveBtn.disabled = true;
+                    rejectBtn.disabled = true;
+                    approvalMessage.style.display = "block";
+                    approvalMessage.style.color = newStatus === "approved" ? "green" : "red";
+                    approvalMessage.textContent = newStatus === "approved"
+                        ? "You have approved this request."
+                        : "You have rejected this request.";
+
+
+                    // Update all edits done by approver then take action and save updated data to database 
+                    const rows = document.querySelectorAll("#petrol-table-body tr");
+                    const items = [];
+
+                    rows.forEach(row => {
+
+                        items.push({
+                            id: row.dataset.id,
+                            date: row.cells[0].querySelector("input").value,
+                            start_km: row.cells[1].querySelector("input").value,
+                            end_km: row.cells[2].querySelector("input").value,
+                            total_km_travelled: row.cells[3].querySelector("input").value,
+                            location: row.cells[4].querySelector("input").value
+                        });
+
+                    });
+
+                    const remarks = document.getElementById("remarks").value;
+
+                    const formData = new FormData();
+
+                    formData.append("req_no", currentPetrolRequestId);
+                    formData.append("remarks", remarks);
+                    formData.append("items", JSON.stringify(items));
+
+                    const files = document.getElementById("petrolAttachment").files;
+
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append("petrolAttachment", files[i]);
+                    }
+
+                    fetch("/api/petrol/update", {
+                        method: "POST",
+                        credentials: "include",
+                        body: formData
+                    })
+                        .then(res => res.json())
+                        .then(updateRes => {
+
+                            return fetch(`/api/petrol/approval/update`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                credentials: "include", // ✅ ensures session is sent
+                                body: JSON.stringify({
+                                    req_no: currentPetrolRequestId,
+                                    status: newStatus,
+                                    comments,
+                                    role: "admin",
+                                    approver_id: sessionStorage.getItem("user_id")
+                                })
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.fire(
+                                newStatus === "approved" ? "Approved!" : "Rejected!",
+                                data.message,
+                                "success"
+                            );
+                            loadPetrolApproval();
+                        })
+                        .catch(err => {
+                            console.error("UPDATE ERROR:", err);
+                            Swal.fire("Error", "Something went wrong", "error");
+                            // If error, re-enable buttons so user can try again
+                            approveBtn.disabled = false;
+                            rejectBtn.disabled = false;
+                        });
+                };
+
+                if (newStatus === "rejected") {
+                    Swal.fire({
+                        title: "Reason for rejection",
+                        input: "text",
+                        inputLabel: "Rejection Reason",
+                        inputPlaceholder: "Enter reason here...",
+                        inputValidator: value => !value?.trim() ? "Reason required!" : null,
+                        showCancelButton: true
+                    }).then(result => {
+                        if (result.isConfirmed) handleFetch(result.value);
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Approve petrol claim?",
+                        text: "Once approved, cannot be reverted.",
+                        icon: "question",
+                        showCancelButton: true,
+                        confirmButtonText: "Approve"
+                    }).then(result => {
+                        if (result.isConfirmed) handleFetch();
+                    });
+                }
+            }
+
+
+            document.addEventListener("DOMContentLoaded", () => {
+
+                loadPetrolApproval();
+
+                document.getElementById("approveBtn").addEventListener("click", function () {
+                    updatePetrolStatus("approved");
+                });
+
+                document.getElementById("rejectBtn").addEventListener("click", function () {
+                    updatePetrolStatus("rejected");
+                });
+
+            });
+
+
             // Add Row with Delete Button
             document.getElementById("add-petrol-row").addEventListener("click", function (e) {
                 e.preventDefault(); // Prevent page jump
@@ -820,142 +1183,31 @@
             });
 
 
-            // window.onload = () => {
-            //     fetch('/api/petrol/get-new-req-no')
-            //         .then(res => res.json())
-            //         .then(data => {
-            //             console.log("New req_no:", data.req_no);
-            //             // Set to hidden input
-            //             document.getElementById('req_no_input').value = data.req_no;
-            //             // Show in Personal Info box
-            //             document.getElementById('info-request-number').textContent = data.req_no;
-            //         })
-            //         .catch(err => {
-            //             console.error("Error fetching req_no:", err);
-            //         });
-            // };
+            //Download Buttons 
+            document.getElementById("downloadPetrolBtn").addEventListener("click", () => {
 
-
-
-            // personal info
-            let petrolReqNo = "";
-            fetch("/api/petrol/personalinfo", { credentials: "include" })
-                .then(res => res.json())
-                .then(data => {
-
-                    if (data.error) {
-                        console.error(data.error);
-                        return;
-                    }
-
-                    // Save req_no for later submission
-                    petrolReqNo = data.req_no;
-                    document.getElementById("req_no").value = petrolReqNo;
-
-                    document.getElementById("info-employee-id").textContent = data.employee_id || "-";
-                    document.getElementById("info-request-number").textContent = data.req_no;
-                    document.getElementById("info-request-date").textContent = new Date().toISOString().split("T")[0];
-                    document.getElementById("info-name").textContent = data.employee_name || "-";
-                    document.getElementById("info-email").textContent = data.requester_email || "-";
-                    document.getElementById("info-company").textContent = data.company || "-";
-                    document.getElementById("info-department").textContent = data.department || "-";
-                    document.getElementById("info-designation").textContent = data.designation || "-";
-                    document.getElementById("info-line-manager").textContent = data.line_manager || "-";
-                    document.getElementById("info-joining-date").textContent = data.joining_date || "-";
-
-
-
-                    const requestDate = data.request_date
-                        ? new Date(data.request_date).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric"
-                        })
-                        : "-";
-
-                    const joiningDate = data.joining_date
-                        ? new Date(data.joining_date).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric"
-                        })
-                        : "-";
-
-                    document.getElementById("info-request-date").textContent = requestDate;
-                    document.getElementById("info-joining-date").textContent = joiningDate;
-
-                    // Save for later submit
-                    window.personalInfo = data;
-                })
-                .catch(err => console.error(err));
-
-
-
-
-            // submit petrol conveyance
-            document.getElementById("petrolForm").addEventListener("submit", function (e) {
-                e.preventDefault();
-
-                const rows = document.querySelectorAll("#petrol-table-body tr");
-                const petrolRows = [];
-
-                rows.forEach(row => {
-                    const date = row.cells[0].querySelector("input")?.value || "";
-                    const start_km = row.cells[1].querySelector("input")?.value || "0";
-                    const end_km = row.cells[2].querySelector("input")?.value || "0";
-                    const total_km_travelled = row.cells[3].querySelector("input")?.value || "0";
-                    const location = row.cells[4].querySelector("input")?.value || "";
-
-                    if (date && start_km && end_km) {
-                        petrolRows.push({ date, start_km, end_km, total_km_travelled, location });
-                    }
-                });
-
-                const req_no = document.getElementById("req_no").value;
-                const remarks = document.getElementById("remarks").value;
-
-                const formData = new FormData();
-
-                formData.append("req_no", req_no);
-                formData.append("remarks", remarks);
-                formData.append("items", JSON.stringify(petrolRows));
-
-                // Attachment
-                const attachment = document.getElementById("petrolAttachment");
-
-                if (attachment.files.length > 0) {
-                    formData.append("petrolAttachment", attachment.files[0]);
+                if (!window.currentAttachments || window.currentAttachments.length === 0) {
+                    Swal.fire("Info", "No attachment found.", "info");
+                    return;
                 }
 
-                fetch("/api/petrol/submit", {
-                    method: "POST",
-                    body: formData
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: "Petrol Claim Submitted: " + data.message,
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        Swal.fire({
-                            title: 'Error!',
-                            text: data.message || "Submission failed",
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    });
+                window.currentAttachments.forEach(file => {
+                    window.open(file, "_blank");
+                });
+
+            });
+
+
+            // load funtion of petrol 
+            document.addEventListener("DOMContentLoaded", () => {
+                loadPetrolApproval();
             });
 
         </script>
 
         <script>
             fetch("/api/auth/session-check", {
-                credentials: "include"   // ⭐ IMPORTANT
+                credentials: "include"
             })
                 .then(res => res.json())
                 .then(data => {
@@ -965,85 +1217,37 @@
                         return;
                     }
 
-                    // ✅ Username
                     document.getElementById("userName").textContent = data.user.name;
+                    
+                    // redirect when clicked on WL 
+                    const headerLogo = document.getElementById("headerLogo");
 
-                    // ===============================
-                    // ✅ HEADER REDIRECT
-                    // ===============================
-                    const header = document.getElementById("headerLogo");
+                    headerLogo.addEventListener("click", () => {
 
-                    if (header) {
-                        header.addEventListener("click", () => {
-                            if (data.user.roleId === 4) {
-                                window.location.href = "employee-dashboard.html";
-                            } else {
-                                window.location.href = "humanresource.html";
-                            }
-                        });
-                    }
+                        if (data.user.roleId === 4) {
+                            // Employee
+                            window.location.href = "employee-dashboard.html";
+                        } else {
+                            // Admin / HR / Approver
+                            window.location.href = "petrol-approval.html";
+                        }
 
-                    // ===============================
-                    // ✅ SIDEBAR CHANGE
-                    // ===============================
+                    });
+
+                    sessionStorage.setItem("user_id", data.user.user_id);
+
+                    const panel = document.querySelector(".left-panel");
+
+                    // Employee
                     if (data.user.roleId === 4) {
-
-                        const panel = document.getElementById("sidePanel");
-
                         if (panel) {
-                            panel.innerHTML = `
-
-            <button class="btn-hr" id="leaveBtn">
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                    <i class="fa-solid fa-calendar-check"></i>
-                    <span>Leave</span>
-                </div>
-            </button>
-
-            <button class="btn-finance" id="expenseBtn">
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                    <i class="fa-solid fa-money-bill"></i>
-                    <span>Expense</span>
-                </div>
-            </button>
-            
-            <button class="btn-reports" id="performanceBtn2">
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                    <i class="fa-solid fa-chart-column"></i>
-                    <span>Performance</span>
-                </div>
-            </button>
-
-            <button class="btn-it" id="petrolBtn">
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                    <i class="fa-solid fa-gas-pump"></i>
-                    <span>Petrol</span>
-                </div>
-            </button>
-
-            <button class="btn-pm" id="salesBtn">
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Incentive</span>
-                </div>
-            </button>
-
-
-            <!-- 🔵 Blue Certificate -->
-            <button class="btn-reports" style="background-color:#0d6efd;" id="certificateBtn">
-                <div style="display:flex;flex-direction:column;align-items:center;">
-                    <i class="fa-solid fa-certificate"></i>
-                    <span>Certificate</span>
-                </div>
-            </button>
-
-            `;
-                            document.getElementById("leaveBtn")?.addEventListener("click", () => location.href = "LeaveRequest.html");
-                            document.getElementById("expenseBtn")?.addEventListener("click", () => location.href = "expense-claim.html");
-                            document.getElementById("performanceBtn2")?.addEventListener("click", () => location.href = "performance.html");
-                            document.getElementById("petrolBtn")?.addEventListener("click", () => location.href = "petrol-conveyance.html");
-                            document.getElementById("salesBtn")?.addEventListener("click", () => location.href = "sales.html");
-                            document.getElementById("certificateBtn")?.addEventListener("click", () => location.href = "certificate.html");
+                            panel.style.display = "none";
+                        }
+                    }
+                    // Admin / HR / Approver
+                    else {
+                        if (panel) {
+                            panel.style.display = "flex";
                         }
                     }
 

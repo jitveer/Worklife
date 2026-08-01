@@ -78,7 +78,20 @@ exports.getPersonalInfo = (req, res) => {
 
 // 2. Create a new petrol conveyance
 exports.createPetrolClaim = (req, res) => {
-  const { req_no, remarks, items } = req.body;
+
+  const { req_no, remarks } = req.body;
+
+  const items =
+    typeof req.body.items === "string"
+      ? JSON.parse(req.body.items)
+      : req.body.items;
+
+  // Attachment
+  const attachments = req.files?.length
+    ? JSON.stringify(
+      req.files.map(file => "/uploads/petrol_files/" + file.filename)
+    )
+    : null;
 
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).send({ error: "Items required" });
@@ -96,10 +109,10 @@ exports.createPetrolClaim = (req, res) => {
 
     // 1️⃣ Insert petrol_claim
     const claimSql = `
-      INSERT INTO petrol_claim (req_no, requester_id, remarks, status, created_at, updated_at)
-      VALUES (?, ?, ?, 'Pending', NOW(), NOW())
+      INSERT INTO petrol_claim (req_no, requester_id, remarks, attachments, status, created_at, updated_at)
+      VALUES (?, ?, ?, ?, 'Pending', NOW(), NOW())
     `;
-    db.query(claimSql, [req_no, requester_id, remarks], (err, result) => {
+    db.query(claimSql, [req_no, requester_id, remarks, attachments], (err, result) => {
       if (err) return res.status(500).send({ error: err.message });
 
       const petrol_claim_id = result.insertId;
@@ -198,7 +211,7 @@ exports.createPetrolClaim = (req, res) => {
                 if (emailRes?.length > 0) {
                   const email = emailRes[0].email;
                   const msg = `${requesterName} submitted a petrol claim for your approval`;
-                  const link = `/petrol-approval.html?type=petrol&reqNo=${req_no}`;
+                  const link = `/petrol-request-approval.html?reqNo=${req_no}`;
                   db.query(
                     `INSERT INTO notifications (email, message, link, status, created_at, updated_at)
                      VALUES (?, ?, ?, 'unread', NOW(), NOW())`,
@@ -262,7 +275,7 @@ exports.updatePetrolApproval = (req, res) => {
             ? `You approved ${requesterName}'s petrol claim`
             : `You rejected ${requesterName}'s petrol claim`;
 
-          const approverLink = `/petrol-approval.html?type=petrol&reqNo=${req_no}`;
+          const approverLink = `/petrol-request-approval.html?reqNo=${req_no}`;
 
           const approverEmailSql = `SELECT email FROM users WHERE id = ?`;
           db.query(approverEmailSql, [approver_id], (eErr, eRes) => {
@@ -329,7 +342,7 @@ exports.updatePetrolApproval = (req, res) => {
                     if (errInsert) console.error("Error inserting next approver:", errInsert);
 
                     const msg = `New Petrol Claim ${req_no} requires your approval`;
-                    const link = `/petrol-approval.html?type=petrol&reqNo=${req_no}`;
+                    const link = `/petrol-request-approval.html?reqNo=${req_no}`;
 
                     db.query(`SELECT email FROM users WHERE id = ?`, [row.approver_user_id], (eErr, eRes) => {
                       if (!eErr && eRes?.length > 0) {
@@ -536,7 +549,7 @@ exports.getPetrolApprovals = (req, res) => {
 
 
 
-// approver pop-up form
+// approver pop-up form / fetch data of employee to approver 
 exports.getPetrolClaimByReqNo = (req, res) => {
   const reqNo = req.params.req_no;
   // SAFE CHECK
@@ -548,11 +561,24 @@ exports.getPetrolClaimByReqNo = (req, res) => {
 
   const claimSql = `
     SELECT 
-        pc.req_no AS requester_no, 
-        CONCAT(e.first_name, ' ', e.last_name) AS requester_name, 
-        e.email, 
-        DATE_FORMAT(pc.created_at, '%Y-%m-%d') AS date,
-        d.department_name AS department, 
+    pc.id,
+    pc.req_no AS requester_no,
+
+    e.employee_id,
+    CONCAT(e.first_name, ' ', e.last_name) AS requester_name,
+    e.email,
+
+    DATE_FORMAT(pc.created_at, '%Y-%m-%d') AS request_date,
+    DATE_FORMAT(e.doj, '%Y-%m-%d') AS joining_date,
+
+    c.company_name,
+    d.department_name,
+
+    e.designation,
+ 
+    CONCAT(m.first_name, ' ', m.last_name) AS line_manager, 
+
+        pc.attachments,
         pc.remarks,
         pc.rejection_reason,
         pc.rejected_by,
@@ -561,7 +587,9 @@ exports.getPetrolClaimByReqNo = (req, res) => {
         pa.status AS approval_status  
     FROM petrol_claim pc
     JOIN employees e ON pc.requester_id = e.id
+    LEFT JOIN company_name c ON e.company_id = c.id
     LEFT JOIN department d ON e.department_id = d.id
+    LEFT JOIN employees m ON e.line_manager_id = m.id
     LEFT JOIN petrol_approvals pa 
         ON pa.petrol_claim_id = pc.id 
         AND pa.approver_id = ?
@@ -573,10 +601,11 @@ exports.getPetrolClaimByReqNo = (req, res) => {
   // Claim items (table rows)
   const itemsSql = `
     SELECT 
+        id,
         DATE_FORMAT(date, '%Y-%m-%d') AS date, 
         start_km, 
         end_km, 
-        total_km_travelled AS total_km, 
+        total_km_travelled, 
         location
     FROM petrol_items
     WHERE petrol_claim_id = ?
@@ -614,10 +643,201 @@ exports.getPetrolClaimByReqNo = (req, res) => {
         }
 
         claim.items = itemRows;
+
+        // Convert attachment JSON to array
+        try {
+          claim.attachments = claim.attachments
+            ? JSON.parse(claim.attachments)
+            : [];
+        } catch (e) {
+          claim.attachments = [];
+        }
+
         res.json(claim);
       });
     });
   });
+};
+
+
+
+// Update Petrol Claim (Approver Edit)
+// Update Petrol Claim (Approver Edit)
+exports.updatePetrolClaim = (req, res) => {
+
+  const req_no = req.body.req_no;
+  const remarks = req.body.remarks;
+
+  let items = [];
+
+  try {
+    items = JSON.parse(req.body.items || "[]");
+  } catch (err) {
+    items = [];
+  }
+
+  // Update attachments if uploaded
+  if (req.files && req.files.length > 0) {
+
+    const attachments = JSON.stringify(
+      req.files.map(file => "/uploads/petrol_files/" + file.filename)
+    );
+
+    db.query(
+      `UPDATE petrol_claim
+       SET attachments = ?
+       WHERE req_no = ?`,
+      [attachments, req_no]
+    );
+  }
+
+  if (!req_no) {
+    return res.status(400).json({ message: "Request Number is required" });
+  }
+
+  // Get Claim ID
+  db.query(
+    "SELECT id FROM petrol_claim WHERE req_no = ?",
+    [req_no],
+    (err, claimRows) => {
+
+      if (err) return res.status(500).json({ error: err });
+
+      if (!claimRows.length) {
+        return res.status(404).json({ message: "Petrol Claim not found" });
+      }
+
+      const claimId = claimRows[0].id;
+
+      // Update remarks
+      db.query(
+        `UPDATE petrol_claim
+         SET remarks = ?, updated_at = NOW()
+         WHERE req_no = ?`,
+        [remarks, req_no],
+        (err1) => {
+
+          if (err1) return res.status(500).json({ error: err1 });
+
+          // Get existing DB rows
+          db.query(
+            "SELECT id FROM petrol_items WHERE petrol_claim_id = ?",
+            [claimId],
+            (err2, dbRows) => {
+
+              if (err2) return res.status(500).json({ error: err2 });
+
+              const dbIds = dbRows.map(r => Number(r.id));
+
+              const formIds = items
+                .filter(item => item.id)
+                .map(item => Number(item.id));
+
+              // Delete removed rows
+              const deleteIds = dbIds.filter(id => !formIds.includes(id));
+
+              deleteIds.forEach(id => {
+                db.query(
+                  "DELETE FROM petrol_items WHERE id = ? AND petrol_claim_id = ?",
+                  [id, claimId]
+                );
+              });
+
+              if (items.length === 0) {
+                return res.json({
+                  success: true,
+                  message: "Petrol Claim Updated Successfully"
+                });
+              }
+
+              let completed = 0;
+
+              items.forEach(item => {
+
+                // Existing Row -> UPDATE
+                if (item.id) {
+
+                  db.query(
+                    `UPDATE petrol_items
+                     SET
+                        date = ?,
+                        start_km = ?,
+                        end_km = ?,
+                        total_km_travelled = ?,
+                        location = ?
+                     WHERE id = ?
+                     AND petrol_claim_id = ?`,
+                    [
+                      item.date,
+                      item.start_km,
+                      item.end_km,
+                      item.total_km_travelled,
+                      item.location,
+                      item.id,
+                      claimId
+                    ],
+                    done
+                  );
+
+                }
+
+                // New Row -> INSERT
+                else {
+
+                  db.query(
+                    `INSERT INTO petrol_items
+                    (
+                      petrol_claim_id,
+                      date,
+                      start_km,
+                      end_km,
+                      total_km_travelled,
+                      location
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?)`,
+                    [
+                      claimId,
+                      item.date,
+                      item.start_km,
+                      item.end_km,
+                      item.total_km_travelled,
+                      item.location
+                    ],
+                    done
+                  );
+
+                }
+
+              });
+
+              function done(err) {
+
+                if (err) {
+                  return res.status(500).json({ error: err });
+                }
+
+                completed++;
+
+                if (completed === items.length) {
+
+                  return res.json({
+                    success: true,
+                    message: "Petrol Claim Updated Successfully"
+                  });
+
+                }
+
+              }
+
+            }
+          );
+
+        }
+      );
+
+    }
+  );
+
 };
 
 

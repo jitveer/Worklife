@@ -289,7 +289,7 @@
         /* -----------------------------------
         Modal
        ----------------------------------- */
-        .modal {
+        /* .modal {
             display: none;
             position: fixed;
             top: 0;
@@ -357,7 +357,7 @@
             background-color: #bbb !important;
             cursor: not-allowed;
             opacity: 0.7;
-        }
+        } */
 
 
 
@@ -676,25 +676,25 @@
 
 
             <!-- PETROL VIEW MODAL -->
-            <div class="modal" id="petrolModal">
+            <!-- <div class="modal" id="petrolModal">
                 <div class="modal-content">
                     <span class="close-btn" id="closeModalBtn">
                         <i class="fa-solid fa-rectangle-xmark"></i>
                     </span>
-                    <h3>Petrol Claim Details <span id="petrolStatusTag" class="status-box small">Status</span></h3>
+                    <h3>Petrol Claim Details <span id="petrolStatusTag" class="status-box small">Status</span></h3> -->
 
                     <!-- Claim Info -->
-                    <div id="petrolDetails">
+                    <!-- <div id="petrolDetails">
                         <p><strong>Requester Name:</strong> <span id="viewRequesterName"></span></p>
                         <p><strong>Requester No:</strong> <span id="viewRequesterNo"></span></p>
                         <p><strong>Email:</strong> <span id="viewEmail"></span></p>
                         <p><strong>Date:</strong> <span id="viewDate"></span></p>
                         <p><strong>Department:</strong> <span id="viewDepartment"></span></p>
                         <p><strong>Remarks:</strong> <span id="viewRemarks"></span></p>
-                    </div>
+                    </div> -->
 
                     <!-- Items Table -->
-                    <h4>Petrol Items</h4>
+                    <!-- <h4>Petrol Items</h4>
                     <table>
                         <thead>
                             <tr>
@@ -706,14 +706,14 @@
                             </tr>
                         </thead>
                         <tbody id="petrolItemsTableBody"></tbody>
-                    </table>
+                    </table> -->
 
                     <!-- Approve / Reject Buttons -->
-                    <button id="approveBtn" class="approve-btn" id="approveBtn">Approve</button>
+                    <!-- <button id="approveBtn" class="approve-btn" id="approveBtn">Approve</button>
                     <button id="rejectBtn" class="cancel-btn" id="rejectBtn">Reject</button>
                     <p id="approvalMessage" style="display:none; color:red; font-weight: bold; margin-top: 10px;"></p>
                 </div>
-            </div>
+            </div> -->
 
 
             <script>
@@ -770,7 +770,7 @@
                         viewBtn.innerHTML = `<i class="fas fa-eye"></i>`;
 
                         viewBtn.addEventListener("click", () => {
-                            viewPetrol(row.req_no);
+                            window.location.href = `petrol-request-approval.html?reqNo=${row.req_no}`;
                         });
 
                         actionTd.appendChild(viewBtn);
@@ -866,173 +866,173 @@
 
 
                 // view pop-up form for approve or reject
-                function viewPetrol(reqNo) {
-                    currentPetrolRequestId = reqNo;
+                // function viewPetrol(reqNo) {
+                //     currentPetrolRequestId = reqNo;
 
-                    fetch(`/api/petrol/claims/${reqNo}`, { credentials: "include" })
-                        .then(res => res.json())
-                        .then(data => {
-                            // Fill Claim Details
-                            document.getElementById("viewRequesterName").textContent = data.requester_name || "-";
-                            document.getElementById("viewRequesterNo").textContent = data.requester_no || "-";
-                            document.getElementById("viewEmail").textContent = data.email || "-";
-                            document.getElementById("viewDate").textContent = data.date || "-";
-                            document.getElementById("viewDepartment").textContent = data.department || "-";
-                            document.getElementById("viewRemarks").textContent = data.remarks || "-";
+                //     fetch(`/api/petrol/claims/${reqNo}`, { credentials: "include" })
+                //         .then(res => res.json())
+                //         .then(data => {
+                //             // Fill Claim Details
+                //             document.getElementById("viewRequesterName").textContent = data.requester_name || "-";
+                //             document.getElementById("viewRequesterNo").textContent = data.requester_no || "-";
+                //             document.getElementById("viewEmail").textContent = data.email || "-";
+                //             document.getElementById("viewDate").textContent = data.date || "-";
+                //             document.getElementById("viewDepartment").textContent = data.department || "-";
+                //             document.getElementById("viewRemarks").textContent = data.remarks || "-";
 
-                            // Status Tag
-                            const statusTag = document.getElementById("petrolStatusTag");
-                            const claimStatus = data.status || data.status || "Pending";
-                            statusTag.textContent = claimStatus;
-                            statusTag.className = "status-box small " + claimStatus.toLowerCase();
+                //             // Status Tag
+                //             const statusTag = document.getElementById("petrolStatusTag");
+                //             const claimStatus = data.status || data.status || "Pending";
+                //             statusTag.textContent = claimStatus;
+                //             statusTag.className = "status-box small " + claimStatus.toLowerCase();
 
-                            // Petrol Items Table
-                            const itemsBody = document.getElementById("petrolItemsTableBody");
-                            itemsBody.innerHTML = "";
-                            if (data.items && data.items.length > 0) {
-                                data.items.forEach(item => {
-                                    const row = `<tr>
-                                    <td>${item.date}</td>
-                                    <td>${item.start_km}</td>
-                                    <td>${item.end_km}</td>
-                                    <td>${item.total_km}</td>
-                                    <td>${item.location}</td>
-                                    </tr>`;
-                                    itemsBody.innerHTML += row;
-                                });
-                            } else {
-                                itemsBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No items</td></tr>`;
-                            }
+                //             // Petrol Items Table
+                //             const itemsBody = document.getElementById("petrolItemsTableBody");
+                //             itemsBody.innerHTML = "";
+                //             if (data.items && data.items.length > 0) {
+                //                 data.items.forEach(item => {
+                //                     const row = `<tr>
+                //                     <td>${item.date}</td>
+                //                     <td>${item.start_km}</td>
+                //                     <td>${item.end_km}</td>
+                //                     <td>${item.total_km}</td>
+                //                     <td>${item.location}</td>
+                //                     </tr>`;
+                //                     itemsBody.innerHTML += row;
+                //                 });
+                //             } else {
+                //                 itemsBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No items</td></tr>`;
+                //             }
 
-                            // Approve/Reject buttons and message
-                            const approveBtn = document.getElementById("approveBtn");
-                            const rejectBtn = document.getElementById("rejectBtn");
-                            const approvalMessage = document.getElementById("approvalMessage");
+                //             // Approve/Reject buttons and message
+                //             const approveBtn = document.getElementById("approveBtn");
+                //             const rejectBtn = document.getElementById("rejectBtn");
+                //             const approvalMessage = document.getElementById("approvalMessage");
 
-                            const myStatus = (data.approval_status || "pending").toLowerCase();
+                //             const myStatus = (data.approval_status || "pending").toLowerCase();
 
-                            if (myStatus === "approved") {
-                                approveBtn.disabled = true;
-                                rejectBtn.disabled = true;
-                                approvalMessage.style.display = "block";
-                                approvalMessage.style.color = "green";
-                                approvalMessage.textContent = "You have already approved this request.";
-                            } else if (myStatus === "rejected") {
-                                approveBtn.disabled = true;
-                                rejectBtn.disabled = true;
-                                approvalMessage.style.display = "block";
-                                approvalMessage.style.color = "red";
-                                approvalMessage.textContent = "You have already rejected this request.";
-                            } else if (myStatus === "pending") {
-                                approveBtn.disabled = false;
-                                rejectBtn.disabled = false;
-                                approvalMessage.style.display = "none";
-                            }
-                            // Show modal
-                            document.getElementById("petrolModal").style.display = "flex";
-                        })
-                        .catch(err => {
-                            console.error("Error fetching petrol claim:", err);
-                            Swal.fire("Error", "Unable to load petrol claim details.", "error");
-                        });
-                }
+                //             if (myStatus === "approved") {
+                //                 approveBtn.disabled = true;
+                //                 rejectBtn.disabled = true;
+                //                 approvalMessage.style.display = "block";
+                //                 approvalMessage.style.color = "green";
+                //                 approvalMessage.textContent = "You have already approved this request.";
+                //             } else if (myStatus === "rejected") {
+                //                 approveBtn.disabled = true;
+                //                 rejectBtn.disabled = true;
+                //                 approvalMessage.style.display = "block";
+                //                 approvalMessage.style.color = "red";
+                //                 approvalMessage.textContent = "You have already rejected this request.";
+                //             } else if (myStatus === "pending") {
+                //                 approveBtn.disabled = false;
+                //                 rejectBtn.disabled = false;
+                //                 approvalMessage.style.display = "none";
+                //             }
+                //             // Show modal
+                //             document.getElementById("petrolModal").style.display = "flex";
+                //         })
+                //         .catch(err => {
+                //             console.error("Error fetching petrol claim:", err);
+                //             Swal.fire("Error", "Unable to load petrol claim details.", "error");
+                //         });
+                // }
 
-                // Approve/Reject handler
-                function updatePetrolStatus(newStatus) {
-                    if (!currentPetrolRequestId) return;
+                // // Approve/Reject handler
+                // function updatePetrolStatus(newStatus) {
+                //     if (!currentPetrolRequestId) return;
 
-                    const handleFetch = (comments = "") => {
-                        const approveBtn = document.getElementById("approveBtn");
-                        const rejectBtn = document.getElementById("rejectBtn");
-                        const approvalMessage = document.getElementById("approvalMessage");
+                //     const handleFetch = (comments = "") => {
+                //         const approveBtn = document.getElementById("approveBtn");
+                //         const rejectBtn = document.getElementById("rejectBtn");
+                //         const approvalMessage = document.getElementById("approvalMessage");
 
-                        // Disable buttons immediately after click
-                        approveBtn.disabled = true;
-                        rejectBtn.disabled = true;
-                        approvalMessage.style.display = "block";
-                        approvalMessage.style.color = newStatus === "approved" ? "green" : "red";
-                        approvalMessage.textContent = newStatus === "approved"
-                            ? "You have approved this request."
-                            : "You have rejected this request.";
+                //         // Disable buttons immediately after click
+                //         approveBtn.disabled = true;
+                //         rejectBtn.disabled = true;
+                //         approvalMessage.style.display = "block";
+                //         approvalMessage.style.color = newStatus === "approved" ? "green" : "red";
+                //         approvalMessage.textContent = newStatus === "approved"
+                //             ? "You have approved this request."
+                //             : "You have rejected this request.";
 
 
-                        fetch(`/api/petrol/approval/update`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            credentials: "include", // ✅ ensures session is sent
-                            body: JSON.stringify({
-                                req_no: currentPetrolRequestId,
-                                status: newStatus,
-                                comments,
-                                role: "admin",
-                                approver_id: sessionStorage.getItem("user_id")
-                            })
-                        })
-                            .then(res => res.json())
-                            .then(data => {
-                                Swal.fire(
-                                    newStatus === "approved" ? "Approved!" : "Rejected!",
-                                    data.message,
-                                    "success"
-                                );
-                                loadPetrolClaims();
-                                viewPetrol(currentPetrolRequestId);
-                            })
-                            .catch(err => {
-                                Swal.fire("Error", "Something went wrong", "error");
-                                // If error, re-enable buttons so user can try again
-                                approveBtn.disabled = false;
-                                rejectBtn.disabled = false;
-                            });
-                    };
+                //         fetch(`/api/petrol/approval/update`, {
+                //             method: "POST",
+                //             headers: { "Content-Type": "application/json" },
+                //             credentials: "include", // ✅ ensures session is sent
+                //             body: JSON.stringify({
+                //                 req_no: currentPetrolRequestId,
+                //                 status: newStatus,
+                //                 comments,
+                //                 role: "admin",
+                //                 approver_id: sessionStorage.getItem("user_id")
+                //             })
+                //         })
+                //             .then(res => res.json())
+                //             .then(data => {
+                //                 Swal.fire(
+                //                     newStatus === "approved" ? "Approved!" : "Rejected!",
+                //                     data.message,
+                //                     "success"
+                //                 );
+                //                 loadPetrolClaims();
+                //                 viewPetrol(currentPetrolRequestId);
+                //             })
+                //             .catch(err => {
+                //                 Swal.fire("Error", "Something went wrong", "error");
+                //                 // If error, re-enable buttons so user can try again
+                //                 approveBtn.disabled = false;
+                //                 rejectBtn.disabled = false;
+                //             });
+                //     };
 
-                    if (newStatus === "rejected") {
-                        Swal.fire({
-                            title: "Reason for rejection",
-                            input: "text",
-                            inputLabel: "Rejection Reason",
-                            inputPlaceholder: "Enter reason here...",
-                            inputValidator: value => !value?.trim() ? "Reason required!" : null,
-                            showCancelButton: true
-                        }).then(result => {
-                            if (result.isConfirmed) handleFetch(result.value);
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Approve petrol claim?",
-                            text: "Once approved, cannot be reverted.",
-                            icon: "question",
-                            showCancelButton: true,
-                            confirmButtonText: "Approve"
-                        }).then(result => {
-                            if (result.isConfirmed) handleFetch();
-                        });
-                    }
-                }
-                // closing of popup by clicking outside also
-                function closePetrolModal() {
-                    document.getElementById("petrolModal").style.display = "none";
-                }
+                //     if (newStatus === "rejected") {
+                //         Swal.fire({
+                //             title: "Reason for rejection",
+                //             input: "text",
+                //             inputLabel: "Rejection Reason",
+                //             inputPlaceholder: "Enter reason here...",
+                //             inputValidator: value => !value?.trim() ? "Reason required!" : null,
+                //             showCancelButton: true
+                //         }).then(result => {
+                //             if (result.isConfirmed) handleFetch(result.value);
+                //         });
+                //     } else {
+                //         Swal.fire({
+                //             title: "Approve petrol claim?",
+                //             text: "Once approved, cannot be reverted.",
+                //             icon: "question",
+                //             showCancelButton: true,
+                //             confirmButtonText: "Approve"
+                //         }).then(result => {
+                //             if (result.isConfirmed) handleFetch();
+                //         });
+                //     }
+                // }
+                // // closing of popup by clicking outside also
+                // function closePetrolModal() {
+                //     document.getElementById("petrolModal").style.display = "none";
+                // }
 
-                // Close when clicking outside the modal content
-                const petrolModal = document.getElementById("petrolModal");
-                petrolModal.addEventListener("click", function (event) {
-                    // If the clicked target is the modal itself (background), close it
-                    if (event.target === petrolModal) {
-                        closePetrolModal();
-                    }
-                });
+                // // Close when clicking outside the modal content
+                // const petrolModal = document.getElementById("petrolModal");
+                // petrolModal.addEventListener("click", function (event) {
+                //     // If the clicked target is the modal itself (background), close it
+                //     if (event.target === petrolModal) {
+                //         closePetrolModal();
+                //     }
+                // });
 
-                document.addEventListener("DOMContentLoaded", () => {
-                    loadPetrolClaims();
+                // document.addEventListener("DOMContentLoaded", () => {
+                //     loadPetrolClaims();
 
-                    const reqNo = new URLSearchParams(window.location.search).get("reqNo");
-                    if (reqNo) {
-                        setTimeout(() => {
-                            viewPetrol(reqNo);
-                        }, 300);
-                    }
-                });
+                //     const reqNo = new URLSearchParams(window.location.search).get("reqNo");
+                //     if (reqNo) {
+                //         setTimeout(() => {
+                //             viewPetrol(reqNo);
+                //         }, 300);
+                //     }
+                // });
 
 
 
@@ -1103,13 +1103,13 @@
                     // ==========================
                     // APPROVE / REJECT
                     // ==========================
-                    document.getElementById("approveBtn")?.addEventListener("click", () => {
-                        updatePetrolStatus("approved");
-                    });
+                    // document.getElementById("approveBtn")?.addEventListener("click", () => {
+                    //     updatePetrolStatus("approved");
+                    // });
 
-                    document.getElementById("rejectBtn")?.addEventListener("click", () => {
-                        updatePetrolStatus("rejected");
-                    });
+                    // document.getElementById("rejectBtn")?.addEventListener("click", () => {
+                    //     updatePetrolStatus("rejected");
+                    // });
 
                     // ==========================
                     // INITIAL LOAD

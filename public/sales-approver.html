@@ -366,11 +366,18 @@
 
         .sales-actions-top {
             display: flex;
-            justify-content: space-between;
-            /* keeps both on same row */
             align-items: center;
-            width: 100%;
             margin: 12px 0;
+        }
+
+        .sales-actions-top p {
+            margin: 0;
+            margin-right: auto;
+        }
+
+        #downloadBtn {
+            margin-right: 5px;
+            /* reduce or increase as needed */
         }
 
         .view-files-btn {
@@ -674,9 +681,11 @@
             }
 
             .sales-actions-top {
-                flex-direction: row;
+                display: flex;
+                flex-direction: column;
                 align-items: flex-start;
-                font-size: 14px;
+                gap: 10px;
+                margin: 12px 0;
             }
 
             .view-files-btn {
@@ -915,25 +924,19 @@
             <div class="sales-actions-top">
 
                 <p>
-                    <a href="#" id="addSalesRow">
-                        <strong>+ Add Row</strong>
-                    </a>
+                    <a href="#" id="addSalesRow"><strong>+ Add Row</strong></a>
                 </p>
 
-                <div style="display:flex; gap:10px; align-items:center;">
+                <button type="button" class="view-files-btn" id="downloadBtn">
+                    View / Download
+                </button>
 
-                    <button type="button" class="view-files-btn" id="downloadBtn">
-                        View / Download
-                    </button>
+                <button type="button" class="view-files-btn" id="replaceAttachmentBtn" style="display:none;">
+                    Attach
+                </button>
 
-                    <button type="button" class="view-files-btn" id="replaceAttachmentBtn" style="display:none;">
-                        Attach
-                    </button>
-
-                    <input type="file" id="replacementAttachment" accept=".png,.jpg,.jpeg,.pdf,.xls,.xlsx"
-                        style="display:none;">
-
-                </div>
+                <input type="file" id="replacementAttachment" accept=".png,.jpg,.jpeg,.pdf,.xls,.xlsx"
+                    style="display:none;">
 
             </div>
 
@@ -1148,9 +1151,13 @@
                             row.dataset.itemId = item.id; // IMPORTANT
 
                             row.innerHTML = `
-                        <td><input type="date" class="form-control applied_date" value="${item.applied_date?.split('T')[0] || ''}"></td>
-                        <td><input type="date" class="form-control booking_date" value="${item.date_of_booking?.split('T')[0] || ''}"></td>
-                        <td>
+                        <td data-label="*Applied Date">
+                            <input type="date" class="form-control applied_date" value="${item.applied_date?.split('T')[0] || ''}">
+                            </td>
+                        <td data-label="*Date of Booking">
+                            <input type="date" class="form-control booking_date" value="${item.date_of_booking?.split('T')[0] || ''}">
+                        </td>
+                        <td data-label="*Representative Name">
                             <select class="form-control representative" data-selected="${item.representative_id}">
                                 <option>Select</option>
                             </select>
@@ -1162,24 +1169,26 @@
                         <td data-label="*Flat No">
                             <input type="text" class="form-control flat_no" value="${item.flat_no || ''}">
                         </td>
-                        <td>
+                        <td data-label="*Project">
                             <select class="form-control project" data-selected="${item.project_id}">
                                 <option>Select</option>
                             </select>
                         </td>
-                        <td>
+                        <td data-label="*Typo">
                             <select class="form-control typo" data-selected="${item.typo_id}">
                                 <option>Select</option>
                             </select>
                         </td>
-                        <td>
+                        <td data-label="*Status">
                             <select class="form-control status" data-selected="${item.status_id}">
                                 <option>Select</option>
                             </select>
                         </td>
-                        <td><input type="text" class="form-control dimension" value="${item.dimension_sqft}"></td>
+                        <td data-label="*Dimension (Sq-ft)">
+                            <input type="text" class="form-control dimension" value="${item.dimension_sqft}">
+                        </td>
                         
-                        <td>
+                        <td data-label="*Individual / Sharing">
                             <select class="form-control incentive_type">
                                 <option value="">Select</option>
                                 <option value="individual" ${item.incentive_type === 'individual' ? 'selected' : ''}>Individual</option>
@@ -1187,11 +1196,11 @@
                                 </select>
                                 </td>
                                 
-                                <td>
+                                <td data-label="*Earned Incentive Amount">
                                     <input type="text" class="form-control earned_incentive" value="${item.earned_incentive || ''}">
                                 </td>
                                 
-                                <td>
+                                <td data-label="*Total Incentive Payable">
                                     <input type="text" class="form-control total_incentive" value="${item.total_incentive || ''}">
                         </td>
 
