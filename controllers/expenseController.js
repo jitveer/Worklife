@@ -80,7 +80,30 @@ exports.getPersonalInfo = (req, res) => {
 
 // 2. Create a new claim
 exports.createExpenseClaim = (req, res) => {
-  const { req_no, total_expense, requester_comments, items } = req.body;
+  const { req_no, total_expense, requester_comments } = req.body;
+
+  // Parse items because FormData sends it as a string
+  let items = [];
+
+  try {
+    items = JSON.parse(req.body.items || "[]");
+  } catch (err) {
+    items = [];
+  }
+
+  // Attachment
+  let attachments = null;
+
+  if (req.files && req.files.length > 0) {
+
+    attachments = JSON.stringify(
+      req.files.map(file =>
+        "/uploads/expense_files/" + file.filename
+      )
+    );
+
+  }
+
   const empCode = req.session.user.employee_id;
 
   const getRequesterIdSql = `SELECT id FROM employees WHERE employee_id = ?`;
@@ -93,10 +116,10 @@ exports.createExpenseClaim = (req, res) => {
     const requester_id = empResult[0].id;
 
     const claimSql = `
-    INSERT INTO expense_claim (req_no, total_expense, requester_comments, requester_id, created_at, updated_at)
-    VALUES (?, ?, ?, ?, NOW(), NOW())
+    INSERT INTO expense_claim (req_no, total_expense, requester_comments, attachments, requester_id, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, NOW(), NOW())
   `;
-    db.query(claimSql, [req_no, total_expense, requester_comments, requester_id], (err, result) => {
+    db.query(claimSql, [req_no, total_expense, requester_comments, attachments, requester_id], (err, result) => {
       if (err) return res.status(500).send({ error: err.message });
 
       const claim_id = result.insertId;
@@ -171,7 +194,7 @@ exports.createExpenseClaim = (req, res) => {
                   if (emailResult?.length > 0) {
                     const email = emailResult[0].email;
                     const msg = `${requesterName} submitted an expense claim for your approval`;
-                    const link = `/expense-approval.html?type=expense&reqNo=${req_no}`;
+                    const link = `/expense-request-approval.html?req_no=${req_no}`;
                     db.query(
                       `INSERT INTO notifications (email, message, link, status, created_at, updated_at)
                        VALUES (?, ?, ?, 'unread', NOW(), NOW())`,
@@ -239,7 +262,7 @@ exports.updateExpenseApproval = (req, res) => {
         ? `You approved ${requesterName}'s expense claim`
         : `You rejected ${requesterName}'s expense claim`;
 
-      const approverLink = `/expense-approval.html?type=expense&reqNo=${req_no}`;
+      const approverLink = `/expense-request-approval.html?req_no=${req_no}`;
 
       const approverEmailSql = `SELECT email FROM users WHERE id = ?`;
       db.query(approverEmailSql, [approver_id], (eErr, eRes) => {
@@ -303,7 +326,7 @@ exports.updateExpenseApproval = (req, res) => {
                 if (errInsert) console.error("Error inserting next approver:", errInsert);
 
                 const msg = `New Expense Claim ${req_no} requires your approval`;
-                const link = `/expense-approval.html?type=expense&reqNo=${req_no}`;
+                const link = `/expense-request-approval.html?req_no=${req_no}`;
                 const emailSql = `SELECT email FROM users WHERE id = ?`;
 
                 db.query(emailSql, [row.approver_user_id], (eErr, eRes) => {
@@ -441,7 +464,8 @@ exports.updateExpenseApproval = (req, res) => {
 };
 
 
-// pop-up details 
+// popup data
+// new approver page prefetch data filled by employee
 exports.getExpenseClaimByReqNo = (req, res) => {
   const { req_no } = req.params;
   const approver_id = req.query.approver_id;
@@ -452,24 +476,47 @@ exports.getExpenseClaimByReqNo = (req, res) => {
 
   // Step 1: Get claim + employee + department info
   const claimSql = `
-    SELECT 
-      ec.id AS claim_id,
-      ec.req_no,
-      ec.status, 
-      ec.total_expense,
-      ec.requester_comments,
-      ec.created_at AS claim_date,
-      CONCAT(e.first_name, ' ', e.last_name) AS employee_name,
-      e.email,
-      d.department_name,
-       CONCAT(rej.first_name, ' ', rej.last_name) AS rejected_by_name,
-      ec.rejection_reason
-    FROM expense_claim ec
-    JOIN employees e ON ec.requester_id = e.id
-    JOIN department d ON e.department_id = d.id
-    LEFT JOIN users rej ON ec.rejected_by = rej.id
-    WHERE ec.req_no = ?
-  `;
+SELECT
+    ec.id AS claim_id,
+    ec.req_no,
+    ec.status,
+    ec.total_expense,
+    ec.requester_comments,
+    ec.attachments,
+    ec.created_at AS claim_date,
+
+    e.employee_id,
+    CONCAT(e.first_name,' ',e.last_name) AS employee_name,
+    e.email,
+    e.designation,
+    e.doj AS joining_date,
+
+    d.department_name,
+    c.company_name,
+    lm.name AS line_manager,
+
+    CONCAT(rej.first_name,' ',rej.last_name) AS rejected_by_name,
+    ec.rejection_reason
+
+FROM expense_claim ec
+
+INNER JOIN employees e
+ON ec.requester_id = e.id
+
+LEFT JOIN department d
+ON e.department_id = d.id
+
+LEFT JOIN company_name c
+ON e.company_id = c.id
+
+LEFT JOIN line_managers lm
+ON e.line_manager_id =  lm.id
+
+LEFT JOIN users rej
+ON ec.rejected_by = rej.id
+
+WHERE ec.req_no = ?
+`;
 
   db.query(claimSql, [req_no], (err, claimRows) => {
     if (err) return res.status(500).send({ error: err.message });
@@ -491,7 +538,18 @@ exports.getExpenseClaimByReqNo = (req, res) => {
 
 
       // Step 2: Get all expense items for this claim
-      const itemsSql = `SELECT date, expense_type, description, amount FROM expense_items WHERE claim_id = ?`;
+      const itemsSql = `
+SELECT
+id,
+DATE_FORMAT(date,'%Y-%m-%d') AS date,
+expense_type,
+description,
+currency,
+each_rate,
+amount
+FROM expense_items
+WHERE claim_id = ?
+`;
 
       db.query(itemsSql, [claim.claim_id], (err, itemRows) => {
         if (err) return res.status(500).send({ error: err.message });
@@ -499,16 +557,32 @@ exports.getExpenseClaimByReqNo = (req, res) => {
         // Step 3: Return full structured response
         res.json({
           req_no: claim.req_no,
+          employee_id: claim.employee_id,
           status: claim.status,
+
           employee_name: claim.employee_name,
           email: claim.email,
+
           department: claim.department_name,
+          designation: claim.designation,
+          company: claim.company_name,
+          line_manager: claim.line_manager,
+
+          joining_date: claim.joining_date,
+
           date: claim.claim_date,
+
           amount: claim.total_expense,
+
           requester_comments: claim.requester_comments,
+
           rejected_by: claim.rejected_by_name,
           rejection_reason: claim.rejection_reason,
+
           items: itemRows,
+
+          attachments: claim.attachments,
+
           user_status: userStatus
         });
       });
@@ -525,6 +599,230 @@ exports.getExpenseClaimsByUser = (req, res) => {
     res.send(results);
   });
 };
+
+
+
+
+
+// Update Expense Claim (Approver Edit)
+exports.updateExpenseRequest = (req, res) => {
+
+  const { req_no, requester_comments, total_expense } = req.body;
+
+  // FormData sends items as string
+  let items = [];
+
+  try {
+    items = JSON.parse(req.body.items || "[]");
+  } catch (err) {
+    items = [];
+  }
+
+  // New attachment (if approver uploads one)
+  let attachments = null;
+
+  if (req.files && req.files.length > 0) {
+
+    attachments = JSON.stringify(
+
+      req.files.map(file =>
+        "/uploads/expense_files/" + file.filename
+      )
+
+    );
+
+  }
+
+  if (!req_no) {
+    return res.status(400).json({
+      message: "Request Number is required"
+    });
+  }
+
+  // Get Claim ID
+  db.query(
+    "SELECT id FROM expense_claim WHERE req_no = ?",
+    [req_no],
+    (err, claimRows) => {
+
+      if (err) return res.status(500).json({ error: err });
+
+      if (!claimRows.length) {
+        return res.status(404).json({
+          message: "Expense Claim not found"
+        });
+      }
+
+      const claimId = claimRows[0].id;
+
+      // Update expense_claim
+      let updateSql = `
+UPDATE expense_claim
+SET
+    requester_comments = ?,
+    total_expense = ?`;
+
+      let params = [
+        requester_comments,
+        total_expense
+      ];
+
+      // If approver uploaded a new attachment,
+      // update the same attachment column
+      if (attachments) {
+
+        updateSql += `,
+    attachments = ?`;
+
+        params.push(attachments);
+
+      }
+
+      updateSql += `,
+updated_at = NOW()
+WHERE req_no = ?`;
+
+      params.push(req_no);
+
+      db.query(
+        updateSql,
+        params,
+        (err1) => {
+
+          if (err1) {
+            return res.status(500).json({ error: err1 });
+          }
+
+          // Existing item ids
+          db.query(
+            "SELECT id FROM expense_items WHERE claim_id = ?",
+            [claimId],
+            (err2, dbRows) => {
+
+              if (err2) {
+                return res.status(500).json({ error: err2 });
+              }
+
+              const dbIds = dbRows.map(r => Number(r.id));
+
+              const formIds = items
+                .filter(item => item.id)
+                .map(item => Number(item.id));
+
+              // Delete removed rows (only if approver removed any)
+              const deleteIds = dbIds.filter(id => !formIds.includes(id));
+
+              deleteIds.forEach(id => {
+                db.query(
+                  "DELETE FROM expense_items WHERE id=? AND claim_id=?",
+                  [id, claimId]
+                );
+              });
+
+              if (!items.length) {
+                return res.json({
+                  success: true,
+                  message: "Expense Claim Updated Successfully"
+                });
+              }
+
+              let completed = 0;
+
+              items.forEach(item => {
+                // Existing Row -> UPDATE
+                if (item.id) {
+
+                  db.query(
+                    `UPDATE expense_items
+                                         SET
+                                            date=?,
+                                            expense_type=?,
+                                            description=?,
+                                            currency=?,
+                                            each_rate=?,
+                                            amount=?,
+                                            total=?
+                                         WHERE id=?
+                                         AND claim_id=?`,
+                    [
+                      item.date,
+                      item.expense_type,
+                      item.description,
+                      item.currency,
+                      item.each_rate,
+                      item.amount,
+                      item.amount,
+                      item.id,
+                      claimId
+                    ],
+                    done
+                  );
+
+                }
+
+                // New Row -> INSERT
+                else {
+
+                  db.query(
+                    `INSERT INTO expense_items
+                                        (
+                                            claim_id,
+                                            date,
+                                            expense_type,
+                                            description,
+                                            currency,
+                                            each_rate,
+                                            amount,
+                                            total
+                                        )
+                                        VALUES (?,?,?,?,?,?,?,?)`,
+                    [
+                      claimId,
+                      item.date,
+                      item.expense_type,
+                      item.description,
+                      item.currency,
+                      item.each_rate,
+                      item.amount,
+                      item.amount
+                    ],
+                    done
+                  );
+
+                }
+
+              });
+
+              function done(err) {
+
+                if (err) {
+                  return res.status(500).json({ error: err });
+                }
+
+                completed++;
+
+                if (completed === items.length) {
+
+                  return res.json({
+                    success: true,
+                    message: "Expense Claim Updated Successfully"
+                  });
+
+                }
+
+              }
+
+            }
+          );
+
+        }
+      );
+
+    }
+  );
+
+};
+
 
 
 

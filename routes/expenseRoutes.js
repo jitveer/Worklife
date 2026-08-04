@@ -2,13 +2,15 @@ const db = require('../db');
 const express = require('express');
 const router = express.Router();
 const expenseController = require('../controllers/expenseController');
+const upload = require("../uploadConfig");
+const uploadExpense = upload("expense_files");
 
 
 // Fetch personal info
 router.get('/personalinfo', expenseController.getPersonalInfo);
 
 // Submit new expense claim
-router.post('/submit', expenseController.createExpenseClaim);
+router.post('/submit', uploadExpense.array("attachments"), expenseController.createExpenseClaim);
 //view for approver
 + router.get('/view/:req_no', expenseController.getExpenseClaimByReqNo);
 
@@ -24,6 +26,10 @@ router.get('/approvals', expenseController.getExpenseApprovals);
 router.get('/my-requests', expenseController.getMyExpenseRequests);
 
 router.get("/track/:req_no", expenseController.trackExpenseApproval);
+
+// update fields after approver edits it 
+router.put( "/update-request", uploadExpense.array("attachments"), expenseController.updateExpenseRequest);
+
 
 // Generate a new req_no
 router.get('/get-new-req-no', (req, res) => {

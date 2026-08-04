@@ -34,6 +34,10 @@ function createUploader(folderName) {
     const ext = path.extname(file.originalname).toLowerCase();
     const mime = file.mimetype.toLowerCase();
 
+    console.log("Original Name:", file.originalname);
+    console.log("Extension:", ext);
+    console.log("Mime Type:", mime);
+
     if (allowedExtensions.includes(ext) && allowedMimeTypes.includes(mime)) {
       cb(null, true);
     } else {
@@ -42,7 +46,7 @@ function createUploader(folderName) {
   };
 
   // ⭐ RETURN multer instance (IMPORTANT) with limits and validation filter
-  return multer({ 
+  return multer({
     storage,
     fileFilter,
     limits: { fileSize: 10 * 1024 * 1024 } // 10MB maximum file size limit (DoS protection)

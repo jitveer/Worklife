@@ -285,7 +285,7 @@
         /* -----------------------------------
          Modal
         ----------------------------------- */
-        .modal {
+        /* .modal {
             display: none;
             position: fixed;
             top: 0;
@@ -353,7 +353,7 @@
             background-color: #bbb !important;
             cursor: not-allowed;
             opacity: 0.7;
-        }
+        } */
 
 
 
@@ -603,7 +603,7 @@
 
 
             <!-- EXPENSE MODAL -->
-            <div class="modal" id="expenseModal">
+            <!-- <div class="modal" id="expenseModal">
                 <div class="modal-content">
                     <span class="close-btn" id="closeExpenseModalBtn">
                         <i class="fa-solid fa-rectangle-xmark"></i>
@@ -625,18 +625,18 @@
                         </thead>
                         <tbody id="expenseItemsTableBody">
                             <!-- Populated dynamically -->
-                        </tbody>
+                        <!-- </tbody>
                     </table>
                     <button class="approve-btn" id="approveBtn">Approve</button>
                     <button class="cancel-btn" id="rejectBtn">Reject</button>
                     <p id="approvalMessage" style="color: red; display: none; margin-top: 10px;"></p>
                     <div id="expenseApprovalNote"></div>
                 </div>
-            </div>
+            </div> --> -->
 
             <script>
 
-                let currentRequestId = null;
+                // let currentRequestId = null;
                 let allExpenseClaims = [];
 
                 let filterState = {
@@ -710,7 +710,8 @@
                         viewBtn.innerHTML = `<i class="fas fa-eye"></i>`;
 
                         viewBtn.addEventListener("click", () => {
-                            viewRequest(row.req_no);
+                            window.location.href =
+                                `expense-request-approval.html?req_no=${row.req_no}`;
                         });
 
                         actionTd.appendChild(viewBtn);
@@ -822,187 +823,183 @@
                     });
                 }
 
-                // Navigate to view page
-                function viewExpense(reqNo) {
-                    window.location.href = `/expense-approval.html?req_no=${reqNo}`;
-                }
 
                 window.onload = () => {
                     loadExpenseClaims(); // Load all requests into table
 
-                    const reqNo = new URLSearchParams(window.location.search).get("reqNo");
-                    if (reqNo) {
-                        // 🔔 Notification with reqNo → directly open modal
-                        setTimeout(() => {
-                            viewRequest(reqNo);
-                        }, 300);
-                    }
+                    // const reqNo = new URLSearchParams(window.location.search).get("reqNo");
+                    // if (reqNo) {
+                    //     // 🔔 Notification with reqNo → directly open modal
+                    //     setTimeout(() => {
+                    //         viewRequest(reqNo);
+                    //     }, 300);
+                    // }
                 };
 
                 // view pop-up
-                function viewRequest(reqNo) {
-                    currentRequestId = reqNo;
+                // function viewRequest(reqNo) {
+                //     currentRequestId = reqNo;
 
-                    fetch(`/api/expense/view/${reqNo}?approver_id=${sessionStorage.getItem("user_id")}`)
-                        .then(res => res.json())
-                        .then(data => {
+                //     fetch(`/api/expense/view/${reqNo}?approver_id=${sessionStorage.getItem("user_id")}`)
+                //         .then(res => res.json())
+                //         .then(data => {
 
-                            // Set status tag
-                            const statusTag = document.getElementById("expenseStatusTag");
-                            statusTag.textContent = data.approver_status || data.status || "N/A";
-                            statusTag.classList.remove("approved", "pending", "rejected");
-                            const statusClass = (data.approver_status || data.status || "").toLowerCase();
-                            if (statusClass) {
-                                statusTag.classList.add(statusClass);
-                            }
+                //             // Set status tag
+                //             const statusTag = document.getElementById("expenseStatusTag");
+                //             statusTag.textContent = data.approver_status || data.status || "N/A";
+                //             statusTag.classList.remove("approved", "pending", "rejected");
+                //             const statusClass = (data.approver_status || data.status || "").toLowerCase();
+                //             if (statusClass) {
+                //                 statusTag.classList.add(statusClass);
+                //             }
 
-                            // Fill modal content
-                            document.getElementById("expenseDetails").innerHTML = `
-                            <p><strong>Requester Name:</strong> ${data.employee_name}</p>
-                            <p><strong>Request No:</strong> ${data.req_no}</p>
-                            <p><strong>Email:</strong> ${data.email || '-'}</p>
-                            <p><strong>Date:</strong> ${new Date(data.date).toLocaleDateString('en-GB')}</p>
-                            <p><strong>Department:</strong> ${data.department}</p>
-                            <p><strong>Total Amount:</strong> ₹${data.amount}</p>
-                            <p><strong>Comments:</strong> ${data.requester_comments || '-'}</p>
-                            `;
+                //             // Fill modal content
+                //             document.getElementById("expenseDetails").innerHTML = `
+                //             <p><strong>Requester Name:</strong> ${data.employee_name}</p>
+                //             <p><strong>Request No:</strong> ${data.req_no}</p>
+                //             <p><strong>Email:</strong> ${data.email || '-'}</p>
+                //             <p><strong>Date:</strong> ${new Date(data.date).toLocaleDateString('en-GB')}</p>
+                //             <p><strong>Department:</strong> ${data.department}</p>
+                //             <p><strong>Total Amount:</strong> ₹${data.amount}</p>
+                //             <p><strong>Comments:</strong> ${data.requester_comments || '-'}</p>
+                //             `;
 
-                            // 🔁 Populate items
-                            const tableBody = document.getElementById("expenseItemsTableBody");
-                            tableBody.innerHTML = "";
-                            if (data.items && data.items.length > 0) {
-                                data.items.forEach(item => {
-                                    const row = document.createElement("tr");
-                                    row.innerHTML = `
-                                    <td>${new Date(item.date).toLocaleDateString('en-GB')}</td>
-                                    <td>${item.expense_type}</td>
-                                    <td>${item.description}</td>
-                                    <td>₹${item.amount}</td>
-                                    `;
-                                    tableBody.appendChild(row);
-                                });
-                            } else {
-                                tableBody.innerHTML = `<tr><td colspan="4">No items found</td></tr>`;
+                //             // 🔁 Populate items
+                //             const tableBody = document.getElementById("expenseItemsTableBody");
+                //             tableBody.innerHTML = "";
+                //             if (data.items && data.items.length > 0) {
+                //                 data.items.forEach(item => {
+                //                     const row = document.createElement("tr");
+                //                     row.innerHTML = `
+                //                     <td>${new Date(item.date).toLocaleDateString('en-GB')}</td>
+                //                     <td>${item.expense_type}</td>
+                //                     <td>${item.description}</td>
+                //                     <td>₹${item.amount}</td>
+                //                     `;
+                //                     tableBody.appendChild(row);
+                //                 });
+                //             } else {
+                //                 tableBody.innerHTML = `<tr><td colspan="4">No items found</td></tr>`;
 
-                            }
+                //             }
 
-                            // Show modal
-                            document.getElementById("expenseModal").style.display = "flex";
+                //             // Show modal
+                //             document.getElementById("expenseModal").style.display = "flex";
 
-                            // Enable buttons if still pending
-                            const approveBtn = document.getElementById("approveBtn");
-                            const cancelBtn = document.getElementById("rejectBtn");
-                            const approvalMessage = document.getElementById("approvalMessage");
+                //             // Enable buttons if still pending
+                //             const approveBtn = document.getElementById("approveBtn");
+                //             const cancelBtn = document.getElementById("rejectBtn");
+                //             const approvalMessage = document.getElementById("approvalMessage");
 
-                            // Always show buttons first
-                            approveBtn.style.display = "inline-block";
-                            cancelBtn.style.display = "inline-block";
+                //             // Always show buttons first
+                //             approveBtn.style.display = "inline-block";
+                //             cancelBtn.style.display = "inline-block";
 
-                            const status = (data.user_status || data.approver_status || "").toLowerCase(); //  only check current approver's own status
+                //             const status = (data.user_status || data.approver_status || "").toLowerCase(); //  only check current approver's own status
 
-                            if (status === "approved") {
-                                approveBtn.disabled = true;
-                                cancelBtn.disabled = true;
-                                approvalMessage.textContent = "You have already approved this request.";
-                                approvalMessage.style.color = "green";
-                                approvalMessage.style.display = "block";
-                            }
-                            else if (status === "rejected") {
-                                approveBtn.disabled = true;
-                                cancelBtn.disabled = true;
-                                approvalMessage.textContent = "You have already rejected this request.";
-                                approvalMessage.style.color = "red";
-                                approvalMessage.style.display = "block";
-                            }
-                            else {
-                                approveBtn.disabled = false;
-                                cancelBtn.disabled = false;
-                                approvalMessage.textContent = "";
-                                approvalMessage.style.display = "none";
-                            }
-                        })
-                        .catch(err => {
-                            console.error("Failed to load expense details:", err);
-                            Swal.fire("Error", "Unable to load claim details.", "error");
-                        });
-                }
-                function closeExpenseModal() {
-                    document.getElementById("expenseModal").style.display = "none";
-                }
+                //             if (status === "approved") {
+                //                 approveBtn.disabled = true;
+                //                 cancelBtn.disabled = true;
+                //                 approvalMessage.textContent = "You have already approved this request.";
+                //                 approvalMessage.style.color = "green";
+                //                 approvalMessage.style.display = "block";
+                //             }
+                //             else if (status === "rejected") {
+                //                 approveBtn.disabled = true;
+                //                 cancelBtn.disabled = true;
+                //                 approvalMessage.textContent = "You have already rejected this request.";
+                //                 approvalMessage.style.color = "red";
+                //                 approvalMessage.style.display = "block";
+                //             }
+                //             else {
+                //                 approveBtn.disabled = false;
+                //                 cancelBtn.disabled = false;
+                //                 approvalMessage.textContent = "";
+                //                 approvalMessage.style.display = "none";
+                //             }
+                //         })
+                //         .catch(err => {
+                //             console.error("Failed to load expense details:", err);
+                //             Swal.fire("Error", "Unable to load claim details.", "error");
+                //         });
+                // }
+                // function closeExpenseModal() {
+                //     document.getElementById("expenseModal").style.display = "none";
+                // }
 
 
                 // update expence claims
-                function updateExpenseStatus(newStatus) {
-                    if (!currentRequestId) return;
+                // function updateExpenseStatus(newStatus) {
+                //     if (!currentRequestId) return;
 
-                    // Cancel flow
-                    if (newStatus === "rejected") {
-                        Swal.fire({
-                            title: "Reason for rejection",
-                            input: "text",
-                            inputLabel: "Rejection Reason",
-                            inputPlaceholder: "Enter reason here...",
-                            inputValidator: (value) => {
-                                if (!value || value.trim() === "") {
-                                    return "Reason required!";
-                                }
-                            },
-                            showCancelButton: true
-                        }).then(result => {
-                            if (result.isConfirmed) {
+                //     // Cancel flow
+                //     if (newStatus === "rejected") {
+                //         Swal.fire({
+                //             title: "Reason for rejection",
+                //             input: "text",
+                //             inputLabel: "Rejection Reason",
+                //             inputPlaceholder: "Enter reason here...",
+                //             inputValidator: (value) => {
+                //                 if (!value || value.trim() === "") {
+                //                     return "Reason required!";
+                //                 }
+                //             },
+                //             showCancelButton: true
+                //         }).then(result => {
+                //             if (result.isConfirmed) {
 
-                                fetch(`/api/expense/update-approval`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({
-                                        req_no: currentRequestId,
-                                        status: newStatus,
-                                        reason: result.value,
-                                        comments: result.value,
-                                        role: "admin",
-                                        approver_id: sessionStorage.getItem("user_id")
-                                    })
-                                })
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        Swal.fire("Rejected!", data.message, "success");
-                                        loadExpenseClaims(); // Refresh table
-                                        closeExpenseModal();
-                                    });
-                            }
-                        });
+                //                 fetch(`/api/expense/update-approval`, {
+                //                     method: "POST",
+                //                     headers: { "Content-Type": "application/json" },
+                //                     body: JSON.stringify({
+                //                         req_no: currentRequestId,
+                //                         status: newStatus,
+                //                         reason: result.value,
+                //                         comments: result.value,
+                //                         role: "admin",
+                //                         approver_id: sessionStorage.getItem("user_id")
+                //                     })
+                //                 })
+                //                     .then(res => res.json())
+                //                     .then(data => {
+                //                         Swal.fire("Rejected!", data.message, "success");
+                //                         loadExpenseClaims(); // Refresh table
+                //                         closeExpenseModal();
+                //                     });
+                //             }
+                //         });
 
-                    } else {
-                        // Approval flow
-                        Swal.fire({
-                            title: "Approve expense?",
-                            text: "Once approved, cannot be reverted.",
-                            icon: "question",
-                            showCancelButton: true,
-                            confirmButtonText: "Approve"
-                        }).then(result => {
-                            if (result.isConfirmed) {
+                //     } else {
+                //         // Approval flow
+                //         Swal.fire({
+                //             title: "Approve expense?",
+                //             text: "Once approved, cannot be reverted.",
+                //             icon: "question",
+                //             showCancelButton: true,
+                //             confirmButtonText: "Approve"
+                //         }).then(result => {
+                //             if (result.isConfirmed) {
 
-                                fetch(`/api/expense/update-approval`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({
-                                        req_no: currentRequestId,
-                                        status: newStatus,
-                                        role: "admin",
-                                        approver_id: sessionStorage.getItem("user_id")
-                                    })
-                                })
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        Swal.fire("Approved!", data.message, "success");
-                                        loadExpenseClaims();
-                                        viewRequest(currentRequestId);
-                                    });
-                            }
-                        });
-                    }
-                };
+                //                 fetch(`/api/expense/update-approval`, {
+                //                     method: "POST",
+                //                     headers: { "Content-Type": "application/json" },
+                //                     body: JSON.stringify({
+                //                         req_no: currentRequestId,
+                //                         status: newStatus,
+                //                         role: "admin",
+                //                         approver_id: sessionStorage.getItem("user_id")
+                //                     })
+                //                 })
+                //                     .then(res => res.json())
+                //                     .then(data => {
+                //                         Swal.fire("Approved!", data.message, "success");
+                //                         loadExpenseClaims();
+                //                         viewRequest(currentRequestId);
+                //                     });
+                //             }
+                //         });
+                //     }
+                // };
 
 
 
@@ -1042,16 +1039,6 @@
                     document.getElementById("approvedBtn")?.addEventListener("click", () => loadRequests("approved"));
                     document.getElementById("pendingBtn")?.addEventListener("click", () => loadRequests("pending"));
                     document.getElementById("rejectedBtn")?.addEventListener("click", () => loadRequests("rejected"));
-
-                    // MODAL
-                    document.getElementById("closeExpenseModalBtn")
-                        ?.addEventListener("click", closeExpenseModal);
-
-                    document.getElementById("approveBtn")
-                        ?.addEventListener("click", () => updateExpenseStatus("approved"));
-
-                    document.getElementById("rejectBtn")
-                        ?.addEventListener("click", () => updateExpenseStatus("rejected"));
 
                 });
 

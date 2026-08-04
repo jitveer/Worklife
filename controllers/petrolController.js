@@ -661,7 +661,7 @@ exports.getPetrolClaimByReqNo = (req, res) => {
 
 
 
-// Update Petrol Claim (Approver Edit)
+
 // Update Petrol Claim (Approver Edit)
 exports.updatePetrolClaim = (req, res) => {
 

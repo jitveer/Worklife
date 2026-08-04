@@ -24,5 +24,4 @@ router.get("/track/:reqNo", petrolController.trackPetrolApproval);
 // updates done by approver to employee data
 router.post("/update", uploadPetrol.array("petrolAttachment"), petrolController.updatePetrolClaim);
 
-
 module.exports = router;
