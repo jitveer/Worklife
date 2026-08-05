@@ -281,7 +281,7 @@
     /* -----------------------------------
    Modal
 ----------------------------------- */
-    .modal {
+    /* .modal {
       display: none;
       position: fixed;
       top: 0;
@@ -384,7 +384,7 @@
 
     .swal2-validation-message {
       color: red !important;
-    }
+    } */
 
 
 
@@ -645,7 +645,7 @@
   </div>
 
   <!-- MODAL -->
-  <div class="modal" id="viewModal">
+  <!-- <div class="modal" id="viewModal">
     <div class="modal-content">
       <span class="close-btn" id="closeModalBtn">
         <i class="fa-solid fa-rectangle-xmark"></i>
@@ -660,7 +660,7 @@
       <div id="approvalNote"></div>
       <div id="approvalMessage"></div>
     </div>
-  </div>
+  </div> -->
 
 
   <script>
@@ -788,7 +788,7 @@
             viewBtn.className = "icon-box view";
             viewBtn.innerHTML = `<i class="fas fa-eye"></i>`;
             viewBtn.addEventListener("click", () => {
-              viewRequest(req.id);
+               window.location.href = `approve-emp-leave.html?id=${req.id}`;
             });
 
             // 🗑 DELETE BUTTON
@@ -969,14 +969,14 @@
       document.getElementById("pendingBtn")?.addEventListener("click", () => filterLeave("pending"));
       document.getElementById("cancelledBtn")?.addEventListener("click", () => filterLeave("cancelled"));
 
-      document.getElementById("closeModalBtn")
-        ?.addEventListener("click", closeModal);
+      // document.getElementById("closeModalBtn")
+      //   ?.addEventListener("click", closeModal);
 
-      document.getElementById("approveBtn")
-        ?.addEventListener("click", () => updateStatus("approved"));
+      // document.getElementById("approveBtn")
+      //   ?.addEventListener("click", () => updateStatus("approved"));
 
-      document.getElementById("cancelBtn")
-        ?.addEventListener("click", () => updateStatus("cancelled"));
+      // document.getElementById("cancelBtn")
+      //   ?.addEventListener("click", () => updateStatus("cancelled"));
 
     });
 
@@ -1015,111 +1015,111 @@
 
 
     // view request
-    function viewRequest(id) {
-      currentRequestId = id;
-      fetch(`/api/leave/${id}`)
-        .then(res => res.json())
-        .then(data => {
+    // function viewRequest(id) {
+    //   currentRequestId = id;
+    //   fetch(`/api/leave/${id}`)
+    //     .then(res => res.json())
+    //     .then(data => {
 
-          const fromDate = new Date(data.from_date).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-          });
-          const toDate = new Date(data.to_date).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-          });
-          // status tag
-          const statusTag = document.getElementById("modalStatusTag");
-          statusTag.textContent = data.status || "N/A";
-          statusTag.classList.remove("approved", "pending", "cancelled");
-          statusTag.classList.add((data.status || "").toLowerCase());
+    //       const fromDate = new Date(data.from_date).toLocaleDateString("en-GB", {
+    //         day: "2-digit",
+    //         month: "short",
+    //         year: "numeric"
+    //       });
+    //       const toDate = new Date(data.to_date).toLocaleDateString("en-GB", {
+    //         day: "2-digit",
+    //         month: "short",
+    //         year: "numeric"
+    //       });
+    //       // status tag
+    //       const statusTag = document.getElementById("modalStatusTag");
+    //       statusTag.textContent = data.status || "N/A";
+    //       statusTag.classList.remove("approved", "pending", "cancelled");
+    //       statusTag.classList.add((data.status || "").toLowerCase());
 
-          const detailDiv = document.getElementById("requestDetails");
-          detailDiv.innerHTML = `
-            <p><strong>Requester Name:</strong> ${data.requester_name}</p>
-            <p><strong>Request No:</strong> ${data.req_no}</p>
-            <p><strong>Requester Email:</strong> ${data.email_id}</p>
-            <p><strong>Company:</strong> ${data.company}</p>
-            <p><strong>Department:</strong> ${data.department_name}</p>
-            <p><strong>Designation:</strong> ${data.designation}</p>
-            <p><strong>Leave Type:</strong> ${data.leave_type}</p>
-            <p><strong>From:</strong> ${fromDate}</p>
-            <p><strong>To:</strong> ${toDate}</p>
-            <p><strong>Requested Days:</strong> ${data.requested_days}</p>
-            <p><strong>Medical Certificate:</strong> 
-              ${data.medical_certificates
-              ? `<a href="${window.location.origin}${data.medical_certificates}" target="_blank">View Certificate</a>`
-              : 'No certificate uploaded'}
-            </p>
-            <p style="text-transform: capitalize"><strong>Comments:</strong> ${data.requester_comments}</p>
-            <p><strong>Task Assigned:</strong></p>
-           ${data.assignments && data.assignments.length > 0
-              ? `
-              <table border="1" cellspacing="0" cellpadding="5" style="border-collapse: collapse; margin-left: 10px; margin-top: 10px; width: 95%;">
-                <thead style="background: #f5f5f5;">
-                  <tr>
-                    <th>Assigned Employee</th>
-                    <th>Task Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                  ${data.assignments.map(task => `
-                  <tr>
-                    <td>${task.assigned_employee_name}</td>
-                    <td>${task.task_description}</td>
-                  </tr>
-                  `).join("")}
-                  </tbody>
-                  </table>
-                  `
-              : `<p style="margin-left: 10px;">No task assigned</p>`
-            }
-                  `;
-          document.getElementById("viewModal").style.display = "flex";
-          //  Hide buttons if employee
+    //       const detailDiv = document.getElementById("requestDetails");
+    //       detailDiv.innerHTML = `
+    //         <p><strong>Requester Name:</strong> ${data.requester_name}</p>
+    //         <p><strong>Request No:</strong> ${data.req_no}</p>
+    //         <p><strong>Requester Email:</strong> ${data.email_id}</p>
+    //         <p><strong>Company:</strong> ${data.company}</p>
+    //         <p><strong>Department:</strong> ${data.department_name}</p>
+    //         <p><strong>Designation:</strong> ${data.designation}</p>
+    //         <p><strong>Leave Type:</strong> ${data.leave_type}</p>
+    //         <p><strong>From:</strong> ${fromDate}</p>
+    //         <p><strong>To:</strong> ${toDate}</p>
+    //         <p><strong>Requested Days:</strong> ${data.requested_days}</p>
+    //         <p><strong>Medical Certificate:</strong> 
+    //           ${data.medical_certificates
+    //           ? `<a href="${window.location.origin}${data.medical_certificates}" target="_blank">View Certificate</a>`
+    //           : 'No certificate uploaded'}
+    //         </p>
+    //         <p style="text-transform: capitalize"><strong>Comments:</strong> ${data.requester_comments}</p>
+    //         <p><strong>Task Assigned:</strong></p>
+    //        ${data.assignments && data.assignments.length > 0
+    //           ? `
+    //           <table border="1" cellspacing="0" cellpadding="5" style="border-collapse: collapse; margin-left: 10px; margin-top: 10px; width: 95%;">
+    //             <thead style="background: #f5f5f5;">
+    //               <tr>
+    //                 <th>Assigned Employee</th>
+    //                 <th>Task Description</th>
+    //                 </tr>
+    //             </thead>
+    //             <tbody>
+    //               ${data.assignments.map(task => `
+    //               <tr>
+    //                 <td>${task.assigned_employee_name}</td>
+    //                 <td>${task.task_description}</td>
+    //               </tr>
+    //               `).join("")}
+    //               </tbody>
+    //               </table>
+    //               `
+    //           : `<p style="margin-left: 10px;">No task assigned</p>`
+    //         }
+    //               `;
+    //       document.getElementById("viewModal").style.display = "flex";
+    //       //  Hide buttons if employee
 
-          const approveBtn = document.querySelector(".approve-btn");
-          const cancelBtn = document.querySelector(".cancel-btn");
-          const noteDiv = document.getElementById("approvalNote");
-          const approvalMessage = document.getElementById("approvalMessage");
-
-
-          if (userRole === "employee") {
-            // Employees don’t see the buttons
-            approveBtn.style.display = "none";
-            cancelBtn.style.display = "none";
-          } else {
-
-            const approvedStatus = data.approval_status;
+    //       const approveBtn = document.querySelector(".approve-btn");
+    //       const cancelBtn = document.querySelector(".cancel-btn");
+    //       const noteDiv = document.getElementById("approvalNote");
+    //       const approvalMessage = document.getElementById("approvalMessage");
 
 
-            if (approvedStatus === "approved") {
-              approveBtn.disabled = true;
-              cancelBtn.disabled = true;
-              approvalMessage.style.display = "block";
-              approvalMessage.style.color = "green";
-              approvalMessage.textContent = "You have already approved this request.";
-            } else if (approvedStatus === "cancelled") {
-              approveBtn.disabled = true;
-              cancelBtn.disabled = true;
-              approvalMessage.style.display = "block";
-              approvalMessage.style.color = "red";
-              approvalMessage.textContent = "You have already cancelled this request.";
-            }
-            else if (approvedStatus === "skipped") {
-              approveBtn.disabled = true;
-              cancelBtn.disabled = true;
-            } else {
-              approveBtn.style.display = "inline-block";
-              cancelBtn.style.display = "inline-block";
-              approvalMessage.style.display = "none";
-            }
-          }
-        });
-    }
+    //       if (userRole === "employee") {
+    //         // Employees don’t see the buttons
+    //         approveBtn.style.display = "none";
+    //         cancelBtn.style.display = "none";
+    //       } else {
+
+    //         const approvedStatus = data.approval_status;
+
+
+    //         if (approvedStatus === "approved") {
+    //           approveBtn.disabled = true;
+    //           cancelBtn.disabled = true;
+    //           approvalMessage.style.display = "block";
+    //           approvalMessage.style.color = "green";
+    //           approvalMessage.textContent = "You have already approved this request.";
+    //         } else if (approvedStatus === "cancelled") {
+    //           approveBtn.disabled = true;
+    //           cancelBtn.disabled = true;
+    //           approvalMessage.style.display = "block";
+    //           approvalMessage.style.color = "red";
+    //           approvalMessage.textContent = "You have already cancelled this request.";
+    //         }
+    //         else if (approvedStatus === "skipped") {
+    //           approveBtn.disabled = true;
+    //           cancelBtn.disabled = true;
+    //         } else {
+    //           approveBtn.style.display = "inline-block";
+    //           cancelBtn.style.display = "inline-block";
+    //           approvalMessage.style.display = "none";
+    //         }
+    //       }
+    //     });
+    // }
 
     // delete request (SweetAlert version)
     function deleteRequest(id) {
@@ -1144,104 +1144,104 @@
 
 
     // update status
-    function updateStatus(newStatus) {
-      if (!currentRequestId) return;
+    // function updateStatus(newStatus) {
+    //   if (!currentRequestId) return;
 
-      if (newStatus === "cancelled") {
-        Swal.fire({
-          title: "Why are you cancelling this leave?",
-          input: "text",
-          inputLabel: "Cancellation Reason",
-          inputPlaceholder: "Enter reason here...",
-          inputValidator: (value) => {
-            if (!value || value.trim() === "") {
-              return "Cancellation reason is required!";
-            }
-          },
-          showCancelButton: true,
-          confirmButtonText: "Submit",
-          cancelButtonText: "Cancel"
-        }).then((result) => {
-          if (result.isConfirmed) {
-            const reason = result.value;
+    //   if (newStatus === "cancelled") {
+    //     Swal.fire({
+    //       title: "Why are you cancelling this leave?",
+    //       input: "text",
+    //       inputLabel: "Cancellation Reason",
+    //       inputPlaceholder: "Enter reason here...",
+    //       inputValidator: (value) => {
+    //         if (!value || value.trim() === "") {
+    //           return "Cancellation reason is required!";
+    //         }
+    //       },
+    //       showCancelButton: true,
+    //       confirmButtonText: "Submit",
+    //       cancelButtonText: "Cancel"
+    //     }).then((result) => {
+    //       if (result.isConfirmed) {
+    //         const reason = result.value;
 
-            fetch(`/api/leave/update-status/${currentRequestId}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                status: newStatus,
-                role: "admin",
-                reason: reason
-              })
-            })
+    //         fetch(`/api/leave/update-status/${currentRequestId}`, {
+    //           method: "PUT",
+    //           headers: { "Content-Type": "application/json" },
+    //           body: JSON.stringify({
+    //             status: newStatus,
+    //             role: "admin",
+    //             reason: reason
+    //           })
+    //         })
 
-              .then(res => res.json())
-              .then(data => {
-                Swal.fire("Cancelled!", data.message, "success");
+    //           .then(res => res.json())
+    //           .then(data => {
+    //             Swal.fire("Cancelled!", data.message, "success");
 
-                document.querySelectorAll(".approve-btn").forEach(btn => btn.disabled = true);
-                document.querySelectorAll(".modal-cancel-btn").forEach(btn => btn.disabled = true);
+    //             document.querySelectorAll(".approve-btn").forEach(btn => btn.disabled = true);
+    //             document.querySelectorAll(".modal-cancel-btn").forEach(btn => btn.disabled = true);
 
-                loadRequests('all');
-                closeModal();
-              });
-          }
-        });
+    //             loadRequests('all');
+    //             closeModal();
+    //           });
+    //       }
+    //     });
 
-      } else if (newStatus === "approved") {
-        Swal.fire({
-          title: "Are you sure?",
-          html: "<span style='color: red; font-weight: bold;'>Once approved cannot be cancelled?</span>",
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonText: "Yes, approve it",
-          cancelButtonText: "No"
-        }).then((result) => {
-          if (result.isConfirmed) {
-            fetch(`/api/leave/update-status/${currentRequestId}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                status: newStatus,
-                role: "admin"
-              })
-            })
-              .then(res => res.json())
-              .then(data => {
-                Swal.fire("Approved!", data.message, "success");
+    //   } else if (newStatus === "approved") {
+    //     Swal.fire({
+    //       title: "Are you sure?",
+    //       html: "<span style='color: red; font-weight: bold;'>Once approved cannot be cancelled?</span>",
+    //       icon: "question",
+    //       showCancelButton: true,
+    //       confirmButtonText: "Yes, approve it",
+    //       cancelButtonText: "No"
+    //     }).then((result) => {
+    //       if (result.isConfirmed) {
+    //         fetch(`/api/leave/update-status/${currentRequestId}`, {
+    //           method: "PUT",
+    //           headers: { "Content-Type": "application/json" },
+    //           body: JSON.stringify({
+    //             status: newStatus,
+    //             role: "admin"
+    //           })
+    //         })
+    //           .then(res => res.json())
+    //           .then(data => {
+    //             Swal.fire("Approved!", data.message, "success");
 
-                document.querySelectorAll(".approve-btn").forEach(btn => btn.disabled = true);
-                document.querySelectorAll(".cancel-btn").forEach(btn => btn.disabled = true);
+    //             document.querySelectorAll(".approve-btn").forEach(btn => btn.disabled = true);
+    //             document.querySelectorAll(".cancel-btn").forEach(btn => btn.disabled = true);
 
-                loadRequests('all');
-                viewRequest(currentRequestId);
-              });
-          }
-        });
-      }
-    }
+    //             loadRequests('all');
+    //             viewRequest(currentRequestId);
+    //           });
+    //       }
+    //     });
+    //   }
+    // }
 
-    function closeModal() {
-      document.getElementById("viewModal").style.display = "none";
-      currentRequestId = null;
-    }
+    // function closeModal() {
+    //   document.getElementById("viewModal").style.display = "none";
+    //   currentRequestId = null;
+    // }
 
-    // Close modal when clicking outside the content
-    window.addEventListener("click", function (event) {
-      const modal = document.getElementById("viewModal");
-      if (event.target === modal) {
-        closeModal();
-      }
-    })
+    // // Close modal when clicking outside the content
+    // window.addEventListener("click", function (event) {
+    //   const modal = document.getElementById("viewModal");
+    //   if (event.target === modal) {
+    //     closeModal();
+    //   }
+    // })
 
-    window.onload = () => {
-      const leaveId = getQueryParam("leaveId");
-      if (leaveId) {
-        viewRequest(leaveId);
-      } else {
-        loadRequests('all');
-      }
-    };
+    // window.onload = () => {
+    //   const leaveId = getQueryParam("leaveId");
+    //   if (leaveId) {
+    //     viewRequest(leaveId);
+    //   } else {
+    //     loadRequests('all');
+    //   }
+    // };
 
   </script>
 </body>

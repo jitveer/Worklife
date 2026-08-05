@@ -250,7 +250,7 @@ router.get("/my-requests", (req, res) => {
   });
 });
 
-
+// employee data prefetched to approver 
 router.get("/:id", (req, res) => {
   const leaveId = req.params.id;
   const approverUserId = req.session.user?.user_id;
@@ -268,12 +268,15 @@ router.get("/:id", (req, res) => {
       c.company_name AS company,
       d.department_name,
       e.designation,
+      e.doj AS joining_date,
+      lm.name AS line_manager,
       lra.status AS approval_status
     FROM leave_requests lr
     JOIN users u ON lr.requester_email = u.email
     JOIN employees e ON u.email = e.email
     JOIN department d ON e.department_id = d.id
     JOIN company_name c ON e.company_id = c.id
+    LEFT JOIN line_managers lm ON e.line_manager_id = lm.id
     LEFT JOIN leave_request_approvals lra 
       ON lr.id = lra.leave_request_id AND lra.approver_user_id = ?
     WHERE lr.id = ?

@@ -37,14 +37,14 @@ function notifyLevel(approverUserId, leaveRequestId, requesterName) {
         [
           email,
           `${requesterName} submitted a leave request for your approval.`,
-          `/leave-requests-approval.html?leaveId=${leaveRequestId}`
+          `/approve-emp-leave.html?id=${leaveRequestId}`
         ],
         (err) => {
           if (!err) {
             sendNotificationToUser(
               email,
               `${requesterName} submitted a leave request for your approval.`,
-              `/leave-requests-approval.html?leaveId=${leaveRequestId}`
+              `/approve-emp-leave.html?id=${leaveRequestId}`
             );
           }
         }
@@ -246,13 +246,13 @@ WHERE u.email = ?
                       [
                         email1,
                         `${requesterName} submitted a leave request for your approval.`,
-                        `/leave-requests-approval.html?leaveId=${leaveId}`
+                        `/approve-emp-leave.html?id=${leaveId}`
                       ],
                       (err) => {
                         if (!err) {
                           sendNotificationToUser(email1,
                             `${requesterName} submitted a leave request for your approval.`,
-                            `/leave-requests-approval.html?leaveId=${leaveId}`
+                            `/approve-emp-leave.html?id=${leaveId}`
                           );
                         }
                       }
@@ -322,7 +322,7 @@ WHERE u.email = ?
                     [
                       user.email,
                       `${requesterName} submitted a leave request for your approval.`,
-                      `/leave-requests-approval.html?leaveId=${leaveId}`,
+                      `/approve-emp-leave.html?id=${leaveId}`,
                       "unread"
                     ],
                     (err) => {
@@ -330,7 +330,7 @@ WHERE u.email = ?
                         sendNotificationToUser(
                           user.email,
                           `${requesterName} submitted a leave request for your approval.`,
-                          `/leave-requests-approval.html?leaveId=${leaveId}`
+                          `/approve-emp-leave.html?id=${leaveId}`
                         );
                       }
                     }
@@ -381,7 +381,7 @@ WHERE u.email = ?
                         [
                           user.email,
                           `${requesterName} submitted a leave request for your approval.`,
-                          `/leave-requests-approval.html?leaveId=${leaveId}`,
+                          `/approve-emp-leave.html?id=${leaveId}`,
                           "unread"
                         ],
                         (err) => {
@@ -389,7 +389,7 @@ WHERE u.email = ?
                             sendNotificationToUser(
                               user.email,
                               `${requesterName} submitted a leave request for your approval.`,
-                              `/leave-requests-approval.html?leaveId=${leaveId}`
+                              `/approve-emp-leave.html?id=${leaveId}`
                             );
                           }
                         }
@@ -503,7 +503,7 @@ exports.updateLeaveStatus = (req, res) => {
           db.query(
             deleteSkippedNotifSql,
             [
-              `/leave-requests-approval.html?leaveId=${leaveRequestId}`,
+              `/approve-emp-leave.html?id=${leaveRequestId}`,
               leaveRequestId,
               current.level
             ],
@@ -580,7 +580,7 @@ exports.updateLeaveStatus = (req, res) => {
                     [
                       `❌ You cancelled a leave request of ${requesterName}`,
                       req.session.user.email,
-                      `/leave-requests-approval.html?leaveId=${leaveRequestId}`,
+                      `/approve-emp-leave.html?id=${leaveRequestId}`,
                       `%submitted a leave request%`
                     ],
                     (err) => {
@@ -678,7 +678,7 @@ exports.updateLeaveStatus = (req, res) => {
                   [
                     `✅ You approved leave request from ${requesterName}`,
                     req.session.user.email,
-                    `/leave-requests-approval.html?leaveId=${leaveRequestId}`
+                    `/approve-emp-leave.html?id=${leaveRequestId}`
                   ]
                 );
 
@@ -759,7 +759,7 @@ exports.updateLeaveStatus = (req, res) => {
                   [
                     `✅ You approved leave request from ${requesterName}`,
                     req.session.user.email,
-                    `/leave-requests-approval.html?leaveId=${leaveRequestId}`
+                    `/approve-emp-leave.html?id=${leaveRequestId}`
                   ]
                 );
 
@@ -840,7 +840,7 @@ exports.updateLeaveStatus = (req, res) => {
                   [
                     `✅ You approved leave request from ${requesterName}`,
                     req.session.user.email,
-                    `/leave-requests-approval.html?leaveId=${leaveRequestId}`
+                    `/approve-emp-leave.html?id=${leaveRequestId}`
                   ]
                 );
 
@@ -945,7 +945,7 @@ exports.updateLeaveStatus = (req, res) => {
                     [
                       `✅ You approved leave request from ${requesterName}`,
                       req.session.user.email,
-                      `/leave-requests-approval.html?leaveId=${leaveRequestId}`,
+                      `/approve-emp-leave.html?id=${leaveRequestId}`,
                       `%submitted a leave request%`
                     ],
                     (err) => {
@@ -985,7 +985,7 @@ exports.updateLeaveStatus = (req, res) => {
               db.query(
                 deleteSkippedNotifSql,
                 [
-                  `/leave-requests-approval.html?leaveId=${leaveRequestId}`,
+                  `/approve-emp-leave.html?id=${leaveRequestId}`,
                   leaveRequestId,
                   current.level
                 ],
@@ -1085,7 +1085,7 @@ exports.updateLeaveStatus = (req, res) => {
                                 [
                                   approver.email,
                                   `${requesterName} submitted a leave request for your approval.`,
-                                  `/leave-requests-approval.html?leaveId=${leaveRequestId}`
+                                  `/approve-emp-leave.html?id=${leaveRequestId}`
                                 ],
                                 (err) => {
                                   if (err) console.error(err);
