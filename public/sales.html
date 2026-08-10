@@ -978,86 +978,578 @@
 
     <script>
         let uploadedIncentiveFiles = [];
+        let incentiveUploadPromise = null;
+        let incentiveUploading = false;
 
-        document.getElementById("submitSalesForm").addEventListener("click", function (e) {
+        // document.getElementById("submitSalesForm").addEventListener("click", function (e) {
+        //     e.preventDefault();
+
+        //     const rows = document.querySelectorAll("#salesItemsBody tr");
+        //     const saleRows = [];
+
+        //     rows.forEach(row => {
+        //         saleRows.push({
+        //             applied_date: row.querySelector('input[type="date"]').value,
+        //             date_of_booking: row.querySelectorAll('input[type="date"]')[1].value,
+        //             representative_id: row.querySelector('.representative').value,
+        //             client_name: row.querySelector(".client-name").value,
+        //             flat_no: row.querySelector(".flat-no").value,
+        //             project_id: row.querySelector('.project').value,
+        //             typo_id: row.querySelector('.typo').value,
+        //             status_id: row.querySelector('.status').value,
+        //             dimension_sqft: row.querySelector('.dimension').value
+        //         });
+        //     });
+
+        //     fetch("/api/sales/submit", {
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify({
+        //             req_no: window.salesPersonalInfo.request_number,
+        //             remarks: document.getElementById("remarks")?.value || "",
+        //             items: saleRows,
+        //             file_paths: uploadedIncentiveFiles
+        //         })
+        //     })
+        //         .then(res => res.json())
+        //         .then(data => Swal.fire("Success", data.message, "success"))
+        //         .catch(err => Swal.fire("Error", "Submit failed", "error"));
+        // });
+
+
+
+
+        document.getElementById("submitSalesForm").addEventListener("click", async function (e) {
+
             e.preventDefault();
 
-            const rows = document.querySelectorAll("#salesItemsBody tr");
-            const saleRows = [];
+            const submitBtn = this;
 
-            rows.forEach(row => {
-                saleRows.push({
-                    applied_date: row.querySelector('input[type="date"]').value,
-                    date_of_booking: row.querySelectorAll('input[type="date"]')[1].value,
-                    representative_id: row.querySelector('.representative').value,
-                    client_name: row.querySelector(".client-name").value,
-                    flat_no: row.querySelector(".flat-no").value,
-                    project_id: row.querySelector('.project').value,
-                    typo_id: row.querySelector('.typo').value,
-                    status_id: row.querySelector('.status').value,
-                    dimension_sqft: row.querySelector('.dimension').value
+            try {
+
+                // ==========================================
+                // 1. CHECK FILE UPLOAD
+                // ==========================================
+
+                if (incentiveUploadPromise) {
+
+                    submitBtn.disabled = true;
+
+                    submitBtn.innerHTML =
+                        '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+
+                    await incentiveUploadPromise;
+                }
+
+                // If upload is still running
+                if (incentiveUploading) {
+                    throw new Error(
+                        "Please wait until the attachment finishes uploading."
+                    );
+                }
+
+
+                // ==========================================
+                // 2. CHECK ATTACHMENT
+                // ==========================================
+
+                if (uploadedIncentiveFiles.length === 0) {
+
+                    throw new Error(
+                        "Please attach a file before submitting the incentive request."
+                    );
+                }
+
+
+                // ==========================================
+                // 3. COLLECT SALES ROWS
+                // ==========================================
+
+                const rows =
+                    document.querySelectorAll("#salesItemsBody tr");
+
+                const saleRows = [];
+
+                rows.forEach((row, index) => {
+
+                    const appliedDate =
+                        row.querySelector('input[type="date"]')?.value || "";
+
+                    const dateInputs =
+                        row.querySelectorAll('input[type="date"]');
+
+                    const bookingDate =
+                        dateInputs[1]?.value || "";
+
+                    const representative =
+                        row.querySelector(".representative")?.value || "";
+
+                    const clientName =
+                        row.querySelector(".client-name")?.value || "";
+
+                    const flatNo =
+                        row.querySelector(".flat-no")?.value || "";
+
+                    const project =
+                        row.querySelector(".project")?.value || "";
+
+                    const typo =
+                        row.querySelector(".typo")?.value || "";
+
+                    const status =
+                        row.querySelector(".status")?.value || "";
+
+                    const dimension =
+                        row.querySelector(".dimension")?.value || "";
+
+
+                    // Skip completely empty rows
+                    if (
+                        !appliedDate &&
+                        !bookingDate &&
+                        !representative &&
+                        !clientName &&
+                        !flatNo &&
+                        !project &&
+                        !typo &&
+                        !status &&
+                        !dimension
+                    ) {
+                        return;
+                    }
+
+
+                    // ==========================================
+                    // REQUIRED FIELD VALIDATION
+                    // ==========================================
+
+                    if (!appliedDate) {
+                        throw new Error(
+                            `Please enter Applied Date in row ${index + 1}.`
+                        );
+                    }
+
+                    if (!bookingDate) {
+                        throw new Error(
+                            `Please enter Date of Booking in row ${index + 1}.`
+                        );
+                    }
+
+                    if (!representative) {
+                        throw new Error(
+                            `Please select Representative Name in row ${index + 1}.`
+                        );
+                    }
+
+                    if (!clientName) {
+                        throw new Error(
+                            `Please enter Client Name in row ${index + 1}.`
+                        );
+                    }
+
+                    if (!flatNo) {
+                        throw new Error(
+                            `Please enter Flat No in row ${index + 1}.`
+                        );
+                    }
+
+                    if (!project) {
+                        throw new Error(
+                            `Please select Project in row ${index + 1}.`
+                        );
+                    }
+
+                    if (!typo) {
+                        throw new Error(
+                            `Please select Typo in row ${index + 1}.`
+                        );
+                    }
+
+                    if (!status) {
+                        throw new Error(
+                            `Please select Status in row ${index + 1}.`
+                        );
+                    }
+
+                    if (!dimension) {
+                        throw new Error(
+                            `Please enter Dimension in row ${index + 1}.`
+                        );
+                    }
+
+
+                    saleRows.push({
+                        applied_date: appliedDate,
+                        date_of_booking: bookingDate,
+                        representative_id: representative,
+                        client_name: clientName,
+                        flat_no: flatNo,
+                        project_id: project,
+                        typo_id: typo,
+                        status_id: status,
+                        dimension_sqft: dimension
+                    });
+
                 });
-            });
 
-            fetch("/api/sales/submit", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    req_no: window.salesPersonalInfo.request_number,
-                    remarks: document.getElementById("remarks")?.value || "",
-                    items: saleRows,
-                    file_paths: uploadedIncentiveFiles
-                })
-            })
-                .then(res => res.json())
-                .then(data => Swal.fire("Success", data.message, "success"))
-                .catch(err => Swal.fire("Error", "Submit failed", "error"));
+
+                // ==========================================
+                // 4. CHECK ROWS
+                // ==========================================
+
+                if (saleRows.length === 0) {
+
+                    throw new Error(
+                        "Please enter at least one incentive request row."
+                    );
+                }
+
+
+                // ==========================================
+                // 5. CHECK REQUEST NUMBER
+                // ==========================================
+
+                if (!window.salesPersonalInfo?.request_number) {
+
+                    throw new Error(
+                        "Request number is not available. Please refresh the page and try again."
+                    );
+                }
+
+
+                // ==========================================
+                // 6. DISABLE SUBMIT
+                // ==========================================
+
+                submitBtn.disabled = true;
+
+                submitBtn.innerHTML =
+                    '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+
+
+                // ==========================================
+                // 7. SUBMIT
+                // ==========================================
+
+                const response = await fetch(
+                    "/api/sales/submit",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        credentials: "include",
+
+                        body: JSON.stringify({
+
+                            req_no:
+                                window.salesPersonalInfo.request_number,
+
+                            remarks:
+                                document.getElementById("remarks")?.value || "",
+
+                            items:
+                                saleRows,
+
+                            file_paths:
+                                uploadedIncentiveFiles
+
+                        })
+                    }
+                );
+
+
+                // ==========================================
+                // 8. READ RESPONSE
+                // ==========================================
+
+                const data = await response.json();
+
+                console.log(
+                    "📥 INCENTIVE SUBMIT RESPONSE:",
+                    data
+                );
+
+
+                // ==========================================
+                // 9. HANDLE SERVER ERROR
+                // ==========================================
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.error ||
+                        data.message ||
+                        "Incentive request submission failed."
+                    );
+                }
+
+
+                // ==========================================
+                // 10. SUCCESS
+                // ==========================================
+
+                await Swal.fire({
+                    title: "Success!",
+                    text:
+                        data.message ||
+                        `Incentive request ${data.req_no} submitted successfully.`,
+                    icon: "success",
+                    confirmButtonText: "OK"
+                });
+
+
+            } catch (error) {
+
+                console.error(
+                    "🔥 INCENTIVE SUBMIT ERROR:",
+                    error
+                );
+
+                Swal.fire({
+                    title: "Submission Failed",
+                    text:
+                        error.message ||
+                        "Something went wrong while submitting the incentive request.",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+
+            } finally {
+
+                submitBtn.disabled = false;
+
+                submitBtn.innerHTML = "Submit";
+
+            }
+
         });
 
 
-
-
+        //----------------------------
         // add files while submit
+        // -----------------------------
         function openIncentiveFileUpload() {
             document.getElementById("incentiveFilesInput").click();
         }
 
 
-        document.getElementById("incentiveFilesInput").addEventListener("change", async function () {
-            // attache butto changes to attached file name 
+        // document.getElementById("incentiveFilesInput").addEventListener("change", async function () {
+        //     // attache butto changes to attached file name 
+        //     const attachBtn = document.getElementById("attachBtn");
+
+        //     if (this.files.length === 1) {
+        //         attachBtn.innerHTML = `<i class="fa-solid fa-file"></i> ${this.files[0].name}`;
+        //     } else if (this.files.length > 1) {
+        //         attachBtn.innerHTML = `<i class="fa-solid fa-folder-open"></i> ${this.files.length} Files Selected`;
+        //     } else {
+        //         attachBtn.innerHTML = "Attach Files";
+        //     }
+
+        //     const files = this.files;
+        //     if (!files.length) return;
+
+        //     for (let f of files) {
+        //         const fd = new FormData();
+        //         fd.append("incentive_file", f);
+
+        //         const res = await fetch("/api/sales/incentive/upload", {
+        //             method: "POST",
+        //             body: fd
+        //         });
+
+        //         const data = await res.json();
+
+        //         if (data.success) {
+        //             uploadedIncentiveFiles.push(data.filePath);
+        //         }
+        //     }
+        // });
+
+
+
+
+
+        //---------------------------------
+        // incetive file input 
+        //---------------------------------
+        document.getElementById("incentiveFilesInput").addEventListener("change", function () {
+
+            const input = this;
             const attachBtn = document.getElementById("attachBtn");
 
-            if (this.files.length === 1) {
-                attachBtn.innerHTML = `<i class="fa-solid fa-file"></i> ${this.files[0].name}`;
-            } else if (this.files.length > 1) {
-                attachBtn.innerHTML = `<i class="fa-solid fa-folder-open"></i> ${this.files.length} Files Selected`;
-            } else {
+            const files = Array.from(input.files);
+
+            // Reset previous uploaded files
+            uploadedIncentiveFiles = [];
+
+            // No file selected
+            if (!files.length) {
+
                 attachBtn.innerHTML = "Attach Files";
+
+                incentiveUploadPromise = null;
+                incentiveUploading = false;
+
+                return;
             }
 
-            const files = this.files;
-            if (!files.length) return;
 
-            for (let f of files) {
-                const fd = new FormData();
-                fd.append("incentive_file", f);
+            // ==========================================
+            // SHOW UPLOADING STATUS
+            // ==========================================
 
-                const res = await fetch("/api/sales/incentive/upload", {
-                    method: "POST",
-                    body: fd
-                });
+            attachBtn.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
 
-                const data = await res.json();
+            incentiveUploading = true;
 
-                if (data.success) {
-                    uploadedIncentiveFiles.push(data.filePath);
+
+            // ==========================================
+            // START UPLOAD AND STORE PROMISE
+            // ==========================================
+
+            incentiveUploadPromise = (async () => {
+
+                try {
+
+                    for (const file of files) {
+
+                        console.log("📎 Uploading incentive file:", {
+                            name: file.name,
+                            type: file.type,
+                            size: file.size
+                        });
+
+
+                        const fd = new FormData();
+
+                        fd.append(
+                            "incentive_file",
+                            file
+                        );
+
+
+                        const res = await fetch(
+                            "/api/sales/incentive/upload",
+                            {
+                                method: "POST",
+                                body: fd,
+                                credentials: "include"
+                            }
+                        );
+
+
+                        const data = await res.json();
+
+                        console.log(
+                            "📎 INCENTIVE UPLOAD RESPONSE:",
+                            data
+                        );
+
+
+                        // ==================================
+                        // UPLOAD FAILED
+                        // ==================================
+
+                        if (
+                            !res.ok ||
+                            !data.success ||
+                            !data.filePath
+                        ) {
+
+                            throw new Error(
+                                data.error ||
+                                data.message ||
+                                `Failed to upload ${file.name}`
+                            );
+                        }
+
+
+                        // ==================================
+                        // UPLOAD SUCCESS
+                        // ==================================
+
+                        uploadedIncentiveFiles.push(
+                            data.filePath
+                        );
+
+                    }
+
+
+                    // ==========================================
+                    // ALL FILES SUCCESSFULLY UPLOADED
+                    // ==========================================
+
+                    if (files.length === 1) {
+
+                        attachBtn.innerHTML =
+                            `<i class="fa-solid fa-file"></i> ${files[0].name}`;
+
+                    } else {
+
+                        attachBtn.innerHTML =
+                            `<i class="fa-solid fa-folder-open"></i> ${files.length} Files Attached`;
+
+                    }
+
+
+                    console.log(
+                        "✅ INCENTIVE FILES UPLOADED:",
+                        uploadedIncentiveFiles
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "🔥 INCENTIVE FILE UPLOAD ERROR:",
+                        error
+                    );
+
+
+                    // Clear failed uploads
+                    uploadedIncentiveFiles = [];
+
+
+                    attachBtn.innerHTML =
+                        "Attach Files";
+
+
+                    Swal.fire({
+                        title: "File Upload Failed",
+                        text:
+                            error.message ||
+                            "Unable to upload attachment.",
+                        icon: "error",
+                        confirmButtonText: "OK"
+                    });
+
+
+                    // Important:
+                    // Make Submit fail if upload failed
+                    throw error;
+
+
+                } finally {
+
+                    incentiveUploading = false;
+
                 }
-            }
+
+            })();
+
         });
 
 
 
+
+        
+        //----------------------------------
         // dropdown boxes of all
+        //-----------------------------
         function loadDropdownData() {
             fetch("/api/sales/dropdown-data")
                 .then(res => res.json())
