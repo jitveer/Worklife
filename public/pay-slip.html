@@ -815,10 +815,10 @@
 
         .amount-words-container {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             justify-content: center;
             align-items: center;
-            gap: 0px;
+            gap: 5px;
             width: 100%;
             font-style: italic;
             font-weight: bold;
@@ -829,12 +829,15 @@
         }
 
         .amount-words-container textarea {
-            width: 350px;
-            min-height: 16px;
+            width: auto;
+            min-height: 40px;
+            max-width: 500px;
+
             height: 16px;
+            min-height: 16px;
 
             border: none;
-            border-bottom: 1px dashed #000;
+            /* border-bottom: 1px dashed #000; */
 
             outline: none;
             background: transparent;
@@ -850,6 +853,8 @@
 
             line-height: 16px;
             padding: 0;
+
+            field-sizing: content;
         }
 
         .ps-amount-words strong {
@@ -1727,7 +1732,7 @@
                             <tr>
 
                                 <th colspan="2" class="ps-section-title">
-                                    Earned Salary
+                                    Salary Details
                                 </th>
 
                                 <th class="ps-section-title deduction-heading">

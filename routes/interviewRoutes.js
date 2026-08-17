@@ -7,6 +7,7 @@ const {
   getInterviewList,
   startExam,
   submitExam,
+  viewInterview,
   updateDecision,
   deleteInterview
 } = require("../controllers/interviewController");
@@ -17,6 +18,9 @@ router.post("/interview/invite", sendInvite);
 router.get("/interview/list", getInterviewList);
 router.post("/decision", updateDecision);
 router.post("/delete", deleteInterview);
+
+// view button to see completed question paper 
+router.get("/interview/view/:invite_id", viewInterview);
 
 // Candidate APIs
 router.get("/exam/start", startExam);

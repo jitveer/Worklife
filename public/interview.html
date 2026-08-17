@@ -410,9 +410,24 @@
         <option value="Rejected">Rejected</option>
       </select>
     </td>
-    <td class="border px-3 py-2 text-center">
-      <i class="fa-solid fa-trash text-red-600 cursor-pointer deleteBtn"></i>
-    </td>
+<td class="border px-3 py-2 text-center">
+
+    ${row.status === "Completed"
+                                ? `
+            <i
+                class="fa-solid fa-eye text-blue-600 cursor-pointer viewBtn mr-3"
+                title="View">
+            </i>
+        `
+                                : ""
+                            }
+
+    <i
+        class="fa-solid fa-trash text-red-600 cursor-pointer deleteBtn"
+        title="Delete">
+    </i>
+
+</td>
   `;
 
                         // ✅ dropdown change
@@ -420,6 +435,18 @@
                             .addEventListener("change", (e) => {
                                 updateDecision(row.invite_id, e.target.value);
                             });
+
+
+
+                        // View completed interview
+                        if (row.status === "Completed") {
+
+                            tr.querySelector(".viewBtn")
+                                .addEventListener("click", () => {
+                                    viewInterview(row.invite_id);
+                                });
+
+                        }
 
                         // ✅ delete click
                         tr.querySelector(".deleteBtn")
@@ -480,7 +507,28 @@
         }
 
 
+
+
+
+        // =================================
+        // View completed interview
+        // =================================
+        function viewInterview(inviteId) {
+
+            window.open(
+                `questions.html?view=${inviteId}`,
+                "_blank"
+            );
+
+        }
+
+
+
+
+
+        //=================================
         // delete button
+        //=================================
         function deleteInterview(inviteId) {
 
             Swal.fire({

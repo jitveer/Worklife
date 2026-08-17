@@ -154,18 +154,107 @@ exports.submitExam = (req, res) => {
                 });
 
                 db.query(
-                    "UPDATE interview_invites SET score=?, status='Completed' WHERE invite_id=?",
-                    [score, invite_id],
-                    () => res.json({
-                        message: "Exam submitted",
-                        score,
-                        total: questions.length
-                    })
+                    `UPDATE interview_invites
+     SET score = ?,
+         answers = ?,
+         status = 'Completed'
+     WHERE invite_id = ?`,
+                    [score, JSON.stringify(answers), invite_id],
+                    (updateErr, result) => {
+
+                        if (updateErr) {
+                            console.error("❌ INTERVIEW UPDATE ERROR:", updateErr);
+
+                            return res.status(500).json({
+                                success: false,
+                                message: "Failed to save exam result"
+                            });
+                        }
+                        return res.json({
+                            message: "Exam submitted",
+                            score,
+                            total: questions.length
+                        });
+                    }
                 );
             }
         );
     });
 };
+
+
+
+
+
+
+
+/* ======================
+   VIEW COMPLETED INTERVIEW QUESTION PAPER
+====================== */
+exports.viewInterview = (req, res) => {
+
+    const { invite_id } = req.params;
+
+    const query = `
+        SELECT
+            ii.invite_id,
+            ii.candidate_email,
+            ii.role_id,
+            ii.score,
+            ii.status,
+            ii.answers,
+            r.role_name,
+            qp.paper_content
+        FROM interview_invites ii
+        JOIN roles r
+            ON ii.role_id = r.role_id
+        JOIN question_papers qp
+            ON ii.role_id = qp.role_id
+        WHERE ii.invite_id = ?
+    `;
+
+    db.query(query, [invite_id], (err, rows) => {
+
+        if (err) {
+            console.error("View interview error:", err);
+
+            return res.status(500).json({
+                message: "Failed to load interview"
+            });
+        }
+
+        if (!rows.length) {
+            return res.status(404).json({
+                message: "Interview not found"
+            });
+        }
+
+        const row = rows[0];
+
+        // Only completed interviews can be viewed
+        if (row.status !== "Completed") {
+            return res.status(403).json({
+                message: "Interview is not completed yet"
+            });
+        }
+
+        const questions = JSON.parse(row.paper_content);
+
+        const answers = row.answers
+            ? JSON.parse(row.answers)
+            : [];
+
+        return res.json({
+            invite_id: row.invite_id,
+            candidate_email: row.candidate_email,
+            role_name: row.role_name,
+            score: row.score,
+            questions: questions,
+            answers: answers
+        });
+    });
+};
+
 
 
 
