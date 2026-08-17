@@ -657,8 +657,11 @@
           .then(data => {
             if (!data) return;
 
-            // Hide exam UI
-            document.querySelector(".exam-container").style.display = "none";
+            // Hide only exam content
+            document.querySelector(".exam-header").style.display = "none";
+            document.querySelector(".candidate-email").style.display = "none";
+            document.querySelector(".questions").style.display = "none";
+            document.querySelector(".submit-area").style.display = "none";
 
             // Show result screen
             document.getElementById("resultScreen").style.display = "flex";

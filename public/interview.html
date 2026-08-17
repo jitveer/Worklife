@@ -639,7 +639,51 @@
 
 
 
+
         loadInterviewTable();
+
+
+
+        // logout
+        function logoutUser() {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You will be logged out from your session.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, logout",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Call logout API
+                    fetch("/api/auth/logout")
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: "Logged Out!",
+                                    text: "You have been successfully logged out.",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+
+                                setTimeout(() => {
+                                    window.location.href = "index.html"; // Redirect to login
+                                }, 2000);
+                            } else {
+                                Swal.fire("Oops!", "Logout failed. Try again.", "error");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Logout error:", err);
+                            Swal.fire("Error", "Something went wrong. Try again.", "error");
+                        });
+                }
+            });
+        }
     </script>
 
 </body>

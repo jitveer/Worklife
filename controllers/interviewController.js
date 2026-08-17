@@ -240,9 +240,23 @@ exports.viewInterview = (req, res) => {
 
         const questions = JSON.parse(row.paper_content);
 
-        const answers = row.answers
-            ? JSON.parse(row.answers)
-            : [];
+        let answers = [];
+
+        if (row.answers) {
+            if (typeof row.answers === "string") {
+                try {
+                    answers = JSON.parse(row.answers);
+                } catch (error) {
+                    console.error("Invalid answers data:", row.answers);
+
+                    answers = row.answers
+                        .split(",")
+                        .map(answer => answer.trim());
+                }
+            } else {
+                answers = row.answers;
+            }
+        }
 
         return res.json({
             invite_id: row.invite_id,
