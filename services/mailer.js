@@ -206,7 +206,7 @@ exports.sendEmployeeFormEmail = (to, link) => {
 
 
 // send pay slip through mailer 
-exports.sendPayslipEmail = (to, subject, text, pdfBuffer) => {
+exports.sendPayslipEmail = (to, subject, text, pdfBuffer, employeeName, payMonth) => {
 
   if (!to) {
     console.log("❌ No email found");
@@ -215,12 +215,12 @@ exports.sendPayslipEmail = (to, subject, text, pdfBuffer) => {
 
 
   const htmlTemplate = `
-  <p>Dear Employee,</p>
+  <p>Dear ${employeeName || "Employee"},</p>
 
   <p>Greetings!</p>
 
   <p>
-  Please find attached the Pay-Slip for the month of ${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}.
+  Please find attached the Pay-Slip for the month of ${payMonth}.
   </p>
 
   <br>

@@ -545,6 +545,11 @@
             font-weight: bold;
         }
 
+        #psMonth {
+            width: 120px;
+            box-sizing: border-box;
+            text-align: left;
+        }
 
 
         .ps-month-title input {
@@ -1572,12 +1577,12 @@
                                 </td>
 
                                 <td class="ps-label">
-                                    Number of Leaves
+                                    Leaves
                                 </td>
 
                                 <td class="ps-value-cell">
                                     <span class="ps-colon">:</span>
-                                    <input id="psLeaves" type="number" value="0">
+                                    <input id="psLeavesTaken" type="number" value="0">
                                 </td>
 
                             </tr>
@@ -1595,12 +1600,12 @@
                                 </td>
 
                                 <td class="ps-label">
-                                    Leaves
+                                    SL
                                 </td>
 
                                 <td class="ps-value-cell">
                                     <span class="ps-colon">:</span>
-                                    <input id="psLeavesTaken" type="number" value="0">
+                                    <input id="psSL" type="number" value="0">
                                 </td>
 
                             </tr>
@@ -1618,12 +1623,12 @@
                                 </td>
 
                                 <td class="ps-label">
-                                    SL
+                                    PL
                                 </td>
 
                                 <td class="ps-value-cell">
                                     <span class="ps-colon">:</span>
-                                    <input id="psSL" type="number" value="0">
+                                    <input id="psPL" type="number" value="0">
                                 </td>
 
                             </tr>
@@ -1641,12 +1646,12 @@
                                 </td>
 
                                 <td class="ps-label">
-                                    PL
+                                    Other Leaves
                                 </td>
 
                                 <td class="ps-value-cell">
                                     <span class="ps-colon">:</span>
-                                    <input id="psPL" type="number" value="0">
+                                    <input id="psOtherLeaves" type="number" value="0">
                                 </td>
 
                             </tr>
@@ -1664,12 +1669,12 @@
                                 </td>
 
                                 <td class="ps-label">
-                                    Other Leaves
+                                    Balance Leave Accumulated
                                 </td>
 
                                 <td class="ps-value-cell">
                                     <span class="ps-colon">:</span>
-                                    <input id="psOtherLeaves" type="number" value="0">
+                                    <input id="psBalanceLeave" type="number" value="0">
                                 </td>
 
                             </tr>
@@ -1687,12 +1692,12 @@
                                 </td>
 
                                 <td class="ps-label">
-                                    Balance Leave Accumulated
+                                    Gross Salary
                                 </td>
 
                                 <td class="ps-value-cell">
                                     <span class="ps-colon">:</span>
-                                    <input id="psBalanceLeave" type="number" value="0">
+                                    <input id="psGrossSalary" type="number">
                                 </td>
 
                             </tr>
@@ -1706,13 +1711,14 @@
                                 <td></td>
 
                                 <!-- RIGHT SIDE -->
+                                <!-- RIGHT SIDE -->
                                 <td class="ps-label">
-                                    Gross Salary
+                                    Earned Salary
                                 </td>
 
                                 <td class="ps-value-cell">
                                     <span class="ps-colon">:</span>
-                                    <input id="psGrossSalary" type="number">
+                                    <input id="psEarnedSalary" type="number">
                                 </td>
 
                             </tr>
@@ -2611,8 +2617,8 @@
             // ===============================================
             // LEAVES
             // ===============================================
-            leaves:
-                document.getElementById("psLeaves")?.value || 0,
+            earned_salary:
+                document.getElementById("psEarnedSalary")?.value || 0,
 
             leaves_taken:
                 document.getElementById("psLeavesTaken")?.value || 0,

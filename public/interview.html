@@ -117,10 +117,13 @@
                 </span>
             </div>
 
-            <i class="fa-solid fa-power-off
+            <!-- logout -->
+            <div class="logout" id="logoutBtn">
+                <i class="fa-solid fa-power-off
                    cursor-pointer
                    text-sm md:text-base">
-            </i>
+                </i>
+            </div>
         </div>
     </header>
 
@@ -642,6 +645,9 @@
 
         loadInterviewTable();
 
+
+        document.getElementById("logoutBtn")
+            ?.addEventListener("click", logoutUser);
 
 
         // logout

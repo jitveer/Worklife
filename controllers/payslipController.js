@@ -371,7 +371,7 @@ exports.savePayslip = (req, res) => {
         working_days_attended,
 
         // Leaves
-        leaves,
+        earned_salary,
         leaves_taken,
         balance_leaves,
         lop,
@@ -485,7 +485,7 @@ exports.savePayslip = (req, res) => {
                 total_working_days,
                 working_days_attended,
 
-                leaves,
+                earned_salary,
                 leaves_taken,
                 balance_leaves,
                 lop,
@@ -566,7 +566,7 @@ exports.savePayslip = (req, res) => {
             // ---------------------------------------------
             // Leaves
             // ---------------------------------------------
-            leaves,
+            earned_salary,
             leaves_taken,
             balance_leaves,
             lop,
@@ -730,7 +730,9 @@ exports.savePayslip = (req, res) => {
                         emp.email,
                         "Payslip",
                         "Please find attached payslip",
-                        pdfBuffer
+                        pdfBuffer,
+                        employee_name,
+                        pay_period
                     );
 
 
