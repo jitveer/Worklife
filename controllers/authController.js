@@ -40,7 +40,7 @@ function md5(password) {
 
 exports.login = (req, res) => {
 
-  const { company, role, email, password } = req.body;
+  const { company, role, email, password, loginType } = req.body;
 
   // DEVICE IP
   const ip =
@@ -73,6 +73,14 @@ exports.login = (req, res) => {
     }
 
     const user = results[0];
+
+    // Accounts & Finance login restriction
+    if (loginType === "accounts" && user.department_id !== 7) {
+      return res.json({
+        success: false,
+        message: "This login is restricted to Accounts & Finance."
+      });
+    }
 
     // =========================
     // CHECK DEVICE LOCK
@@ -158,6 +166,7 @@ exports.login = (req, res) => {
           companyId: user.company_id,
           roleId: user.role_id,
           departmentId: user.department_id,
+          loginType: loginType || "normal",
           name: `${user.first_name} ${user.last_name}`,
           employee_id: user.employee_id || null,
           user_id: user.id || null

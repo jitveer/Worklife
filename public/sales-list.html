@@ -704,18 +704,26 @@
 
 
         <script>
-            // session check
-            fetch("/api/auth/session-check")
+            let currentLoginType = "normal";
+
+            fetch("/api/auth/session-check", {
+                credentials: "include"
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (!data.loggedIn) {
                         // Not logged in → go to login
                         window.location.href = "index.html";
-                    } else {
-                        sessionStorage.setItem("user_id", data.user.user_id);
-                        document.getElementById("userName").textContent = data.user.name;
-
+                        return;
                     }
+
+                    // Get actual login type from session
+                    currentLoginType = data.user.loginType || "normal";
+                    console.log("LOGIN TYPE:", currentLoginType);
+
+                    sessionStorage.setItem("user_id", data.user.user_id);
+                    document.getElementById("userName").textContent = data.user.name;
+
                 })
                 .catch(error => {
                     console.error("Session check failed:", error);
@@ -759,7 +767,13 @@
                                     });
 
                                     setTimeout(() => {
-                                        window.location.href = "index.html"; // Redirect to login
+
+                                        if (currentLoginType === "accounts") {
+                                            window.location.href = "accounts-login.html";
+                                        } else {
+                                            window.location.href = "index.html";
+                                        }
+
                                     }, 2000);
                                 } else {
                                     Swal.fire("Oops!", "Logout failed. Try again.", "error");

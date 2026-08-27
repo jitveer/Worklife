@@ -490,12 +490,19 @@
 
   <script>
     let userEmail;
+    let currentLoginType = "normal";
 
     // Session check
     fetch("/api/auth/session-check", { credentials: "include" })
       .then(res => res.json())
       .then(data => {
-        if (!data.loggedIn) location.href = "index.html";
+        if (!data.loggedIn) {
+          location.href = "index.html";
+          return;
+        }
+
+        currentLoginType = data.user.loginType || "normal";
+
         userEmail = data.user.email;
         document.getElementById("userName").textContent = data.user.name;
 
@@ -606,7 +613,7 @@
       fetch(`/api/leave/my-requests`, { credentials: "include" })
         .then(res => res.json())
         .then(data => {
-          
+
 
           const tbody = document.querySelector("#requestsTable tbody");
           tbody.innerHTML = "";
@@ -786,11 +793,6 @@
       document.getElementById("viewModal").style.display = "none";
     }
 
-    function logoutUser() {
-      Swal.fire({ title: "Logging out..." });
-      fetch("/api/auth/logout").then(() => location.href = "index.html");
-    }
-
     window.addEventListener("DOMContentLoaded", () => {
       const params = new URLSearchParams(window.location.search);
       const viewId = params.get("view");
@@ -826,8 +828,15 @@
                 });
 
                 setTimeout(() => {
-                  window.location.href = "index.html"; // Redirect to login
+
+                  if (currentLoginType === "accounts") {
+                    window.location.href = "accounts-login.html";
+                  } else {
+                    window.location.href = "index.html";
+                  }
+
                 }, 2000);
+                
               } else {
                 Swal.fire("Oops!", "Logout failed. Try again.", "error");
               }

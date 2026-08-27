@@ -980,6 +980,7 @@
         let uploadedIncentiveFiles = [];
         let incentiveUploadPromise = null;
         let incentiveUploading = false;
+        let currentLoginType = "normal";
 
         // document.getElementById("submitSalesForm").addEventListener("click", function (e) {
         //     e.preventDefault();
@@ -1546,7 +1547,7 @@
 
 
 
-        
+
         //----------------------------------
         // dropdown boxes of all
         //-----------------------------
@@ -1737,6 +1738,9 @@
                         return;
                     }
 
+                    // logout functionality
+                    currentLoginType = data.user.loginType || "normal";
+
                     // ✅ Set username
                     document.getElementById("userName").textContent = data.user.name;
 
@@ -1853,7 +1857,13 @@
                                 });
 
                                 setTimeout(() => {
-                                    window.location.href = "index.html";
+
+                                    if (currentLoginType === "accounts") {
+                                        window.location.href = "accounts-login.html";
+                                    } else {
+                                        window.location.href = "index.html";
+                                    }
+
                                 }, 2000);
                             } else {
                                 Swal.fire("Oops!", "Logout failed. Try again.", "error");

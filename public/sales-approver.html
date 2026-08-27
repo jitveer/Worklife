@@ -1629,6 +1629,8 @@
 
 
     <script>
+        let currentLoginType = "normal";
+
         // 🔐 SESSION CHECK
         document.addEventListener("DOMContentLoaded", function () {
             fetch("/api/auth/session-check", {
@@ -1637,6 +1639,10 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.loggedIn) {
+
+                        // Get login type from authenticated session
+                        currentLoginType = data.user.loginType || "normal";
+
                         //  Set the user name on your dashboard
                         document.getElementById("userName").textContent = data.user.name;
                         sessionStorage.setItem("user_id", data.user.user_id);
@@ -1699,7 +1705,13 @@
                                 });
 
                                 setTimeout(() => {
-                                    window.location.href = "index.html";
+
+                                    if (currentLoginType === "accounts") {
+                                        window.location.href = "accounts-login.html";
+                                    } else {
+                                        window.location.href = "index.html";
+                                    }
+
                                 }, 2000);
                             } else {
                                 Swal.fire("Oops!", "Logout failed. Try again.", "error");

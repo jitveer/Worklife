@@ -501,6 +501,20 @@
         }
 
 
+        #psCompanyName {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 0.2px;
+            text-align: center;
+            width: 350px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+        }
+
+
         /* =========================================================
    ADDRESS
 ========================================================= */
@@ -1430,7 +1444,7 @@
                         </div>
 
                         <div class="ps-company-name">
-                            MNM REALITY PRIVATE LIMITED
+                            <input id="psCompanyName" type="text" value="MNM REALITY PRIVATE LIMITED">
                         </div>
 
                     </div>
@@ -2563,6 +2577,9 @@
 
             employee_name:
                 document.getElementById("psName")?.value || "",
+
+            company_name:
+                document.getElementById("psCompanyName")?.value || "",
 
             designation:
                 document.getElementById("psDesignation")?.value || "",

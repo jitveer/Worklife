@@ -352,6 +352,7 @@ exports.savePayslip = (req, res) => {
         // Employee details
         employee_code,
         employee_name,
+        company_name,
         designation,
         department,
         pan,
@@ -472,6 +473,7 @@ exports.savePayslip = (req, res) => {
                 emp_id,
                 employee_code,
                 employee_name,
+                company_name,
                 designation,
                 department,
                 pan,
@@ -520,7 +522,7 @@ exports.savePayslip = (req, res) => {
 
             VALUES (
 
-                ?, ?, ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?, ?,
                 ?, ?, ?, ?,
                 ?, ?, ?,
                 ?, ?, ?, ?, ?, ?, ?,
@@ -541,6 +543,7 @@ exports.savePayslip = (req, res) => {
             emp_id,
             employee_code,
             employee_name,
+            company_name,
             designation,
             department,
             pan,

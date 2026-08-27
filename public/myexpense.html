@@ -653,6 +653,8 @@
         }
 
         // session check
+        let currentLoginType = "normal";
+
         fetch("/api/auth/session-check", {
             credentials: "include"   // ⭐ IMPORTANT
         })
@@ -663,6 +665,8 @@
                     window.location.href = "index.html";
                     return;
                 }
+                // logout funcitonality
+                currentLoginType = data.user.loginType || "normal";
 
                 // ✅ Show username
                 document.getElementById("userName").textContent = data.user.name;
@@ -683,7 +687,7 @@
                 }
 
 
-                
+
 
                 // ===============================
                 // ✅ SIDEBAR CHANGE (MAIN FIX)
@@ -842,7 +846,13 @@
                                 });
 
                                 setTimeout(() => {
-                                    window.location.href = "index.html"; // Redirect to login
+
+                                    if (currentLoginType === "accounts") {
+                                        window.location.href = "accounts-login.html";
+                                    } else {
+                                        window.location.href = "index.html";
+                                    }
+
                                 }, 2000);
                             } else {
                                 Swal.fire("Oops!", "Logout failed. Try again.", "error");

@@ -1206,6 +1206,8 @@
         </script>
 
         <script>
+            let currentLoginType = "normal";
+
             fetch("/api/auth/session-check", {
                 credentials: "include"
             })
@@ -1217,8 +1219,10 @@
                         return;
                     }
 
+                    currentLoginType = data.user.loginType || "normal";
+
                     document.getElementById("userName").textContent = data.user.name;
-                    
+
                     // redirect when clicked on WL 
                     const headerLogo = document.getElementById("headerLogo");
 
@@ -1286,7 +1290,13 @@
                                     });
 
                                     setTimeout(() => {
-                                        window.location.href = "index.html"; // Redirect to login
+
+                                        if (currentLoginType === "accounts") {
+                                            window.location.href = "accounts-login.html";
+                                        } else {
+                                            window.location.href = "index.html";
+                                        }
+
                                     }, 2000);
                                 } else {
                                     Swal.fire("Oops!", "Logout failed. Try again.", "error");

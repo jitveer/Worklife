@@ -625,7 +625,7 @@
                         </thead>
                         <tbody id="expenseItemsTableBody">
                             <!-- Populated dynamically -->
-                        <!-- </tbody>
+            <!-- </tbody>
                     </table>
                     <button class="approve-btn" id="approveBtn">Approve</button>
                     <button class="cancel-btn" id="rejectBtn">Reject</button>
@@ -1043,6 +1043,7 @@
                 });
 
 
+                let currentLoginType = "normal";
 
                 // session check
                 fetch("/api/auth/session-check")
@@ -1052,6 +1053,9 @@
                             // Not logged in → go to login
                             window.location.href = "index.html";
                         } else {
+
+                            currentLoginType = data.user.loginType || "normal";
+                            
                             sessionStorage.setItem("user_id", data.user.user_id);
                             document.getElementById("userName").textContent = data.user.name;
 
@@ -1107,7 +1111,13 @@
                                         });
 
                                         setTimeout(() => {
-                                            window.location.href = "index.html"; // Redirect to login
+
+                                            if (currentLoginType === "accounts") {
+                                                window.location.href = "accounts-login.html";
+                                            } else {
+                                                window.location.href = "index.html";
+                                            }
+
                                         }, 2000);
                                     } else {
                                         Swal.fire("Oops!", "Logout failed. Try again.", "error");

@@ -483,6 +483,9 @@
         });
     </script>
     <script>
+
+        let currentLoginType = "normal";
+
         // session check remains same
         fetch("/api/auth/session-check", {
             method: "GET",
@@ -495,6 +498,10 @@
                     window.location.href = "index.html";
                     return;
                 }
+
+                currentLoginType = data.user.loginType || "normal";
+                console.log("LOGIN TYPE:", data.user.loginType);
+                console.log("CURRENT LOGIN TYPE:", currentLoginType);
 
                 document.getElementById("userName").textContent = data.user.name;
 
@@ -751,8 +758,18 @@
                                 });
 
                                 setTimeout(() => {
-                                    window.location.href = "index.html"; // Redirect to login
+
+                                    const loginType = localStorage.getItem("loginType");
+                                    if (loginType === "accounts") {
+                                        localStorage.removeItem("loginType");
+                                        window.location.href = "accounts-login.html";
+                                    } else {
+                                        localStorage.removeItem("loginType");
+                                        window.location.href = "index.html";
+                                    }
+
                                 }, 2000);
+
                             } else {
                                 Swal.fire("Oops!", "Logout failed. Try again.", "error");
                             }

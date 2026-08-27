@@ -1,6 +1,9 @@
 // ==========================
 // Session Check + Logout
 // ==========================
+
+let currentLoginType = "normal";
+
 fetch("/api/auth/session-check", {
     credentials: "include"   // ⭐ IMPORTANT
 })
@@ -11,6 +14,9 @@ fetch("/api/auth/session-check", {
             window.location.href = "index.html";
             return;
         }
+
+        // logout functionality 
+        currentLoginType = data.user.loginType || "normal";
 
         // ✅ Username
         document.getElementById("userName").textContent = data.user.name;
@@ -127,7 +133,15 @@ function logoutUser() {
                             showConfirmButton: false,
                             timer: 2000
                         });
-                        setTimeout(() => window.location.href = "index.html", 2000);
+                        setTimeout(() => {
+
+                            if (currentLoginType === "accounts") {
+                                window.location.href = "accounts-login.html";
+                            } else {
+                                window.location.href = "index.html";
+                            }
+
+                        }, 2000);
                     } else {
                         Swal.fire("Oops!", "Logout failed. Try again.", "error");
                     }

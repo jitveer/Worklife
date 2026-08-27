@@ -683,8 +683,8 @@
                     </span>
                     <h3>Petrol Claim Details <span id="petrolStatusTag" class="status-box small">Status</span></h3> -->
 
-                    <!-- Claim Info -->
-                    <!-- <div id="petrolDetails">
+            <!-- Claim Info -->
+            <!-- <div id="petrolDetails">
                         <p><strong>Requester Name:</strong> <span id="viewRequesterName"></span></p>
                         <p><strong>Requester No:</strong> <span id="viewRequesterNo"></span></p>
                         <p><strong>Email:</strong> <span id="viewEmail"></span></p>
@@ -693,8 +693,8 @@
                         <p><strong>Remarks:</strong> <span id="viewRemarks"></span></p>
                     </div> -->
 
-                    <!-- Items Table -->
-                    <!-- <h4>Petrol Items</h4>
+            <!-- Items Table -->
+            <!-- <h4>Petrol Items</h4>
                     <table>
                         <thead>
                             <tr>
@@ -708,8 +708,8 @@
                         <tbody id="petrolItemsTableBody"></tbody>
                     </table> -->
 
-                    <!-- Approve / Reject Buttons -->
-                    <!-- <button id="approveBtn" class="approve-btn" id="approveBtn">Approve</button>
+            <!-- Approve / Reject Buttons -->
+            <!-- <button id="approveBtn" class="approve-btn" id="approveBtn">Approve</button>
                     <button id="rejectBtn" class="cancel-btn" id="rejectBtn">Reject</button>
                     <p id="approvalMessage" style="display:none; color:red; font-weight: bold; margin-top: 10px;"></p>
                 </div>
@@ -1119,6 +1119,8 @@
 
             </script>
             <script>
+                let currentLoginType = "normal";
+
                 fetch("/api/auth/session-check", {
                     credentials: "include"
                 })
@@ -1128,6 +1130,9 @@
                             // Not logged in → go to login
                             window.location.href = "index.html";
                         } else {
+
+                            currentLoginType = data.user.loginType || "normal";
+
                             document.getElementById("userName").textContent = data.user.name;
                             sessionStorage.setItem("user_id", data.user.user_id);
 
@@ -1174,7 +1179,13 @@
                                         });
 
                                         setTimeout(() => {
-                                            window.location.href = "index.html"; // Redirect to login
+
+                                            if (currentLoginType === "accounts") {
+                                                window.location.href = "accounts-login.html";
+                                            } else {
+                                                window.location.href = "index.html";
+                                            }
+
                                         }, 2000);
                                     } else {
                                         Swal.fire("Oops!", "Logout failed. Try again.", "error");

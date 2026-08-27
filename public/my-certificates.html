@@ -422,6 +422,9 @@
                 });
             }
         }
+
+        let currentLoginType = "normal";
+
         // session check remains same
         fetch("/api/auth/session-check", {
             method: "GET",
@@ -434,6 +437,8 @@
                     window.location.href = "index.html";
                     return;
                 }
+                // logout functionality 
+                currentLoginType = data.user.loginType || "normal";
 
                 // ✅ Username
                 document.getElementById("userName").textContent = data.user.name;
@@ -653,7 +658,13 @@
                                 });
 
                                 setTimeout(() => {
-                                    window.location.href = "index.html"; // Redirect to login
+
+                                    if (currentLoginType === "accounts") {
+                                        window.location.href = "accounts-login.html";
+                                    } else {
+                                        window.location.href = "index.html";
+                                    }
+
                                 }, 2000);
                             } else {
                                 Swal.fire("Oops!", "Logout failed. Try again.", "error");

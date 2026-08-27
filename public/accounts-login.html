@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worklife - Accounts Department Login</title>
+    <meta name="description" content="Sign in to Worklife Accounts and Finance Portal">
+
+    <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* ==========================================================================
+       DESIGN SYSTEM & COLOR THEME (Dashboard: Teal / White / Dark Slate / Coral)
+       ========================================================================== */
+        :root {
+            /* Primary Theme Colors extracted from Worklife Dashboard */
+            --primary-teal: #136371;
+            --primary-teal-dark: #0d4b56;
+            --primary-teal-light: #1b7a8a;
+            --primary-teal-soft: #eaf4f6;
+
+            /* Accent Warm Coral / Orange */
+            --accent-coral: #eb683f;
+            --accent-coral-hover: #d95328;
+            --accent-coral-soft: rgba(235, 104, 63, 0.12);
+
+            /* Neutrals: Black, Slate & Pure White */
+            --dark-slate: #111b21;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --bg-page: #f0f7f8;
+            --bg-card: #ffffff;
+            --border-subtle: #e2ecef;
+            --input-line: #cbd5e1;
+            --input-line-active: #136371;
+
+            /* Art & Botanical Illustration Colors */
+            --shape-bg: #e2f0f2;
+            --leaf-left-color: #a8d5db;
+            --leaf-right-color: #bfe5ea;
+            --leaf-center-color: #8cc3cb;
+            --leaf-stem-color: #164e59;
+            --stem-dark: #0f373e;
+            --pot-color: #eb683f;
+            --pot-rim-color: #d6552b;
+
+            /* Elevations & Shadows */
+            --shadow-card: 0 20px 45px -15px rgba(19, 99, 113, 0.15), 0 0 1px 1px rgba(19, 99, 113, 0.05);
+            --shadow-btn: 0 8px 20px -4px rgba(235, 104, 63, 0.4);
+            --shadow-btn-hover: 0 12px 24px -4px rgba(235, 104, 63, 0.5);
+
+            /* Typography */
+            --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+            /* Transitions */
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Dark Mode Overrides */
+        [data-theme="dark"] {
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-light: #64748b;
+            --bg-page: #0a171a;
+            --bg-card: #102328;
+            --border-subtle: #1c3c44;
+            --input-line: #2d555f;
+            --input-line-active: #2dd4bf;
+
+            --shape-bg: #15333a;
+            --leaf-left-color: #27626d;
+            --leaf-right-color: #327b89;
+            --leaf-center-color: #3e98a8;
+            --leaf-stem-color: #82d8e5;
+            --stem-dark: #a5ebf5;
+
+            --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            --primary-teal-soft: rgba(19, 99, 113, 0.3);
+        }
+
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+            transition: background-color var(--transition-smooth), color var(--transition-smooth);
+        }
+
+        /* Ambient background blobs */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.45;
+            transition: all 1s ease;
+            animation: floatBlobs 18s ease-in-out infinite alternate;
+        }
+
+        .blob-1 {
+            width: 480px;
+            height: 480px;
+            background: radial-gradient(circle, rgba(19, 99, 113, 0.25) 0%, rgba(19, 99, 113, 0) 70%);
+            top: -10%;
+            left: -5%;
+        }
+
+        .blob-2 {
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, rgba(235, 104, 63, 0.15) 0%, rgba(235, 104, 63, 0) 70%);
+            bottom: -15%;
+            right: -5%;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(45, 212, 191, 0.18) 0%, rgba(45, 212, 191, 0) 70%);
+            top: 40%;
+            right: 25%;
+            animation-delay: -10s;
+        }
+
+        .blob-4 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(19, 99, 113, 0.12) 0%, rgba(19, 99, 113, 0) 70%);
+            bottom: 10%;
+            left: 20%;
+            animation-delay: -14s;
+        }
+
+        @keyframes floatBlobs {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(30px, -25px) scale(1.08);
+            }
+
+            100% {
+                transform: translate(-20px, 35px) scale(0.95);
+            }
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2.5rem;
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            background: var(--primary-teal);
+            color: #ffffff;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            font-size: 0.95rem;
+            padding: 0.35rem 0.55rem;
+            border-radius: 6px;
+            letter-spacing: -0.5px;
+            box-shadow: 0 2px 6px rgba(19, 99, 113, 0.25);
+        }
+
+        .brand-name {
+            font-family: var(--font-heading);
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text-main);
+        }
+
+        .dept-tag {
+            background: var(--primary-teal-soft);
+            color: var(--primary-teal);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            border: 1px solid rgba(19, 99, 113, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        [data-theme="dark"] .dept-tag {
+            color: #5eead4;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .lang-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .lang-selector:hover {
+            border-color: var(--primary-teal);
+            color: var(--text-main);
+        }
+
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all var(--transition-fast);
+        }
+
+        .theme-toggle:hover {
+            color: var(--primary-teal);
+            border-color: var(--primary-teal);
+            transform: translateY(-1px);
+        }
+
+        /* Main Login Card Layout */
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border-radius: 28px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-subtle);
+            width: 100%;
+            max-width: 960px;
+            min-height: 500px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+            transition: box-shadow var(--transition-smooth), transform var(--transition-smooth);
+            animation: cardFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Left Panel - Botanical / Fluid Art */
+        .illustration-panel {
+            background: linear-gradient(145deg, rgba(240, 247, 248, 0.7) 0%, rgba(226, 240, 242, 0.4) 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2.5rem;
+            border-right: 1px solid var(--border-subtle);
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .illustration-panel {
+            background: linear-gradient(145deg, rgba(16, 35, 40, 0.9) 0%, rgba(13, 27, 31, 0.6) 100%);
+        }
+
+        .art-backdrop {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .organic-shape {
+            position: absolute;
+            width: 115%;
+            height: 115%;
+            top: -8%;
+            left: -8%;
+            pointer-events: none;
+            z-index: 1;
+            transition: fill var(--transition-smooth);
+        }
+
+        .botanical-art {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 270px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .plant-svg {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 12px 24px rgba(19, 99, 113, 0.08));
+        }
+
+        /* Swaying leaf animations */
+        .leaf-left {
+            transform-origin: 160px 270px;
+            animation: leafSwayLeft 5s ease-in-out infinite alternate;
+        }
+
+        .leaf-right {
+            transform-origin: 160px 270px;
+            animation: leafSwayRight 6s ease-in-out infinite alternate;
+        }
+
+        .leaf-center {
+            transform-origin: 160px 270px;
+            animation: leafSwayCenter 7s ease-in-out infinite alternate;
+        }
+
+        @keyframes leafSwayLeft {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(-3deg) scale(1.02);
+            }
+        }
+
+        @keyframes leafSwayRight {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(3.5deg) scale(1.01);
+            }
+        }
+
+        @keyframes leafSwayCenter {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(-1.5deg) scale(1.03);
+            }
+        }
+
+        .status-chip {
+            position: absolute;
+            bottom: 6px;
+            background: var(--bg-card);
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-teal);
+            box-shadow: 0 4px 12px rgba(19, 99, 113, 0.08);
+            z-index: 3;
+        }
+
+        [data-theme="dark"] .status-chip {
+            color: #5eead4;
+        }
+
+        .chip-pulse {
+            width: 7px;
+            height: 7px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulseGreen 2s infinite;
+        }
+
+        @keyframes pulseGreen {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .illustration-footer {
+            margin-top: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .dept-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .feature-item {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-item i {
+            color: var(--primary-teal);
+            font-size: 0.8rem;
+        }
+
+        /* Right Panel - Clean Minimalist Login Form */
+        .form-panel {
+            padding: 3.8rem 3.4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .form-header {
+            margin-bottom: 2.4rem;
+        }
+
+        .login-title {
+            font-family: var(--font-heading);
+            font-weight: 300;
+            font-size: 2.75rem;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+            margin-bottom: 0.4rem;
+            line-height: 1.15;
+        }
+
+        .login-subtitle {
+            font-size: 0.86rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Clean Underline Input Form */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-bottom: 0.4rem;
+        }
+
+        .clean-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: var(--font-body);
+            font-size: 0.98rem;
+            color: var(--text-main);
+            padding: 0.4rem 2rem 0.4rem 0;
+            outline: none;
+            letter-spacing: 0.2px;
+            transition: color var(--transition-fast);
+        }
+
+        .clean-input::placeholder {
+            color: var(--text-light);
+            font-weight: 300;
+            opacity: 0.85;
+        }
+
+        #passwordInput::placeholder {
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+        }
+
+        /* Underline animated line */
+        .input-line {
+            position: relative;
+            width: 100%;
+            height: 1.5px;
+            background-color: var(--input-line);
+            transition: background-color var(--transition-fast);
+            overflow: hidden;
+        }
+
+        .input-line::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-teal);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-smooth), background-color var(--transition-smooth);
+        }
+
+        [data-theme="dark"] .input-line::after {
+            background-color: #2dd4bf;
+        }
+
+        .clean-input:focus~.input-line::after,
+        .input-group.focused .input-line::after {
+            transform: scaleX(1);
+        }
+
+        .input-group.has-success .input-line::after {
+            background-color: #10b981;
+            transform: scaleX(1);
+        }
+
+        .input-group.has-error .input-line::after {
+            background-color: #ef4444;
+            transform: scaleX(1);
+        }
+
+        .input-indicator {
+            position: absolute;
+            right: 4px;
+            color: #10b981;
+            font-size: 0.95rem;
+            opacity: 0;
+            transform: scale(0.6);
+            transition: all var(--transition-fast);
+            pointer-events: none;
+        }
+
+        .input-group.has-success .input-indicator {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Disable native browser password reveal eye icon (Edge / Chrome / Windows) */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none !important;
+        }
+
+        input[type="password"]::-webkit-credentials-auto-fill-button {
+            visibility: hidden;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 4px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color var(--transition-fast);
+            z-index: 2;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary-teal);
+        }
+
+        .error-text {
+            font-size: 0.74rem;
+            color: #ef4444;
+            margin-top: 0.35rem;
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: all var(--transition-fast);
+            height: 0;
+            overflow: hidden;
+        }
+
+        .input-group.has-error .error-text {
+            opacity: 1;
+            transform: translateY(0);
+            height: auto;
+        }
+
+        /* Submit Button (Pill shaped, labeled Login) */
+        .submit-wrap {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, var(--accent-coral) 0%, #e05b32 100%);
+            color: #ffffff;
+            border: none;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.8rem 3.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: var(--shadow-btn);
+            transition: all var(--transition-smooth);
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            min-width: 150px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-btn-hover);
+            background: linear-gradient(135deg, #f2734b 0%, var(--accent-coral) 100%);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-spinner {
+            display: none;
+        }
+
+        .login-btn.loading .btn-text {
+            opacity: 0.7;
+        }
+
+        .login-btn.loading .btn-spinner {
+            display: inline-block;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-left: 4px solid var(--primary-teal);
+            padding: 0.9rem 1.2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 280px;
+            max-width: 380px;
+            animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .toast.success {
+            border-left-color: #10b981;
+        }
+
+        .toast.error {
+            border-left-color: #ef4444;
+        }
+
+        .toast-icon {
+            font-size: 1.1rem;
+        }
+
+        .toast.success .toast-icon {
+            color: #10b981;
+        }
+
+        .toast.error .toast-icon {
+            color: #ef4444;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .toast-desc {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ==========================================================================
+       RESPONSIVE DESIGN BREAKPOINTS (Mobile, Tablet, Laptop, Desktop)
+       ========================================================================== */
+
+        /* Small Laptops & Tablets Landscape (900px - 1100px) */
+        @media (max-width: 1024px) {
+            .login-card {
+                max-width: 860px;
+                min-height: 460px;
+            }
+
+            .form-panel {
+                padding: 3rem 2.5rem;
+            }
+
+            .illustration-panel {
+                padding: 2rem;
+            }
+        }
+
+        /* Tablets Portrait (768px - 899px) */
+        @media (max-width: 899px) {
+            .top-nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .login-card {
+                grid-template-columns: 1fr;
+                max-width: 480px;
+                min-height: auto;
+            }
+
+            .illustration-panel {
+                display: none;
+                /* Focus squarely on minimal login on tablets & phones */
+            }
+
+            .form-panel {
+                padding: 3rem 2.2rem;
+            }
+        }
+
+        /* Mobile Devices (320px - 640px) */
+        @media (max-width: 640px) {
+            .top-nav {
+                padding: 0.85rem 1rem;
+            }
+
+            .brand-name {
+                font-size: 1.15rem;
+            }
+
+            .dept-tag {
+                display: none;
+            }
+
+            .login-wrapper {
+                padding: 1rem;
+            }
+
+            .login-card {
+                border-radius: 20px;
+                max-width: 100%;
+            }
+
+            .form-panel {
+                padding: 2.2rem 1.5rem;
+            }
+
+            .login-title {
+                font-size: 2.2rem;
+            }
+
+            .login-btn {
+                width: 100%;
+            }
+
+            .toast-container {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem;
+            }
+
+            .toast {
+                min-width: unset;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Ambient background decorative blobs matching dashboard colors -->
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+    </div>
+
+    <!-- Top Navigation / Brand Bar -->
+    <header class="top-nav">
+        <div class="brand">
+            <div class="brand-logo">
+                <span class="logo-icon">WL</span>
+                <span class="brand-name">Worklife</span>
+            </div>
+            <span class="dept-tag"><i class="fa-solid fa-calculator"></i> Accounts & Finance</span>
+        </div>
+        <div class="nav-actions">
+            <div class="lang-selector">
+                <i class="fa-solid fa-globe"></i>
+                <span>English</span>
+                <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem; margin-left: 4px;"></i>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+                <i class="fa-regular fa-moon" id="themeIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Login Card Container -->
+    <main class="login-wrapper">
+        <div class="login-card" id="loginCard">
+
+            <!-- Left Illustration Panel -->
+            <div class="illustration-panel">
+                <div class="art-backdrop">
+                    <!-- Fluid organic shapes -->
+                    <svg class="organic-shape" viewBox="0 0 400 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M78.6,356.5 C-12.8,312.2 -22.4,185.7 54.2,102.3 C130.8,18.9 293.6,-21.4 354.8,58.7 C416,138.8 375.6,339.3 298.2,392.2 C220.8,445.1 170,400.8 78.6,356.5 Z"
+                            fill="var(--shape-bg)" />
+                    </svg>
+
+                    <div class="botanical-art">
+                        <!-- Plant & Minimalist Growth Art in Teal/Slate/White Palette -->
+                        <svg class="plant-svg" viewBox="0 0 320 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Shadow below pot -->
+                            <ellipse cx="160" cy="340" rx="46" ry="10" fill="rgba(14, 96, 107, 0.12)" />
+
+                            <!-- Growth Leaves - Matching Image 1 aesthetics in Teal/Slate Blue tone -->
+                            <!-- Left Leaf 1 -->
+                            <path class="leaf leaf-left"
+                                d="M160 270 C110 240 70 180 80 120 C95 100 135 125 150 160 C158 180 159 230 160 270 Z"
+                                fill="var(--leaf-left-color)" />
+                            <!-- Leaf veins -->
+                            <path d="M160 270 Q120 180 85 125" stroke="var(--leaf-stem-color)" stroke-width="2.5"
+                                stroke-linecap="round" fill="none" />
+                            <path d="M135 210 Q110 190 95 185" stroke="var(--leaf-stem-color)" stroke-width="2"
+                                stroke-linecap="round" fill="none" />
+                            <path d="M148 175 Q125 155 110 150" stroke="var(--leaf-stem-color)" stroke-width="2"
+                                stroke-linecap="round" fill="none" />
+
+                            <!-- Right Leaf 2 -->
+                            <path class="leaf leaf-right"
+                                d="M160 270 C210 240 250 180 240 120 C225 100 185 125 170 160 C162 180 161 230 160 270 Z"
+                                fill="var(--leaf-right-color)" />
+                            <!-- Right leaf veins -->
+                            <path d="M160 270 Q200 180 235 125" stroke="var(--leaf-stem-color)" stroke-width="2.5"
+                                stroke-linecap="round" fill="none" />
+                            <path d="M185 210 Q210 190 225 185" stroke="var(--leaf-stem-color)" stroke-width="2"
+                                stroke-linecap="round" fill="none" />
+                            <path d="M172 175 Q195 155 210 150" stroke="var(--leaf-stem-color)" stroke-width="2"
+                                stroke-linecap="round" fill="none" />
+
+                            <!-- Center Tall Leaf -->
+                            <path class="leaf leaf-center"
+                                d="M160 270 C130 190 120 100 160 50 C200 100 190 190 160 270 Z"
+                                fill="var(--leaf-center-color)" />
+                            <path d="M160 270 L160 58" stroke="var(--leaf-stem-color)" stroke-width="2.5"
+                                stroke-linecap="round" fill="none" />
+                            <path d="M160 190 Q140 170 135 155" stroke="var(--leaf-stem-color)" stroke-width="2"
+                                stroke-linecap="round" fill="none" />
+                            <path d="M160 190 Q180 170 185 155" stroke="var(--leaf-stem-color)" stroke-width="2"
+                                stroke-linecap="round" fill="none" />
+                            <path d="M160 135 Q145 118 140 105" stroke="var(--leaf-stem-color)" stroke-width="2"
+                                stroke-linecap="round" fill="none" />
+                            <path d="M160 135 Q175 118 180 105" stroke="var(--leaf-stem-color)" stroke-width="2"
+                                stroke-linecap="round" fill="none" />
+
+                            <!-- Main Stems / Branch lines -->
+                            <path d="M160 280 L160 270" stroke="var(--stem-dark)" stroke-width="4"
+                                stroke-linecap="round" />
+
+                            <!-- Minimalist Modern Planter Pot with Dashboard Teal/Coral Accent -->
+                            <path
+                                d="M125 285 H195 L188 335 C187 340 182 344 177 344 H143 C138 344 133 340 132 335 L125 285 Z"
+                                fill="var(--pot-color)" />
+                            <!-- Pot Rim -->
+                            <rect x="120" y="277" width="80" height="12" rx="4" fill="var(--pot-rim-color)" />
+                            <!-- Soil -->
+                            <ellipse cx="160" cy="279" rx="36" ry="4" fill="#082b31" opacity="0.6" />
+                        </svg>
+                    </div>
+
+                    <!-- Subtle floating badge indicator -->
+                    <div class="status-chip">
+                        <span class="chip-pulse"></span>
+                        <span class="chip-text">Secure Accounts Gateway</span>
+                    </div>
+                </div>
+
+                <!-- Left Footer info -->
+                <div class="illustration-footer">
+                    <div class="dept-features">
+                        <span class="feature-item"><i class="fa-solid fa-receipt"></i> Expense & Petrol Claims</span>
+                        <span class="feature-item"><i class="fa-solid fa-file-invoice-dollar"></i> Incentives &
+                            Salary</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Form Panel -->
+            <div class="form-panel">
+
+                <div class="form-header">
+                    <h1 class="login-title">Login</h1>
+                    <p class="login-subtitle">Enter your corporate credentials to access your accounts dashboard</p>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" novalidate>
+
+                    <!-- Email / Username Input -->
+                    <div class="input-group" id="emailGroup">
+                        <div class="input-container">
+                            <input type="email" id="emailInput" class="clean-input" placeholder="yourmail@worklife.com"
+                                autocomplete="email" required>
+                            <div class="input-indicator" id="emailIndicator">
+                                <i class="fa-regular fa-circle-check check-icon"></i>
+                            </div>
+                        </div>
+                        <div class="input-line"></div>
+                        <span class="error-text" id="emailError">Please enter a valid work email</span>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="input-group" id="passwordGroup">
+                        <div class="input-container">
+                            <input type="password" id="passwordInput" class="clean-input" placeholder="••••••••••••"
+                                autocomplete="current-password" required>
+                            <button type="button" class="toggle-password" id="togglePassword"
+                                aria-label="Show or hide password" tabindex="-1">
+                                <i class="fa-regular fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <div class="input-line"></div>
+                        <span class="error-text" id="passwordError">Password must be at least 6 characters</span>
+                    </div>
+
+                    <!-- Login Button -->
+                    <div class="submit-wrap">
+                        <button type="submit" class="login-btn" id="loginBtn">
+                            <span class="btn-text">Login</span>
+                            <span class="btn-spinner" id="btnSpinner"><i
+                                    class="fa-solid fa-circle-notch fa-spin"></i></span>
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Notification Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        /**
+         * Worklife - Accounts Department Login Script
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elements
+            const loginForm = document.getElementById('loginForm');
+            const emailInput = document.getElementById('emailInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const emailGroup = document.getElementById('emailGroup');
+            const passwordGroup = document.getElementById('passwordGroup');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const togglePassword = document.getElementById('togglePassword');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const loginBtn = document.getElementById('loginBtn');
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const toastContainer = document.getElementById('toastContainer');
+
+            // --- Email Validation ---
+            const isValidEmail = (email) => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email.trim());
+            };
+
+            // --- Live Validation Listeners ---
+            emailInput.addEventListener('input', () => {
+                const val = emailInput.value.trim();
+                if (val.length === 0) {
+                    emailGroup.classList.remove('has-success', 'has-error');
+                    emailError.style.display = 'none';
+                } else if (isValidEmail(val)) {
+                    emailGroup.classList.add('has-success');
+                    emailGroup.classList.remove('has-error');
+                    emailError.style.display = 'none';
+                } else {
+                    emailGroup.classList.remove('has-success');
+                    if (val.length > 5 && val.includes('@')) {
+                        emailGroup.classList.add('has-error');
+                        emailError.style.display = 'block';
+                    }
+                }
+            });
+
+            emailInput.addEventListener('blur', () => {
+                const val = emailInput.value.trim();
+                if (val.length > 0 && !isValidEmail(val)) {
+                    emailGroup.classList.add('has-error');
+                    emailGroup.classList.remove('has-success');
+                    emailError.style.display = 'block';
+                }
+            });
+
+            passwordInput.addEventListener('input', () => {
+                const val = passwordInput.value;
+                if (val.length >= 6) {
+                    passwordGroup.classList.remove('has-error');
+                    passwordError.style.display = 'none';
+                }
+            });
+
+            // --- Toggle Password Visibility ---
+            togglePassword.addEventListener('click', () => {
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                if (isPassword) {
+                    passwordInput.setAttribute('type', 'text');
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.setAttribute('type', 'password');
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                }
+            });
+
+
+
+
+
+            // --- Form Submit Handler ---
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                let valid = true;
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                // Validate email
+                if (!isValidEmail(email)) {
+                    emailGroup.classList.add('has-error');
+                    emailGroup.classList.remove('has-success');
+                    emailError.style.display = 'block';
+                    valid = false;
+                }
+
+                // Validate password
+                if (!password) {
+                    passwordGroup.classList.add('has-error');
+                    passwordError.style.display = 'block';
+                    valid = false;
+                }
+
+                if (!valid) return;
+
+                // Loading state
+                loginBtn.classList.add('loading');
+                loginBtn.disabled = true;
+
+                try {
+
+                    // Default values for Accounts login
+                    const company = "1";
+                    const role = "4";
+
+                    const response = await fetch("/api/auth/login", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            company,
+                            role,
+                            email,
+                            password,
+                            loginType: "accounts"
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    console.log("Accounts Login Response:", data);
+
+                    if (data.success) {
+
+                        localStorage.setItem("loginType", "accounts");
+
+                        showToast(
+                            'success',
+                            'Login Successful',
+                            'Welcome back! Redirecting...'
+                        );
+
+                        const roleId = Number(
+                            data.user?.roleId || data.roleId
+                        );
+
+                        setTimeout(() => {
+
+                            if (roleId === 4) {
+                                window.location.replace("employee-dashboard.html");
+                            } else {
+                                window.location.replace("dashboard.html");
+                            }
+
+                        }, 1000);
+
+                    } else {
+
+                        showToast(
+                            'error',
+                            'Login Failed',
+                            data.message || 'Invalid email or password.'
+                        );
+
+                        loginBtn.classList.remove('loading');
+                        loginBtn.disabled = false;
+                    }
+
+                } catch (error) {
+
+                    console.error("Login error:", error);
+
+                    showToast(
+                        'error',
+                        'Server Error',
+                        'Unable to connect to the server. Please try again.'
+                    );
+
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                }
+            });
+
+
+
+
+
+            // --- Theme Toggle ---
+            const savedTheme = localStorage.getItem('worklife-theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                if (isDark) {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('worklife-theme', 'light');
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('worklife-theme', 'dark');
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                }
+            });
+
+            // --- Toast Notification System ---
+            function showToast(type, title, desc) {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+
+                const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+
+                toast.innerHTML = `
+          <i class="fa-solid ${icon} toast-icon"></i>
+          <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-desc">${desc}</div>
+          </div>
+        `;
+
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.animation = 'toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) reverse forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3500);
+            }
+        });
+    </script>
+</body>
+
+</html>

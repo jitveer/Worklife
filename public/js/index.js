@@ -67,6 +67,9 @@ document.getElementById("CompanyLoginForm").addEventListener("submit", function 
     .then(res => res.json())
     .then(data => {
       if (data.success) {
+
+        localStorage.setItem("loginType", "normal");
+
         Toastify({
           text: "Login successful!",
           duration: 3000,
@@ -79,7 +82,7 @@ document.getElementById("CompanyLoginForm").addEventListener("submit", function 
 
         const roleId = data.user?.roleId || data.roleId;
         setTimeout(() => {
-         if (roleId === 4) {
+          if (roleId === 4) {
             // Employee
             window.location.replace("employee-dashboard.html");
           } else {
@@ -122,7 +125,7 @@ fetch("/api/auth/session-check", {
   .then(data => {
     if (data.loggedIn) {
 
-         const roleId = data.user?.roleId || data.roleId;
+      const roleId = data.user?.roleId || data.roleId;
 
       if (roleId === 4) {
         window.location.replace("employee-dashboard.html");

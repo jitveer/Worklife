@@ -1,3 +1,5 @@
+let currentLoginType = "normal";
+
 document.addEventListener("DOMContentLoaded", async function () {
 
   const res = await fetch("/api/auth/session-check", {
@@ -11,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     return;
   }
 
+  currentLoginType = data.user.loginType || "normal";
   const roleId = data.user.roleId;
   const currentPage = window.location.pathname.split("/").pop();
 
@@ -527,7 +530,13 @@ function logoutUser() {
             });
 
             setTimeout(() => {
-              window.location.href = "index.html";
+
+              if (currentLoginType === "accounts") {
+                window.location.href = "accounts-login.html";
+              } else {
+                window.location.href = "index.html";
+              }
+
             }, 2000);
           } else {
             Swal.fire("Oops!", "Logout failed. Try again.", "error");
