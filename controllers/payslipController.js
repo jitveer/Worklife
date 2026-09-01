@@ -338,6 +338,41 @@ exports.getEmployeePayslipDetails = (req, res) => {
 
 
 
+// =======================================================
+// FETCH LATEST SENT PAYSLIP
+// =======================================================
+exports.getLatestPayslip = (req, res) => {
+
+    const emp_id = req.params.emp_id;
+
+    const sql = `
+        SELECT *
+        FROM payslips
+        WHERE emp_id = ?
+        ORDER BY updated_at DESC, id DESC
+        LIMIT 1
+    `;
+
+    db.query(sql, [emp_id], (err, result) => {
+
+        if (err) {
+            console.error("LATEST PAYSLIP FETCH ERROR:", err);
+
+            return res.status(500).json({
+                message: "Failed to fetch latest payslip"
+            });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({
+                message: "No previous payslip found for this employee"
+            });
+        }
+
+        res.json(result[0]);
+    });
+};
+
 
 
 

@@ -38,6 +38,7 @@ const interviewRoutes = require("./routes/interviewRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const pushRoutes = require("./routes/pushRoutes");
 const payslipRoutes = require("./routes/payslipRoutes");
+const officeAssetsRoutes = require("./routes/officeAssetsRoutes");
 
 // uploads
 global.appRoot = path.resolve(__dirname, "public");
@@ -225,6 +226,8 @@ app.use("/attendance", attendanceRoutes);
 // push notification
 app.use("/api/push", pushRoutes);
 app.use("/api/payslip", payslipRoutes);
+// Office Assets 
+app.use("/api/office-assets", officeAssetsRoutes);
 // payslip logo inside pdf
 app.use("/images", express.static("public/images"));
 

@@ -38,6 +38,22 @@ document.addEventListener("DOMContentLoaded", async function () {
     nameEl.textContent = data.user.name;
   }
 
+
+//--------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------
+
+// Show approval/list links only for Prema's employee ID
+const premaOnlyLinks = document.querySelectorAll(".prema-only");
+
+if (data.user.employee_id === "EMP0013") {
+    premaOnlyLinks.forEach(link => {
+        link.style.display = "flex";
+    });
+}
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+
   userRole = roleId;
   loadNotifications(data.user.email, roleId);
   loadCalendar();

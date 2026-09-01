@@ -331,62 +331,81 @@ exports.updatePetrolApproval = (req, res) => {
               if (errN) return res.status(500).json({ error: errN.message });
 
               if (approverRows.length > 0) {
-                //  Insert next level approvers
-                const insertSql = `
+
+                // GET REQUESTER NAME
+                const requesterNameSql = `
+                SELECT CONCAT(e.first_name, ' ', e.last_name) AS full_name
+                FROM petrol_claim pc
+                JOIN employees e ON pc.requester_id = e.id
+                WHERE pc.req_no = ?
+                `;
+
+                db.query(requesterNameSql, [req_no], (nameErr, nameResult) => {
+
+                  if (nameErr) {
+                    return res.status(500).json({ error: nameErr.message });
+                  }
+
+                  const requesterName = nameResult[0]?.full_name || "Requester";
+
+
+                  //  Insert next level approvers
+                  const insertSql = `
               INSERT INTO petrol_approvals (req_no, petrol_claim_id, approver_id, level, status)
               VALUES (?, (SELECT id FROM petrol_claim WHERE req_no = ?), ?, ?, 'Pending')
             `;
 
-                approverRows.forEach((row) => {
-                  db.query(insertSql, [req_no, req_no, row.approver_user_id, nextLevel], (errInsert) => {
-                    if (errInsert) console.error("Error inserting next approver:", errInsert);
+                  approverRows.forEach((row) => {
+                    db.query(insertSql, [req_no, req_no, row.approver_user_id, nextLevel], (errInsert) => {
+                      if (errInsert) console.error("Error inserting next approver:", errInsert);
 
-                    const msg = `New Petrol Claim ${req_no} requires your approval`;
-                    const link = `/petrol-request-approval.html?reqNo=${req_no}`;
+                      const msg = `${requesterName} submitted a petrol claim for your approval`;
+                      const link = `/petrol-request-approval.html?reqNo=${req_no}`;
 
-                    db.query(`SELECT email FROM users WHERE id = ?`, [row.approver_user_id], (eErr, eRes) => {
-                      if (!eErr && eRes?.length > 0) {
-                        const email = eRes[0].email;
-                        db.query(`
+                      db.query(`SELECT email FROM users WHERE id = ?`, [row.approver_user_id], (eErr, eRes) => {
+                        if (!eErr && eRes?.length > 0) {
+                          const email = eRes[0].email;
+                          db.query(`
                       INSERT INTO notifications (email, message, link, status, created_at, updated_at)
                       VALUES (?, ?, ?, 'unread', NOW(), NOW())
                     `, [email, msg, link],
-                          (err) => {
-                            if (!err) {
-                              sendNotificationToUser(email, msg, link); // ✅ ADD THIS
+                            (err) => {
+                              if (!err) {
+                                sendNotificationToUser(email, msg, link); // ✅ ADD THIS
+                              }
                             }
-                          }
-                        );
-                      }
+                          );
+                        }
+                      });
                     });
                   });
-                });
 
-                // Notify requester that claim is still under process
-                const getRequester = `SELECT requester_id FROM petrol_claim WHERE req_no = ?`;
-                db.query(getRequester, [req_no], (errR, requesterResult) => {
-                  if (!errR && requesterResult?.length > 0) {
-                    const requesterId = requesterResult[0].requester_id;
-                    db.query(`SELECT email FROM employees WHERE id = ?`, [requesterId], (errE, emailRes) => {
-                      if (!errE && emailRes?.length > 0) {
-                        const requesterEmail = emailRes[0].email;
-                        const msg = `Your petrol claim is under process`;
-                        const link = `/mypetrol.html?reqNo=${req_no}`;
-                        db.query(`UPDATE notifications SET message=?, updated_at=NOW() WHERE email=? AND link=?`,
-                          [msg, requesterEmail, link],
-                          (err) => {
-                            if (!err) {
-                              sendNotificationToUser(requesterEmail, msg, link); // ✅ ADD THIS
+                  // Notify requester that claim is still under process
+                  const getRequester = `SELECT requester_id FROM petrol_claim WHERE req_no = ?`;
+                  db.query(getRequester, [req_no], (errR, requesterResult) => {
+                    if (!errR && requesterResult?.length > 0) {
+                      const requesterId = requesterResult[0].requester_id;
+                      db.query(`SELECT email FROM employees WHERE id = ?`, [requesterId], (errE, emailRes) => {
+                        if (!errE && emailRes?.length > 0) {
+                          const requesterEmail = emailRes[0].email;
+                          const msg = `Your petrol claim is under process`;
+                          const link = `/mypetrol.html?reqNo=${req_no}`;
+                          db.query(`UPDATE notifications SET message=?, updated_at=NOW() WHERE email=? AND link=?`,
+                            [msg, requesterEmail, link],
+                            (err) => {
+                              if (!err) {
+                                sendNotificationToUser(requesterEmail, msg, link); // ✅ ADD THIS
+                              }
                             }
-                          }
-                        );
-                      }
-                    });
-                  }
+                          );
+                        }
+                      });
+                    }
+                  });
+
+                  return res.status(200).json({ message: "Next level approvers notified" });
                 });
-
-                return res.status(200).json({ message: "Next level approvers notified" });
-
+                
               } else {
                 //  Fully approved
                 db.query(`UPDATE petrol_claim SET status='Approved' WHERE req_no=?`, [req_no]);

@@ -820,6 +820,34 @@
         }
 
 
+
+
+        /* =========================================================
+         fetch latest data button
+        ========================================================= */
+        .fetch-latest-btn {
+            background: #2f8f6b;
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .fetch-latest-btn:hover {
+            background: #247456;
+            transform: translateY(-1px);
+        }
+
+        .fetch-latest-btn:active {
+            transform: scale(0.96);
+        }
+
+
         /* =========================================================
    AMOUNT IN WORDS
 ========================================================= */
@@ -2383,6 +2411,215 @@
 
 
 
+
+
+    // =======================================================
+    // FETCH LATEST SENT PAYSLIP
+    // =======================================================
+    async function fetchLatestPayslip(empId) {
+
+        try {
+
+            const res = await fetch(`/api/payslip/latest/${empId}`);
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.message || "No previous payslip found");
+                return;
+            }
+
+            console.log("LATEST PAYSLIP:", data);
+
+            // Store employee ID
+            window.selectedEmpId = empId;
+
+            // Open popup
+            document.getElementById("paySlipModal").style.display = "flex";
+
+
+            // =================================================
+            // EMPLOYEE INFORMATION
+            // =================================================
+
+            document.getElementById("psCompanyName").value =
+                data.company_name || "MNM REALITY PRIVATE LIMITED";
+
+            document.getElementById("psName").value =
+                data.employee_name || "";
+
+            document.getElementById("psEmpCode").value =
+                data.employee_code || "";
+
+            document.getElementById("psDesignation").value =
+                data.designation || "";
+
+            document.getElementById("psDepartment").value =
+                data.department || "";
+
+            document.getElementById("psPan").value =
+                data.pan || "";
+
+            document.getElementById("psBank").value =
+                data.bank_name || "";
+
+            document.getElementById("psAccount").value =
+                data.bank_account_number || "";
+
+            document.getElementById("psPfAccount").value =
+                data.pf_account_number || "";
+
+            document.getElementById("psUan").value =
+                data.uan || "";
+
+
+            // =================================================
+            // DOJ
+            // =================================================
+
+            if (data.date_of_joining) {
+
+                const doj = new Date(data.date_of_joining);
+
+                document.getElementById("psDoj").value =
+                    doj.toLocaleDateString();
+
+            } else {
+
+                document.getElementById("psDoj").value = "";
+
+            }
+
+
+            // =================================================
+            // PAY PERIOD
+            // =================================================
+
+            document.getElementById("psMonth").value =
+                data.pay_period || "";
+
+            document.getElementById("psPayPeriod").value =
+                data.pay_period || "";
+
+
+            // =================================================
+            // WORK DETAILS
+            // =================================================
+
+            document.getElementById("psWorkingDays").value =
+                data.total_working_days ?? "";
+
+            document.getElementById("psPaidDays").value =
+                data.working_days_attended ?? "";
+
+            document.getElementById("psLopDays").value =
+                data.lop ?? 0;
+
+
+            // =================================================
+            // LEAVES
+            // =================================================
+
+            document.getElementById("psLeavesTaken").value =
+                data.leaves_taken ?? 0;
+
+            document.getElementById("psSL").value =
+                data.sl ?? 0;
+
+            document.getElementById("psPL").value =
+                data.pl ?? 0;
+
+            document.getElementById("psOtherLeaves").value =
+                data.other_leaves ?? 0;
+
+            document.getElementById("psBalanceLeave").value =
+                data.balance_leaves ?? 0;
+
+
+            // =================================================
+            // SALARY
+            // =================================================
+
+            document.getElementById("psGrossSalary").value =
+                data.gross_salary ?? 0;
+
+            document.getElementById("psEarnedSalary").value =
+                data.earned_salary ?? 0;
+
+            document.getElementById("psBasicSalary").value =
+                data.basic_salary ?? 0;
+
+            document.getElementById("psHra").value =
+                data.hra ?? 0;
+
+            document.getElementById("psConveyance").value =
+                data.conveyance ?? 0;
+
+            document.getElementById("psMedicalAllowance").value =
+                data.medical_allowance ?? 0;
+
+            document.getElementById("psSpecialAllowance").value =
+                data.special_allowance ?? 0;
+
+            document.getElementById("psOtherAllowance").value =
+                data.others ?? 0;
+
+            document.getElementById("psTotalEarnings").value =
+                data.total_earnings ?? 0;
+
+
+            // =================================================
+            // DEDUCTIONS
+            // =================================================
+
+            document.getElementById("psEmployeeDeduction").value =
+                data.pf ?? 0;
+
+            document.getElementById("esic").value =
+                data.esic ?? 0;
+
+            document.getElementById("psProfessionalTax").value =
+                data.professional_tax ?? 0;
+
+            document.getElementById("psTds").value =
+                data.tds ?? 0;
+
+            document.getElementById("psLopDeduction").value =
+                data.lop_deduction ?? 0;
+
+            document.getElementById("salaryadvance").value =
+                data.salary_advance ?? 0;
+
+            document.getElementById("psTotalDeductions").value =
+                data.total_deductions ?? 0;
+
+
+            // =================================================
+            // NET SALARY
+            // =================================================
+
+            document.getElementById("psNetSalary").value =
+                data.net_salary ?? 0;
+
+            document.getElementById("psNetSalaryWords").value =
+                data.net_salary_words || "Rupees only";
+
+
+            console.log("✅ Latest payslip loaded successfully");
+
+        } catch (err) {
+
+            console.error("FETCH LATEST PAYSLIP ERROR:", err);
+
+            alert("Error while fetching latest payslip");
+        }
+    }
+
+
+
+
+
+
     //-------------------------------------------------------
     // payslip frontend table fetching from employees table
     //-------------------------------------------------------
@@ -2411,13 +2648,19 @@
             <td>${emp.email}</td>
             <td>
                 <button class="pay-btn">Send Pay Slip</button>
+                <button class="fetch-latest-btn">Fetch Latest</button>
             </td>
             `;
 
             const btn = tr.querySelector(".pay-btn");
+            const fetchBtn = tr.querySelector(".fetch-latest-btn");
 
             btn.addEventListener("click", () => {
                 openPayslip(emp.id);
+            });
+
+            fetchBtn.addEventListener("click", () => {
+                fetchLatestPayslip(emp.id);
             });
 
             tbody.appendChild(tr);

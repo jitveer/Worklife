@@ -437,24 +437,109 @@ exports.updateSalesApproval = (req, res) => {
             // If next approvers exist → insert & notify
             if (nextRows.length > 0) {
               nextRows.forEach(row => {
-                db.query(`
-                  INSERT INTO sales_approval (req_no, approver_id, level, status)
-                  VALUES (?, ?, ?, 'Pending')
-                `, [req_no, row.approver_user_id, nextLevel]);
 
-                db.query(`SELECT email FROM users WHERE id=?`, [row.approver_user_id], (eErr, eRes) => {
-                  if (eRes?.length) {
-                    const msg = `Sales Request ${req_no} requires your approval`;
-                    const link = `/sales-approver.html?reqNo=${req_no}`;
-                    db.query(`
-                      INSERT INTO notifications (email, message, link, status, created_at, updated_at)
-                      VALUES (?, ?, ?, 'unread', NOW(), NOW())
-                    `, [eRes[0].email, msg, link], (err) => {
-                      if (!err) {
-                        sendNotificationToUser(eRes[0].email, msg, link);
-                      }
-                    });
+                // 1. Insert next-level approval
+                db.query(`
+    INSERT INTO sales_approval
+    (req_no, approver_id, level, status)
+    VALUES (?, ?, ?, 'Pending')
+  `, [
+                  req_no,
+                  row.approver_user_id,
+                  nextLevel
+                ], (approvalErr) => {
+
+                  if (approvalErr) {
+                    console.error("Approval insert error:", approvalErr);
+                    return;
                   }
+
+                  // 2. Get Level-2 approver email
+                  db.query(
+                    `SELECT email FROM users WHERE id=?`,
+                    [row.approver_user_id],
+                    (emailErr, emailRes) => {
+
+                      if (emailErr) {
+                        console.error("Approver email error:", emailErr);
+                        return;
+                      }
+
+                      if (!emailRes.length) {
+                        console.error(
+                          "Approver email not found:",
+                          row.approver_user_id
+                        );
+                        return;
+                      }
+
+                      const approverEmail = emailRes[0].email;
+
+                      // 3. Get REQUESTER name
+                      db.query(`
+          SELECT CONCAT(e.first_name, ' ', e.last_name) AS requester_name
+          FROM sales s
+          JOIN employees e ON s.requester_id = e.id
+          WHERE s.req_no = ?
+        `, [req_no], (nameErr, nameRes) => {
+
+                        if (nameErr) {
+                          console.error("Requester name error:", nameErr);
+                          return;
+                        }
+
+                        if (!nameRes.length) {
+                          console.error(
+                            "Requester not found for:",
+                            req_no
+                          );
+                          return;
+                        }
+
+                        const requesterName = nameRes[0].requester_name;
+
+                        // 4. Create notification message
+                        const msg =
+                          `${requesterName} submitted Sales Incentive ${req_no} for your approval`;
+
+                        const link =
+                          `/sales-approver.html?reqNo=${req_no}`;
+
+                        // 5. Save notification
+                        db.query(`
+            INSERT INTO notifications
+            (email, message, link, status, created_at, updated_at)
+            VALUES (?, ?, ?, 'unread', NOW(), NOW())
+          `, [
+                          approverEmail,
+                          msg,
+                          link
+                        ], (notificationErr) => {
+
+                          if (notificationErr) {
+                            console.error(
+                              "Notification insert error:",
+                              notificationErr
+                            );
+                            return;
+                          }
+
+                          // 6. Send push notification
+                          sendNotificationToUser(
+                            approverEmail,
+                            msg,
+                            link
+                          );
+
+                          console.log(
+                            "Notification sent to:",
+                            approverEmail,
+                            msg
+                          );
+                        });
+                      });
+                    }
+                  );
                 });
               });
 

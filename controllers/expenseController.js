@@ -315,63 +315,81 @@ exports.updateExpenseApproval = (req, res) => {
           if (errN) return res.status(500).json({ error: errN.message });
 
           if (approverRows.length > 0) {
-            //  Insert next-level approvers into expense_approvals
-            const insertSql = `
+
+            // Get requester name
+            const requesterNameSql = `
+            SELECT CONCAT(e.first_name, ' ', e.last_name) AS full_name
+            FROM expense_claim ec
+            JOIN employees e ON ec.requester_id = e.id
+            WHERE ec.req_no = ?
+            `;
+
+            db.query(requesterNameSql, [req_no], (nameErr, nameResult) => {
+
+              if (nameErr || nameResult.length === 0) {
+                console.error("Error fetching requester name:", nameErr);
+                return;
+              }
+
+              const requesterName = nameResult[0].full_name;
+              //  Insert next-level approvers into expense_approvals
+              const insertSql = `
              INSERT INTO expense_approvals (req_no, approver_id, level, status)
              VALUES (?, ?, ?, 'Pending')
              `;
 
-            approverRows.forEach((row) => {
-              db.query(insertSql, [req_no, row.approver_user_id, nextLevel], (errInsert) => {
-                if (errInsert) console.error("Error inserting next approver:", errInsert);
+              approverRows.forEach((row) => {
+                db.query(insertSql, [req_no, row.approver_user_id, nextLevel], (errInsert) => {
+                  if (errInsert) console.error("Error inserting next approver:", errInsert);
 
-                const msg = `New Expense Claim ${req_no} requires your approval`;
-                const link = `/expense-request-approval.html?req_no=${req_no}`;
-                const emailSql = `SELECT email FROM users WHERE id = ?`;
+                  const msg = `${requesterName} submitted an expense claim for your approval`;
+                  const link = `/expense-request-approval.html?req_no=${req_no}`;
+                  const emailSql = `SELECT email FROM users WHERE id = ?`;
 
-                db.query(emailSql, [row.approver_user_id], (eErr, eRes) => {
-                  if (eErr) console.error("Error fetching email:", eErr);
-                  if (eRes?.length > 0) {
-                    const email = eRes[0].email;
-                    db.query(`
+                  db.query(emailSql, [row.approver_user_id], (eErr, eRes) => {
+                    if (eErr) console.error("Error fetching email:", eErr);
+                    if (eRes?.length > 0) {
+                      const email = eRes[0].email;
+                      db.query(`
                     INSERT INTO notifications (email, message, link, status, created_at, updated_at)
                     VALUES (?, ?, ?, 'unread', NOW(), NOW())
                      `, [email, msg, link], (errNotif) => {
-                      if (errNotif)
-                        console.error("Error inserting notification:", errNotif);
-                      sendNotificationToUser(email, msg, link);
-                    });
-                  }
+                        if (errNotif)
+                          console.error("Error inserting notification:", errNotif);
+                        sendNotificationToUser(email, msg, link);
+                      });
+                    }
+                  });
                 });
               });
-            });
 
-            res.status(200).json({ message: "Next level approvers notified" });
-            // Update requester's notification to "under process"
-            const getRequester = `SELECT requester_id FROM expense_claim WHERE req_no = ?`;
-            db.query(getRequester, [req_no], (err4, requesterResult) => {
-              if (err4) console.error("Error getting requester:", err4);
-              else {
-                const requesterId = requesterResult[0].requester_id;
-                const getEmail = `SELECT email FROM employees WHERE id = ?`;
-                db.query(getEmail, [requesterId], (errE, emailRes) => {
-                  if (errE) console.error("Error getting requester email:", errE);
-                  else if (emailRes?.length > 0) {
-                    const requesterEmail = emailRes[0].email;
-                    const updateMessage = `Your expense claim is under process`;
-                    const link = `/myexpense.html?reqNo=${req_no}`;
-                    db.query(`UPDATE notifications 
+              res.status(200).json({ message: "Next level approvers notified" });
+              // Update requester's notification to "under process"
+              const getRequester = `SELECT requester_id FROM expense_claim WHERE req_no = ?`;
+              db.query(getRequester, [req_no], (err4, requesterResult) => {
+                if (err4) console.error("Error getting requester:", err4);
+                else {
+                  const requesterId = requesterResult[0].requester_id;
+                  const getEmail = `SELECT email FROM employees WHERE id = ?`;
+                  db.query(getEmail, [requesterId], (errE, emailRes) => {
+                    if (errE) console.error("Error getting requester email:", errE);
+                    else if (emailRes?.length > 0) {
+                      const requesterEmail = emailRes[0].email;
+                      const updateMessage = `Your expense claim is under process`;
+                      const link = `/myexpense.html?reqNo=${req_no}`;
+                      db.query(`UPDATE notifications 
                      SET message = ?, updated_at = NOW()
                      WHERE email = ? AND link = ?`,
-                      [updateMessage, requesterEmail, link], (err) => {
-                        if (!err) {
-                          sendNotificationToUser(requesterEmail, updateMessage, link);
+                        [updateMessage, requesterEmail, link], (err) => {
+                          if (!err) {
+                            sendNotificationToUser(requesterEmail, updateMessage, link);
+                          }
                         }
-                      }
-                    );
-                  }
-                });
-              }
+                      );
+                    }
+                  });
+                }
+              });
             });
           } else {
             // expence_claim status approve after 2 approval

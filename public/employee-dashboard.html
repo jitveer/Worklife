@@ -818,9 +818,11 @@
                 .event-view::-webkit-scrollbar {
                     width: 6px;
                 }
+
                 .event-view::-webkit-scrollbar-track {
                     background: transparent;
                 }
+
                 .event-view::-webkit-scrollbar-thumb {
                     background: rgba(15, 23, 42, 0.15);
                     border-radius: 99px;
@@ -831,6 +833,7 @@
                         opacity: 0;
                         transform: translate(-50%, -45%) scale(0.95);
                     }
+
                     to {
                         opacity: 1;
                         transform: translate(-50%, -50%) scale(1);
@@ -965,20 +968,21 @@
                     </div>
                 </div>
 
-                <!-- Card 3: Incentive -->
+
+                <!-- Card 6: Performance -->
                 <div class="module-card">
                     <div class="card-head">
                         <div class="card-icon-wrap">
-                            <i class="fa-solid fa-gift"></i>
+                            <i class="fa-solid fa-chart-line"></i>
                         </div>
-                        <h3>Incentive</h3>
+                        <h3>Performance</h3>
                     </div>
                     <div class="card-actions">
-                        <a href="sales.html" class="action-link">
-                            Incentive Request <i class="fa-solid fa-arrow-right"></i>
+                        <a href="performance.html" class="action-link">
+                            Performance Management <i class="fa-solid fa-arrow-right"></i>
                         </a>
-                        <a href="my-sales.html" class="action-link">
-                            My Incentive <i class="fa-solid fa-arrow-right"></i>
+                        <a href="my-performance.html" class="action-link">
+                            My Performance <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -998,6 +1002,10 @@
                         <a href="mypetrol.html" class="action-link">
                             My Petrol <i class="fa-solid fa-arrow-right"></i>
                         </a>
+                        <!-- Only User ID 33 -->
+                        <a href="petrol-approval.html" class="action-link prema-only" style="display: none;">
+                            Petrol Approval <i class="fa-solid fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -1016,23 +1024,32 @@
                         <a href="myexpense.html" class="action-link">
                             My Expenses <i class="fa-solid fa-arrow-right"></i>
                         </a>
+                        <!-- Only User ID 33 -->
+                        <a href="expense-approval.html" class="action-link prema-only" style="display: none;">
+                            Expense Approval <i class="fa-solid fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
 
-                <!-- Card 6: Performance -->
+
+                <!-- Card 3: Incentive -->
                 <div class="module-card">
                     <div class="card-head">
                         <div class="card-icon-wrap">
-                            <i class="fa-solid fa-chart-line"></i>
+                            <i class="fa-solid fa-gift"></i>
                         </div>
-                        <h3>Performance</h3>
+                        <h3>Incentive</h3>
                     </div>
                     <div class="card-actions">
-                        <a href="performance.html" class="action-link">
-                            Performance Management <i class="fa-solid fa-arrow-right"></i>
+                        <a href="sales.html" class="action-link">
+                            Incentive Request <i class="fa-solid fa-arrow-right"></i>
                         </a>
-                        <a href="my-performance.html" class="action-link">
-                            My Performance <i class="fa-solid fa-arrow-right"></i>
+                        <a href="my-sales.html" class="action-link">
+                            My Incentive <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                        <!-- Only User ID 33 -->
+                        <a href="sales-list.html" class="action-link prema-only" style="display: none;">
+                            Sales List <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -1176,7 +1193,7 @@
 
 
 
-        
+
 
         function logoutUser() {
             Swal.fire({
