@@ -4,18 +4,20 @@ const router = express.Router();
 const attendanceController = require("../controllers/attendanceController");
 const upload = require("../middlewares/selfie");
 
+const attendanceAuth = require("../middlewares/attendanceAuth");
+
 /* ---------- PASSCODE ---------- */
 router.get("/passcode", attendanceController.showPasscode);
 router.post("/verify-passcode", attendanceController.verifyPasscode);
 
 /* ---------- LOGIN OPTIONS ---------- */
-router.get("/login-options", attendanceController.loginOptions);
+router.get("/login-options", attendanceAuth, attendanceController.loginOptions);
 
 /* ---------- OFFICE LOGIN ---------- */
-router.post("/office-login", attendanceController.officeLogin);
+router.post("/office-login", attendanceAuth, attendanceController.officeLogin);
 
 /* ---------- SITE LOGIN ---------- */
-router.get("/site-login", attendanceController.siteLoginPage);
+router.get("/site-login", attendanceAuth, attendanceController.siteLoginPage);
 router.post(
   "/site-login",
   upload.single("selfie"), 
@@ -23,14 +25,14 @@ router.post(
 );
 
 /*---------- total working hours and minutes----------*/
-router.get("/today-working-time", attendanceController.getTodayWorkingTime);
+router.get("/today-working-time", attendanceAuth, attendanceController.getTodayWorkingTime);
 
 /* ---------- SUCCESS ---------- */
-router.get("/success", attendanceController.successPage);
+router.get("/success", attendanceAuth, attendanceController.successPage);
 
-router.get("/logout", attendanceController.logout);
+router.get("/logout", attendanceAuth, attendanceController.logout);
 
-router.post("/emergency-logout", attendanceController.emergencyLogout);
+router.post("/emergency-logout", attendanceAuth, attendanceController.emergencyLogout);
 
 /* ---------- FETCH ATTENDANCE FOR HR ---------- */
 router.get("/attendance", attendanceController.getAttendance);

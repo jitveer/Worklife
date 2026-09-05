@@ -46,7 +46,7 @@ exports.verifyPasscode = (req, res) => {
       }
     }
 
-    
+
     if (!emp) {
       return res.status(401).json({ success: false, message: "Invalid passcode" });
     }
@@ -72,6 +72,26 @@ exports.verifyPasscode = (req, res) => {
         });
       }
 
+      //---------------------------------------------------------------------------------------
+      // Block login after 10:30AM
+      const now = new Date();
+
+      const currentTimeInSeconds =
+        now.getHours() * 3600 +
+        now.getMinutes() * 60 +
+        now.getSeconds();
+
+      const loginCutoff = (10 * 3600) + (30 * 60); // 10:30:00 AM
+
+      // Block login after 10:30:00 AM
+      if (currentTimeInSeconds > loginCutoff) {
+        return res.json({
+          success: false,
+          action: "login_closed",
+          message: "Login is closed for today. Please try again tomorrow."
+        });
+      }
+      //-------------------------------------------------------------------------------
       return res.json({
         success: true,
         action: "login"
@@ -171,7 +191,7 @@ exports.officeLogin = (req, res) => {
   const now = new Date();
 
   const lateStart = new Date();
-  lateStart.setHours(10, 0, 0);
+  lateStart.setHours(10, 15, 0, 0);
 
   let late_minutes = 0;
   let late_seconds = 0;
@@ -247,7 +267,7 @@ exports.siteLogin = async (req, res) => {
     const now = new Date();
 
     const lateStart = new Date();
-    lateStart.setHours(10, 0, 0);
+    lateStart.setHours(10, 15, 0, 0);
 
     let late_minutes = 0;
     let late_seconds = 0;

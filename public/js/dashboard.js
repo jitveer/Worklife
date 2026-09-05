@@ -39,20 +39,35 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
 
-//--------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------
 
-// Show approval/list links only for Prema's employee ID
-const premaOnlyLinks = document.querySelectorAll(".prema-only");
+  // Show approval/list links only for Prema's employee ID
+  const premaOnlyLinks = document.querySelectorAll(".prema-only");
 
-if (data.user.employee_id === "EMP0013") {
+  if (data.user.employee_id === "1256") {
     premaOnlyLinks.forEach(link => {
-        link.style.display = "flex";
+      link.style.display = "flex";
     });
-}
+  }
 
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
+
+
+
+  // Show Leave Requests Approval only for Farheen and Taj
+  const leaveApprovalLinks = document.querySelectorAll(".arbin-fareen-only");
+
+  if (
+    data.user.employee_id === "2302" ||
+    data.user.employee_id === "9330"
+  ) {
+    leaveApprovalLinks.forEach(link => {
+      link.style.display = "flex";
+    });
+  }
+
+  //-------------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------
 
   userRole = roleId;
   loadNotifications(data.user.email, roleId);

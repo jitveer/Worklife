@@ -39,6 +39,7 @@ const attendanceRoutes = require("./routes/attendanceRoutes");
 const pushRoutes = require("./routes/pushRoutes");
 const payslipRoutes = require("./routes/payslipRoutes");
 const officeAssetsRoutes = require("./routes/officeAssetsRoutes");
+const policyRoutes = require("./routes/policyRoutes");
 
 // uploads
 global.appRoot = path.resolve(__dirname, "public");
@@ -118,6 +119,37 @@ app.use(
 );
 
 
+
+
+// Strictly no access for middle page for marking attendance
+//----------------------------------------------------------------------------
+const attendanceAuth = require("./middlewares/attendanceAuth");
+
+const protectedAttendancePages = [
+  "/login-options.html",
+  "/site-location.html",
+  "/site-selfie.html",
+  "/emergency-logout.html",
+  "/logout-success.html",
+  "/success.html"
+];
+
+app.use("/attendance", (req, res, next) => {
+  if (req.path === "/passcode.html") {
+    return next();
+  }
+
+  if (req.path === "/verify-passcode") {
+    return next();
+  }
+
+  if (protectedAttendancePages.includes(req.path)) {
+    return attendanceAuth(req, res, next);
+  }
+
+  next();
+});
+//----------------------------------------------------------------------------
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -228,6 +260,7 @@ app.use("/api/push", pushRoutes);
 app.use("/api/payslip", payslipRoutes);
 // Office Assets 
 app.use("/api/office-assets", officeAssetsRoutes);
+app.use("/api/policies", policyRoutes);
 // payslip logo inside pdf
 app.use("/images", express.static("public/images"));
 
