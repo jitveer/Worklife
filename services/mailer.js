@@ -68,9 +68,12 @@ exports.sendCredentialsEmail = (
 
         <hr>
 
-        <p>
-          Please change your login password after first login.
-        </p>
+       <p>
+          <b>EMS Login Link:</b><br>
+          <a href="https://worklife-ems.mnmreality.com/index.html">
+             https://worklife-ems.mnmreality.com/index.html
+          </a>
+       </p>
 
       </div>
     `

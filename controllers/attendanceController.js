@@ -38,7 +38,8 @@ exports.verifyPasscode = (req, res) => {
     let emp = null;
     for (const e of employees) {
       if (e.passcode) {
-        const match = passcode === e.passcode;
+        // const match = passcode === e.passcode;
+        const match = String(passcode).trim() === String(e.passcode).trim();
         if (match) {
           emp = e;
           break;
