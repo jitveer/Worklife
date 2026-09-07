@@ -121,6 +121,38 @@ app.use(
 
 
 
+
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ✅ Rate Limiting: Prevent brute-force/DDoS attacks on API/attendance endpoints
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in headers
+  legacyHeaders: false, // Disable older X-RateLimit-* headers
+  message: {
+    success: false,
+    message: "Too many requests from this IP. Please try again after a minute."
+  }
+});
+
+// Session middleware
+app.use(session({
+  name: 'worklife.sid', // ✅ Session Stealth: Hide express identification cookie name (connect.sid) from hacker probes
+  secret: process.env.SESSION_SECRET || 'my_secret_key_12345_fallback', // Dynamic session secret
+  store: sessionStore,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // ✅ HTTPS secure cookie enabled dynamically in production
+    httpOnly: true, // ✅ XSS cookie defense: Prevents client-side JS from accessing the session cookie
+    sameSite: "lax",
+  }
+}));
+
+
+
 // Strictly no access for middle page for marking attendance
 //----------------------------------------------------------------------------
 const attendanceAuth = require("./middlewares/attendanceAuth");
@@ -151,33 +183,8 @@ app.use("/attendance", (req, res, next) => {
 });
 //----------------------------------------------------------------------------
 
-app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ Rate Limiting: Prevent brute-force/DDoS attacks on API/attendance endpoints
-const apiLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 100, // Limit each IP to 100 requests per windowMs
-  standardHeaders: true, // Return rate limit info in headers
-  legacyHeaders: false, // Disable older X-RateLimit-* headers
-  message: {
-    success: false,
-    message: "Too many requests from this IP. Please try again after a minute."
-  }
-});
 
-// Session middleware
-app.use(session({
-  name: 'worklife.sid', // ✅ Session Stealth: Hide express identification cookie name (connect.sid) from hacker probes
-  secret: process.env.SESSION_SECRET || 'my_secret_key_12345_fallback', // Dynamic session secret
-  store: sessionStore,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production', // ✅ HTTPS secure cookie enabled dynamically in production
-    httpOnly: true, // ✅ XSS cookie defense: Prevents client-side JS from accessing the session cookie
-    sameSite: "lax",
-  }
-}));
 
 // ✅ Apply Rate Limiter to API and Attendance routes
 app.use('/api', apiLimiter);

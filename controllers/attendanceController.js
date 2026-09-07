@@ -82,7 +82,7 @@ exports.verifyPasscode = (req, res) => {
         now.getMinutes() * 60 +
         now.getSeconds();
 
-      const loginCutoff = (10 * 3600) + (30 * 60); // 10:30:00 AM
+      const loginCutoff = (12 * 3600) + (30 * 60); // 10:30:00 AM
 
       // Block login after 10:30:00 AM
       if (currentTimeInSeconds > loginCutoff) {
