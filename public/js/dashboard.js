@@ -69,6 +69,23 @@ document.addEventListener("DOMContentLoaded", async function () {
   //-------------------------------------------------------------------------------
   //-------------------------------------------------------------------------------
 
+
+  //-------------------------------------------------------------------------------
+// Show Office assets for malini and prema
+
+
+if (
+    data.user.employee_id === "1256" ||
+    data.user.employee_id === "3386"
+) {
+    document.querySelectorAll(".office-assets-only").forEach(el => {
+        el.style.display = "flex";
+    });
+}
+//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+
+
   userRole = roleId;
   loadNotifications(data.user.email, roleId);
   loadCalendar();
