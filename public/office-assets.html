@@ -828,7 +828,7 @@
     /* TOAST NOTIFICATION */
     .toast-box {
       position: fixed;
-      bottom: 24px;
+      top: 24px;
       right: 24px;
       background: #111827;
       color: #ffffff;
@@ -886,7 +886,8 @@
   <!-- MAIN SITE HEADER -->
   <header class="header">
     <div class="header-left">
-     <a href="humanresource.html?section=hr-logo" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+      <a href="humanresource.html?section=hr-logo"
+        style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
         <div class="logo-box">WL</div>
         <div class="worklife-text">Worklife</div>
       </a>
@@ -1410,7 +1411,7 @@
       },
       {
         id: "comp-mobile-device",
-        name: "Mobile Device",
+        name: "Intercom",
         category: "IT & Computing",
         theme: "#14b8a6",
         border: "#ccfbf1",
@@ -2732,6 +2733,28 @@
 
         return;
       }
+
+
+
+      //---------------------------------------------------------------------------
+      // Check for duplicate device + employee combination
+      const duplicateRecord = (component.records || []).find(record => {
+        if (record.id === recordId) return false; // Ignore current record while editing
+
+        return (
+          (record.deviceName || "").trim().toLowerCase() === deviceName.toLowerCase() &&
+          (record.employeeName || "").trim().toLowerCase() === employeeName.toLowerCase()
+        );
+      });
+
+      if (duplicateRecord) {
+        showToast(
+          `Already exists: "${deviceName}" is already assigned to ${employeeName}`
+        );
+        return;
+      }
+
+      //---------------------------------------------------------------------------------
 
 
       const saveBtn =
