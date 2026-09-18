@@ -2,11 +2,7 @@ const db = require("../db");
 const reverseGeocode = require("../utils/reverseGeocode");
 const watermarkImage = require("../utils/watermarkImage");
 
-// // email sent with hashed password in eployee passcode column for attendance 
-// const crypto = require("crypto");
-// function hashPassword(password) {
-//   return crypto.createHash("md5").update(password).digest("hex");
-// }
+
 
 /* ---------- SHOW PASSCODE PAGE ---------- */
 exports.showPasscode = (req, res) => {
@@ -74,25 +70,39 @@ exports.verifyPasscode = (req, res) => {
       }
 
       //---------------------------------------------------------------------------------------
-      // Block login after 10:30AM
-      const now = new Date();
+      // =====================================================
+      // LOGIN TIME CHECK
+      // =====================================================
 
-      const currentTimeInSeconds =
-        now.getHours() * 3600 +
-        now.getMinutes() * 60 +
-        now.getSeconds();
+      if (!isLoginTimeAllowed(emp.employee_id)) {
 
-      const loginCutoff = (10 * 3600) + (30 * 60); // 10:30:00 AM
+        const parts = new Intl.DateTimeFormat("en-IN", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        }).formatToParts(new Date());
 
-      // Block login after 10:30:00 AM
-      if (currentTimeInSeconds > loginCutoff) {
+        const hour = Number(parts.find(p => p.type === "hour").value);
+        const minute = Number(parts.find(p => p.type === "minute").value);
+
+        const currentMinutes = (hour * 60) + minute;
+
+        if (currentMinutes < (9 * 60 + 45)) {
+          return res.json({
+            success: false,
+            action: "login_not_started",
+            message: "Login will be allowed only from 9:45 AM to 10:00 AM."
+          });
+        }
+
         return res.json({
           success: false,
           action: "login_closed",
-          message: "Login is closed for today. Please try again tomorrow."
+          message: "Login time is closed for today. Login is allowed only from 9:45 AM to 10:00 AM."
         });
       }
-      //-------------------------------------------------------------------------------
+
       return res.json({
         success: true,
         action: "login"
@@ -103,65 +113,65 @@ exports.verifyPasscode = (req, res) => {
 
 
 
-// exports.verifyPasscode = (req, res) => {
-//   const { passcode } = req.body;
 
-//   // 🔥 hash input passcode
 
-//   const hashedPasscode = hashPassword(passcode);
 
-//   const sql = "SELECT * FROM employees WHERE passcode = ?";
+// =====================================================
+// LOGIN TIME CHECK
+// LOGIN ALLOWED FROM 9:45 AM TO BEFORE 10:01 AM
+// INDIA TIME
+// =====================================================
+const isLoginTimeAllowed = (employeeId) => {
 
-//   db.query(sql, [hashedPasscode], (err, result) => {
-//     if (err) return res.status(500).json({ message: "DB error" });
+  const parts = new Intl.DateTimeFormat("en-IN", {
+    timeZone: "Asia/Kolkata",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+  }).formatToParts(new Date());
 
-//     if (result.length === 0) {
-//       return res.status(401).json({ message: "Invalid passcode" });
-//     }
+  const hour = Number(parts.find(p => p.type === "hour").value);
+  const minute = Number(parts.find(p => p.type === "minute").value);
+  const second = Number(parts.find(p => p.type === "second").value);
 
-//     const emp = result[0];
-//     req.session.employee = emp;
+  const currentTimeInSeconds =
+    hour * 3600 +
+    minute * 60 +
+    second;
 
-//     const today = new Date().toISOString().split("T")[0];
 
-//     const checkSql = `
-//       SELECT * FROM attendance
-//       WHERE employee_id = ?
-//       AND DATE(login_time) = ?
-//       ORDER BY id DESC LIMIT 1
-//     `;
+  // Employees allowed to login early
+  const earlyLoginEmployees = ["5919", "6701", "9330", "2913"];
+  // Add employee_id values here
 
-//     db.query(checkSql, [emp.id, today], (err, rows) => {
-//       if (err) return res.status(500).json({ message: "DB error" });
+  let loginStart;
+  let loginEnd;
 
-//       if (rows.length > 0 && !rows[0].logout_time) {
-//         return res.json({
-//           success: true,
-//           action: "logout",
-//           attendance_id: rows[0].id
-//         });
-//       }
-//-----------------------------------------------------------------
-//       // const now = new Date();
-//       // const hour = 16;
-//       // const minute = 10;
+  //-----------------------------------------------------------
+  // for testing do changes in this login time 
+  //------------------------------------------------------------
 
-//       // if (hour > 10 || (hour === 10 && minute > 30)) {
-//       //   return res.json({
-//       //     success: false,
-//       //     message: "Login time over. Please login tomorrow."
-//       //   });
-//       // }
+  if (earlyLoginEmployees.includes(String(employeeId).trim())) {
 
-//----------------------------------------------------------------------
-//       // TEMPORARY FOR TESTING LOGIN
-//       return res.json({
-//         success: true,
-//         action: "login"
-//       });
-//     });
-//   });
-// };
+    // Early employees: 8:30 AM to before 9:01 AM
+    loginStart = (8 * 3600) + (30 * 60);
+    loginEnd = (9 * 3600) + (2 * 60);
+
+  } else {
+
+    // Regular employees: 9:45 AM to before 10:01 AM
+    loginStart = (9 * 3600) + (45 * 60);
+    loginEnd = (10 * 3600) + (2 * 60);
+  }
+
+  return (
+    currentTimeInSeconds >= loginStart &&
+    currentTimeInSeconds < loginEnd
+  );
+};
+
+
 
 
 
@@ -189,21 +199,19 @@ exports.officeLogin = (req, res) => {
     return res.status(401).json({ success: false });
   }
 
-  const now = new Date();
+  // =====================================================
+  // CHECK LOGIN TIME
+  // =====================================================
+  if (!isLoginTimeAllowed(emp.employee_id)) {
+    return res.status(403).json({
+      success: false,
+      message: "Office login is allowed only between 9:45 AM and 10:01 AM."
+    });
+  }
 
-  const lateStart = new Date();
-  lateStart.setHours(10, 15, 0, 0);
-
+  // Login is within allowed time
   let late_minutes = 0;
   let late_seconds = 0;
-
-  if (now > lateStart) {
-
-    const diff = Math.floor((now - lateStart) / 1000);
-
-    late_minutes = Math.floor(diff / 60);
-    late_seconds = diff % 60;
-  }
 
 
   const sql = `
@@ -260,27 +268,23 @@ exports.siteLogin = async (req, res) => {
     // console.log("FILE:", req.file);
 
     const emp = req.session.employee;
+
     if (!emp) {
       return res.status(401).send("Session expired");
     }
 
-    // Calculate late login
-    const now = new Date();
+    // =====================================================
+    // CHECK LOGIN TIME
+    // =====================================================
+    if (!isLoginTimeAllowed(emp.employee_id)) {
+      return res.status(403).send(
+        "Site login is allowed only between 9:45 AM and 10:01 AM."
+      );
+    }
 
-    const lateStart = new Date();
-    lateStart.setHours(10, 15, 0, 0);
-
+    // Login is within allowed time
     let late_minutes = 0;
     let late_seconds = 0;
-
-    if (now > lateStart) {
-
-      const diff = Math.floor((now - lateStart) / 1000);
-
-      late_minutes = Math.floor(diff / 60);
-      late_seconds = diff % 60;
-
-    }
 
     // 1️⃣ Read latitude & longitude
     const { latitude, longitude } = req.body;
@@ -369,6 +373,7 @@ exports.logout = (req, res) => {
     SELECT * FROM attendance
     WHERE employee_id = ?
     AND DATE(login_time) = CURDATE()
+    AND logout_time IS NULL
     ORDER BY id DESC LIMIT 1
   `;
 
@@ -380,11 +385,22 @@ exports.logout = (req, res) => {
 
     const attendance = rows[0];
 
-    const now = new Date();
-    const hour = now.getHours();
+
+
+    //-------------------------------------------------------------
+    //for testing logout do changes in this 18 
+    //-------------------------------------------------------------
 
     // before 6pm → emergency logout
-    if (hour < 18) {
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const second = now.getSeconds();
+
+    // Before 6:00:00 PM → Emergency Logout
+    if (
+      hour < 18
+    ) {
       return res.redirect("/attendance/emergency-logout.html");
     }
 
@@ -504,7 +520,10 @@ exports.getTodayWorkingTime = (req, res) => {
 
     const workingTime = hours + " Hours " + minutes + " Minutes";
 
-    res.json({ workingTime });
+    res.json({
+      workingTime,
+      loginTime: rows[0].login_time
+    });
 
   });
 
