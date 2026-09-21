@@ -278,10 +278,23 @@
         const applyBtn = document.getElementById("applyDateFilter");
         const label = document.getElementById("selectedDateLabel");
 
-        let selectedStartDate = "";
-        let selectedEndDate = "";
+        // Helper to get today's date in YYYY-MM-DD (IST)
+        const todayStr = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Asia/Kolkata"
+        }).format(new Date());
 
-        
+        let selectedStartDate = todayStr;
+        let selectedEndDate = todayStr;
+
+        if (label) {
+            label.innerText = `Today (${todayStr})`;
+        }
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+        if (startDateInput) startDateInput.value = todayStr;
+        if (endDateInput) endDateInput.value = todayStr;
+
+
         // ✅ FIXED
         openBtn.addEventListener("click", () => {
             modal.classList.remove("hidden");
@@ -341,6 +354,11 @@
 
                 const tbody = document.getElementById("attendanceTable");
                 tbody.innerHTML = "";
+
+                if (!result.data || result.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="border border-gray-300 px-3 py-6 text-center text-gray-500 font-medium">No attendance records found for ${startDate && endDate ? (startDate === endDate ? startDate : `${startDate} to ${endDate}`) : "today"}</td></tr>`;
+                    return;
+                }
 
                 result.data.forEach((row, index) => {
                     const tr = document.createElement("tr");
@@ -434,8 +452,8 @@
             }
         }
 
-        // Load on page load
-        loadAttendance();
+        // Load on page load (Today's attendance only)
+        loadAttendance(todayStr, todayStr);
 
 
 

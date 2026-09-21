@@ -75,6 +75,7 @@ exports.verifyPasscode = (req, res) => {
       // =====================================================
 
       if (!isLoginTimeAllowed(emp.employee_id)) {
+        const window = getEmployeeLoginWindow(emp.employee_id);
 
         const parts = new Intl.DateTimeFormat("en-IN", {
           timeZone: "Asia/Kolkata",
@@ -85,21 +86,20 @@ exports.verifyPasscode = (req, res) => {
 
         const hour = Number(parts.find(p => p.type === "hour").value);
         const minute = Number(parts.find(p => p.type === "minute").value);
-
         const currentMinutes = (hour * 60) + minute;
 
-        if (currentMinutes < (9 * 60 + 45)) {
+        if (currentMinutes < window.startMinutes) {
           return res.json({
             success: false,
             action: "login_not_started",
-            message: "Login will be allowed only from 9:45 AM to 10:00 AM."
+            message: `Login will be allowed only from ${window.allowedWindow}.`
           });
         }
 
         return res.json({
           success: false,
           action: "login_closed",
-          message: "Login time is closed for today. Login is allowed only from 9:45 AM to 10:00 AM."
+          message: `Login time is closed for today. Login was allowed from ${window.allowedWindow}.`
         });
       }
 
@@ -117,12 +117,61 @@ exports.verifyPasscode = (req, res) => {
 
 
 // =====================================================
+// HELPER: GET LOGIN WINDOW FOR EACH EMPLOYEE TYPE
+// =====================================================
+function getEmployeeLoginWindow(employeeId) {
+  const empId = String(employeeId).trim();
+
+  // 1️⃣ Hemanth (8:00 AM to 10:00 AM)
+  const hemanthEmployees = ["2913"];
+
+  // 2️⃣ Early Employees (8:30 AM to 9:00 AM)
+  const earlyLoginEmployees = ["5919", "6701", "9330"];
+
+  // 3️⃣ Arjun & Akash (9:25 AM to 10:00 AM)
+  const arjunAkashEmployees = ["9790", "5149"];
+
+  if (hemanthEmployees.includes(empId)) {
+    return {
+      allowedWindow: "8:00 AM to 10:00 AM",
+      startMinutes: 8 * 60,
+      startSeconds: 8 * 3600,
+      endSeconds: (10 * 3600) + (2 * 60)
+    };
+  }
+
+  if (earlyLoginEmployees.includes(empId)) {
+    return {
+      allowedWindow: "8:30 AM to 9:00 AM",
+      startMinutes: (8 * 60) + 30,
+      startSeconds: (8 * 3600) + (30 * 60),
+      endSeconds: (9 * 3600) + (2 * 60)
+    };
+  }
+
+  if (arjunAkashEmployees.includes(empId)) {
+    return {
+      allowedWindow: "9:25 AM to 10:00 AM",
+      startMinutes: (9 * 60) + 25,
+      startSeconds: (9 * 3600) + (25 * 60),
+      endSeconds: (10 * 3600) + (2 * 60)
+    };
+  }
+
+  // 4️⃣ Regular Employees (9:45 AM to 10:00 AM)
+  return {
+    allowedWindow: "9:45 AM to 10:00 AM",
+    startMinutes: (9 * 60) + 45,
+    startSeconds: (9 * 3600) + (45 * 60),
+    endSeconds: (10 * 3600) + (2 * 60)
+  };
+}
+
+// =====================================================
 // LOGIN TIME CHECK
-// LOGIN ALLOWED FROM 9:45 AM TO BEFORE 10:01 AM
 // INDIA TIME
 // =====================================================
-const isLoginTimeAllowed = (employeeId) => {
-
+function isLoginTimeAllowed(employeeId) {
   const parts = new Intl.DateTimeFormat("en-IN", {
     timeZone: "Asia/Kolkata",
     hour: "2-digit",
@@ -140,36 +189,13 @@ const isLoginTimeAllowed = (employeeId) => {
     minute * 60 +
     second;
 
-
-  // Employees allowed to login early
-  const earlyLoginEmployees = ["5919", "6701", "9330", "2913"];
-  // Add employee_id values here
-
-  let loginStart;
-  let loginEnd;
-
-  //-----------------------------------------------------------
-  // for testing do changes in this login time 
-  //------------------------------------------------------------
-
-  if (earlyLoginEmployees.includes(String(employeeId).trim())) {
-
-    // Early employees: 8:30 AM to before 9:01 AM
-    loginStart = (8 * 3600) + (30 * 60);
-    loginEnd = (9 * 3600) + (2 * 60);
-
-  } else {
-
-    // Regular employees: 9:45 AM to before 10:01 AM
-    loginStart = (9 * 3600) + (45 * 60);
-    loginEnd = (10 * 3600) + (2 * 60);
-  }
+  const window = getEmployeeLoginWindow(employeeId);
 
   return (
-    currentTimeInSeconds >= loginStart &&
-    currentTimeInSeconds < loginEnd
+    currentTimeInSeconds >= window.startSeconds &&
+    currentTimeInSeconds < window.endSeconds
   );
-};
+}
 
 
 
@@ -203,9 +229,10 @@ exports.officeLogin = (req, res) => {
   // CHECK LOGIN TIME
   // =====================================================
   if (!isLoginTimeAllowed(emp.employee_id)) {
+    const window = getEmployeeLoginWindow(emp.employee_id);
     return res.status(403).json({
       success: false,
-      message: "Office login is allowed only between 9:45 AM and 10:01 AM."
+      message: `Office login is allowed only between ${window.allowedWindow}.`
     });
   }
 
@@ -277,8 +304,9 @@ exports.siteLogin = async (req, res) => {
     // CHECK LOGIN TIME
     // =====================================================
     if (!isLoginTimeAllowed(emp.employee_id)) {
+      const window = getEmployeeLoginWindow(emp.employee_id);
       return res.status(403).send(
-        "Site login is allowed only between 9:45 AM and 10:01 AM."
+        `Site login is allowed only between ${window.allowedWindow}.`
       );
     }
 
@@ -392,15 +420,17 @@ exports.logout = (req, res) => {
     //-------------------------------------------------------------
 
     // before 6pm → emergency logout
-    const now = new Date();
-    const hour = now.getHours();
-    const minute = now.getMinutes();
-    const second = now.getSeconds();
-
-    // Before 6:00:00 PM → Emergency Logout
-    if (
-      hour < 18
-    ) {
+    // Convert current time to India Standard Time (IST)
+    const parts = new Intl.DateTimeFormat("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    }).formatToParts(new Date());
+    const hour = Number(parts.find(p => p.type === "hour").value);
+    // Before 6:00 PM IST (18:00) → Emergency Logout
+    if (hour < 18) {
       return res.redirect("/attendance/emergency-logout.html");
     }
 
