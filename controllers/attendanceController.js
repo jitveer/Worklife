@@ -1,7 +1,8 @@
 const db = require("../db");
 const reverseGeocode = require("../utils/reverseGeocode");
 const watermarkImage = require("../utils/watermarkImage");
-
+// Lock to prevent rapid multiple clicks inserting duplicate attendance
+const activeLoginRequests = new Set();
 
 
 /* ---------- SHOW PASSCODE PAGE ---------- */
@@ -112,10 +113,6 @@ exports.verifyPasscode = (req, res) => {
 };
 
 
-
-
-
-
 // =====================================================
 // HELPER: GET LOGIN WINDOW FOR EACH EMPLOYEE TYPE
 // =====================================================
@@ -128,8 +125,8 @@ function getEmployeeLoginWindow(employeeId) {
   // 2️⃣ Early Employees (8:30 AM to 9:00 AM)
   const earlyLoginEmployees = ["5919", "6701", "9330"];
 
-  // 3️⃣ Arjun & Akash (9:25 AM to 10:00 AM)
-  const arjunAkashEmployees = ["9790", "5149"];
+  // 3️⃣ Arjun (9:25 AM to 10:00 AM)
+  const arjunAkashEmployees = ["5149"];
 
   if (hemanthEmployees.includes(empId)) {
     return {
@@ -225,10 +222,19 @@ exports.officeLogin = (req, res) => {
     return res.status(401).json({ success: false });
   }
 
+  //------------------------------------------------------------------------------------------------------------
+  // 🛡️ GUARD 1: Block simultaneous rapid clicks from the same employee
+  if (activeLoginRequests.has(emp.id)) {
+    return res.json({ success: true }); // Return success so frontend redirects smoothly without inserting again
+  }
+  activeLoginRequests.add(emp.id);
+  //------------------------------------------------------------------------------------------------
+
   // =====================================================
   // CHECK LOGIN TIME
   // =====================================================
   if (!isLoginTimeAllowed(emp.employee_id)) {
+    activeLoginRequests.delete(emp.id);
     const window = getEmployeeLoginWindow(emp.employee_id);
     return res.status(403).json({
       success: false,
@@ -236,12 +242,39 @@ exports.officeLogin = (req, res) => {
     });
   }
 
-  // Login is within allowed time
-  let late_minutes = 0;
-  let late_seconds = 0;
 
 
-  const sql = `
+
+  //---------------------------------------------------------------
+  // 🛡️ GUARD 2: Check database if already logged in today without logout
+  const checkSql = `
+    SELECT id FROM attendance
+    WHERE employee_id = ?
+    AND DATE(login_time) = CURDATE()
+    AND logout_time IS NULL
+    LIMIT 1
+  `;
+  db.query(checkSql, [emp.id], (checkErr, rows) => {
+    if (checkErr) {
+      activeLoginRequests.delete(emp.id);
+      console.error("CHECK LOGIN ERROR:", checkErr);
+      return res.status(500).json({ success: false });
+    }
+    if (rows && rows.length > 0) {
+      activeLoginRequests.delete(emp.id);
+      // Already logged in today, return success so it doesn't duplicate
+      return res.json({ success: true, message: "Already logged in" });
+    }
+
+
+    //----------------------------------------------------
+
+    // Login is within allowed time
+    let late_minutes = 0;
+    let late_seconds = 0;
+
+
+    const sql = `
     INSERT INTO attendance
     (
       employee_id,
@@ -256,20 +289,23 @@ exports.officeLogin = (req, res) => {
     VALUES (?, ?, ?, NOW(), 'Office', ?, ?, ?)
   `;
 
-  db.query(sql, [
-    emp.id,
-    emp.first_name,
-    emp.last_name,
-    req.headers["user-agent"],
-    late_minutes,
-    late_seconds
-  ], (err, result) => {
+    db.query(sql, [
+      emp.id,
+      emp.first_name,
+      emp.last_name,
+      req.headers["user-agent"],
+      late_minutes,
+      late_seconds
+    ], (err, result) => {
 
-    if (err) {
-      console.error("OFFICE LOGIN DB ERROR:", err);
-      return res.status(500).json({ success: false });
-    }
-    res.json({ success: true });
+      activeLoginRequests.delete(emp.id);
+
+      if (err) {
+        console.error("OFFICE LOGIN DB ERROR:", err);
+        return res.status(500).json({ success: false });
+      }
+      res.json({ success: true });
+    });
 
   });
 
@@ -299,6 +335,16 @@ exports.siteLogin = async (req, res) => {
     if (!emp) {
       return res.status(401).send("Session expired");
     }
+
+
+    //----------------------------------------------------------
+    // 🛡️ Block rapid multiple clicks
+    if (activeLoginRequests.has(emp.id)) {
+      return res.json({ success: true });
+    }
+    activeLoginRequests.add(emp.id);
+
+    //-----------------------------------------------------------
 
     // =====================================================
     // CHECK LOGIN TIME
@@ -334,8 +380,29 @@ exports.siteLogin = async (req, res) => {
     // 5️⃣ Watermark image AFTER imagePath exists ✅
     await watermarkImage(imagePath, location_address);
 
-    // 6️⃣ Insert into DB
-    const sql = `
+
+
+    // 🛡️ Check if already logged in today without logout
+    const checkSql = `
+      SELECT id FROM attendance
+      WHERE employee_id = ?
+      AND DATE(login_time) = CURDATE()
+      AND logout_time IS NULL
+      LIMIT 1
+    `;
+    db.query(checkSql, [emp.id], (checkErr, rows) => {
+      if (checkErr) {
+        activeLoginRequests.delete(emp.id);
+        return res.status(500).send("Database error");
+      }
+      if (rows && rows.length > 0) {
+        activeLoginRequests.delete(emp.id);
+        return res.json({ success: true, message: "Already logged in" });
+      }
+
+
+      // 6️⃣ Insert into DB
+      const sql = `
       INSERT INTO attendance
       (
         employee_id,
@@ -353,29 +420,33 @@ exports.siteLogin = async (req, res) => {
       VALUES (?, ?, ?, NOW(), 'Site', ?, ?, ?, ?, ?, ?)
     `;
 
-    db.query(
-      sql,
-      [
-        emp.id,
-        emp.first_name,
-        emp.last_name,
-        latitude,
-        longitude,
-        location_address,
-        imagePath,
-        late_minutes,
-        late_seconds
-      ],
-      (err) => {
-        if (err) {
-          console.error("DB ERROR:", err);
-          return res.status(500).send("Attendance insert failed");
-        }
+      db.query(
+        sql,
+        [
+          emp.id,
+          emp.first_name,
+          emp.last_name,
+          latitude,
+          longitude,
+          location_address,
+          imagePath,
+          late_minutes,
+          late_seconds
+        ],
+        (err) => {
+          activeLoginRequests.delete(emp.id);
 
-        res.json({ success: true });
-      }
-    );
+          if (err) {
+            console.error("DB ERROR:", err);
+            return res.status(500).send("Attendance insert failed");
+          }
+
+          res.json({ success: true });
+        }
+      );
+    });
   } catch (err) {
+    if (emp) activeLoginRequests.delete(emp.id);
     console.error("SITE LOGIN ERROR:", err);
     res.status(500).send("Server error");
   }
@@ -642,7 +713,14 @@ exports.downloadReport = (req, res) => {
 
     results.forEach(row => {
       const name = row.name;
-      const date = new Date(row.login_time).getDate(); // 1–31
+
+      // Get IST date day (1-31)
+      const date = Number(
+        new Intl.DateTimeFormat("en-IN", {
+          timeZone: "Asia/Kolkata",
+          day: "numeric"
+        }).format(new Date(row.login_time))
+      );
 
       if (!grouped[name]) {
         grouped[name] = {};
@@ -650,13 +728,24 @@ exports.downloadReport = (req, res) => {
 
       grouped[name][date] = {
         login: row.login_time
-          ? new Date(row.login_time).toLocaleTimeString()
+          ? new Date(row.login_time).toLocaleTimeString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+          })
           : "",
         logout: row.logout_time
-          ? new Date(row.logout_time).toLocaleTimeString()
+          ? new Date(row.logout_time).toLocaleTimeString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+          })
           : ""
       };
     });
+
 
     // ================== EXCEL ==================
     if (type === "excel") {
@@ -713,17 +802,28 @@ exports.downloadReport = (req, res) => {
       let rows = "";
 
       results.forEach((row, index) => {
-
         const login = row.login_time
-          ? new Date(row.login_time).toLocaleString("en-IN")
+          ? new Date(row.login_time).toLocaleString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+          })
           : "-";
-
         const logout = row.logout_time
-          ? new Date(row.logout_time).toLocaleString("en-IN")
+          ? new Date(row.logout_time).toLocaleString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+          })
           : "-";
-
-        // 🔥 Late Calculation
-        let late = "";
 
         if ((row.late_minutes > 0) || (row.late_seconds > 0)) {
 
