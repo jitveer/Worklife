@@ -926,7 +926,7 @@
       </div>
 
       <div class="filter-pills" id="categoryFilterContainer">
-        <button class="pill-btn active" id="filterPillAll" data-category="All">All Components (8)</button>
+        <button class="pill-btn active" id="filterPillAll" data-category="All">All Components (12)</button>
         <button class="pill-btn" id="filterPillIT" data-category="IT & Computing">IT & Computing</button>
         <button class="pill-btn" id="filterPillPeripherals" data-category="Peripherals">Peripherals</button>
         <button class="pill-btn" id="filterPillStorage" data-category="Storage">Storage</button>
@@ -1346,6 +1346,62 @@
       <path d="M70 116 L130 116 L135 136 L65 136 Z" fill="#334155" rx="4"/>
       <rect x="65" y="136" width="70" height="6" rx="3" fill="#1e293b"/>
     </svg>
+  `,
+      ups: `
+    <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" class="box-svg-illustration">
+      <defs>
+        <linearGradient id="gUps" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#059669"/>
+          <stop offset="100%" stop-color="#047857"/>
+        </linearGradient>
+      </defs>
+      <rect x="55" y="25" width="90" height="115" rx="10" fill="url(#gUps)" stroke="#065f46" stroke-width="2"/>
+      <rect x="67" y="38" width="66" height="24" rx="4" fill="#022c22"/>
+      <text x="100" y="54" fill="#34d399" font-size="11" font-weight="bold" font-family="monospace" text-anchor="middle">230V OK</text>
+      <circle cx="75" cy="74" r="4" fill="#22c55e"/>
+      <circle cx="100" cy="74" r="4" fill="#eab308"/>
+      <circle cx="125" cy="74" r="4" fill="#38bdf8"/>
+      <line x1="67" y1="90" x2="133" y2="90" stroke="#065f46" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="67" y1="100" x2="133" y2="100" stroke="#065f46" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="67" y1="110" x2="133" y2="110" stroke="#065f46" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="67" y1="120" x2="133" y2="120" stroke="#065f46" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+  `,
+      fan: `
+    <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" class="box-svg-illustration">
+      <defs>
+        <linearGradient id="gFanGuard" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#06b6d4"/>
+          <stop offset="100%" stop-color="#0891b2"/>
+        </linearGradient>
+      </defs>
+      <circle cx="100" cy="62" r="44" fill="none" stroke="url(#gFanGuard)" stroke-width="3"/>
+      <circle cx="100" cy="62" r="38" fill="#ecfeff" opacity="0.4"/>
+      <ellipse cx="100" cy="42" rx="9" ry="20" fill="#06b6d4"/>
+      <ellipse cx="116" cy="71" rx="20" ry="9" fill="#06b6d4"/>
+      <ellipse cx="84" cy="71" rx="20" ry="9" fill="#06b6d4"/>
+      <circle cx="100" cy="62" r="9" fill="#0e7490"/>
+      <rect x="96" y="106" width="8" height="32" rx="3" fill="#334155"/>
+      <polygon points="70,142 130,142 138,148 62,148" fill="#1e293b"/>
+    </svg>
+  `,
+      headphones: `
+    <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" class="box-svg-illustration">
+      <defs>
+        <linearGradient id="gHeadphones" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#8b5cf6"/>
+          <stop offset="100%" stop-color="#6d28d9"/>
+        </linearGradient>
+      </defs>
+      <path d="M55 85 C55 45, 75 25, 100 25 C125 25, 145 45, 145 85" fill="none" stroke="url(#gHeadphones)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M70 34 C80 30, 120 30, 130 34" fill="none" stroke="#4c1d95" stroke-width="11" stroke-linecap="round"/>
+      <rect x="42" y="75" width="22" height="42" rx="10" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="2"/>
+      <rect x="136" y="75" width="22" height="42" rx="10" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="2"/>
+      <rect x="47" y="82" width="12" height="28" rx="6" fill="#a78bfa"/>
+      <rect x="141" y="82" width="12" height="28" rx="6" fill="#a78bfa"/>
+      <path d="M52 110 C52 135, 82 140, 95 133" fill="none" stroke="#64748b" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="98" cy="132" r="5" fill="#f43f5e"/>
+    </svg>
   `
     };
 
@@ -1463,6 +1519,46 @@
           { id: "r47", deviceName: "Logitech Brio 4K Ultra HD #1", employeeName: "Main Boardroom Alpha" },
           { id: "r48", deviceName: "Logitech MeetUp All-in-One #2", employeeName: "Conference Room Beta" }
         ]
+      },
+      {
+        id: "comp-ups",
+        name: "UPS",
+        category: "Peripherals",
+        theme: "#059669",
+        border: "#d1fae5",
+        headerGradient: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+        svgKey: "ups",
+        records: []
+      },
+      {
+        id: "comp-fan",
+        name: "Fan",
+        category: "Peripherals",
+        theme: "#06b6d4",
+        border: "#cffafe",
+        headerGradient: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+        svgKey: "fan",
+        records: []
+      },
+      {
+        id: "comp-table",
+        name: "Table",
+        category: "Peripherals",
+        theme: "#10b981",
+        border: "#d1fae5",
+        headerGradient: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+        svgKey: "table",
+        records: []
+      },
+      {
+        id: "comp-headphones",
+        name: "Headphones",
+        category: "Peripherals",
+        theme: "#8b5cf6",
+        border: "#ede9fe",
+        headerGradient: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+        svgKey: "headphones",
+        records: []
       }
     ];
 

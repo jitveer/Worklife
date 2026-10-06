@@ -122,6 +122,8 @@ function getEmployeeLoginWindow(employeeId) {
   // 1️⃣ Hemanth (8:00 AM to 10:00 AM)
   const hemanthEmployees = ["2913"];
 
+  const manjunathEmployees = ["7220"];
+
   // 2️⃣ Early Employees (8:30 AM to 9:00 AM)
   const earlyLoginEmployees = ["5919", "6701", "9330"];
 
@@ -134,6 +136,15 @@ function getEmployeeLoginWindow(employeeId) {
       startMinutes: 8 * 60,
       startSeconds: 8 * 3600,
       endSeconds: (10 * 3600) + (2 * 60)
+    };
+  }
+
+  if (manjunathEmployees.includes(empId)) {
+    return {
+      allowedWindow: "9:00 AM to 10:00 AM",
+      startMinutes: 9 * 60,
+      startSeconds: 9 * 3600,
+      endSeconds: (10 * 3600) + (2 * 60) // Includes 2 min grace period like other shifts
     };
   }
 
