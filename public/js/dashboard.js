@@ -51,6 +51,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   }
 
+  // Show Petrol Approval link for Chandralekha (3854)
+  if (data.user.employee_id === "3854") {
+    document.querySelectorAll(".chandralekha-petrol").forEach(link => {
+      link.style.display = "flex";
+    });
+  }
+
 
 
 
@@ -71,19 +78,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
   //-------------------------------------------------------------------------------
-// Show Office assets for malini and prema
+  // Show Office assets for malini and prema
 
 
-if (
+  if (
     data.user.employee_id === "1256" ||
     data.user.employee_id === "3386"
-) {
+  ) {
     document.querySelectorAll(".office-assets-only").forEach(el => {
-        el.style.display = "flex";
+      el.style.display = "flex";
     });
-}
-//-----------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
+  }
+  //-----------------------------------------------------------------------------
+  //-------------------------------------------------------------------------------
 
 
   userRole = roleId;
