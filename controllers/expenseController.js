@@ -851,7 +851,12 @@ exports.getExpenseApprovals = (req, res) => {
     return res.status(403).json({ success: false, message: "Not authorized" });
   }
 
+
+
+
   const approverId = req.session.user.user_id;
+  const roleId = Number(req.session.user.roleId);
+  const isAdminOrSuperAdmin = roleId === 1 || roleId === 2;
 
   // ---- READ QUERY FILTERS ----
   const status = req.query.status || "all";
@@ -867,27 +872,70 @@ SELECT
   ec.req_no,
   ec.created_at,
   SUM(ei.amount) AS amount,
-  MAX(ea.status) AS approver_status,
-  MAX(ec.status) AS final_status,
+  COALESCE(MAX(ea.status), ec.status) AS approver_status,
+  ec.status AS final_status,
   MAX(CONCAT(emp.first_name, ' ', emp.last_name)) AS requester_name,
   GROUP_CONCAT(DISTINCT ei.expense_type) AS expense_type
-
 FROM expense_claim ec
-
-JOIN expense_approvals ea 
-  ON ec.req_no = ea.req_no 
- AND ea.approver_id = ?
-
+LEFT JOIN expense_approvals ea 
+  ON ec.req_no = ea.req_no ${isAdminOrSuperAdmin ? "" : "AND ea.approver_id = ?"}
 JOIN employees emp 
   ON ec.requester_id = emp.id
-
 JOIN expense_items ei 
   ON ei.claim_id = ec.id
-
 WHERE 1=1
 `;
 
-  const params = [approverId];
+  const params = isAdminOrSuperAdmin ? [] : [approverId];
+
+  // ---- STATUS FILTER ----
+  if (status !== "all") {
+    if (isAdminOrSuperAdmin) {
+      sql += " AND ec.status = ? ";
+    } else {
+      sql += " AND ea.status = ? ";
+    }
+    params.push(status);
+  }
+
+
+  //   const approverId = req.session.user.user_id;
+
+  //   // ---- READ QUERY FILTERS ----
+  //   const status = req.query.status || "all";
+  //   const search = req.query.search ? req.query.search.trim() : "";
+  //   const startDate = req.query.start_date || "";
+  //   const endDate = req.query.end_date || "";
+  //   const isReport = req.query.report === "1";
+
+  //   // ---- BASE QUERY ----
+  //   let sql = `
+  // SELECT 
+  //   ec.id,
+  //   ec.req_no,
+  //   ec.created_at,
+  //   SUM(ei.amount) AS amount,
+  //   MAX(ea.status) AS approver_status,
+  //   MAX(ec.status) AS final_status,
+  //   MAX(CONCAT(emp.first_name, ' ', emp.last_name)) AS requester_name,
+  //   GROUP_CONCAT(DISTINCT ei.expense_type) AS expense_type
+
+  // FROM expense_claim ec
+
+  // JOIN expense_approvals ea 
+  //   ON ec.req_no = ea.req_no 
+  //  AND ea.approver_id = ?
+
+  // JOIN employees emp 
+  //   ON ec.requester_id = emp.id
+
+  // JOIN expense_items ei 
+  //   ON ei.claim_id = ec.id
+
+  // WHERE 1=1
+  // `;
+
+  //   const params = [approverId];
 
   // ---- STATUS FILTER ----
   if (status !== "all") {

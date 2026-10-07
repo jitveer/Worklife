@@ -405,7 +405,7 @@ exports.updatePetrolApproval = (req, res) => {
 
                   return res.status(200).json({ message: "Next level approvers notified" });
                 });
-                
+
               } else {
                 //  Fully approved
                 db.query(`UPDATE petrol_claim SET status='Approved' WHERE req_no=?`, [req_no]);
@@ -488,7 +488,15 @@ exports.getPetrolApprovals = (req, res) => {
     return res.status(403).json({ success: false, message: "Not authorized" });
   }
 
+
+
+
   const approverId = req.session.user.user_id;
+  const roleId = Number(req.session.user.roleId);
+  const isAdminOrSuperAdmin = roleId === 1 || roleId === 2;
+  // Chandralekha view only 
+  const isChandralekha = req.session.user.employee_id === "3854";
+  const canViewAll = isAdminOrSuperAdmin || isChandralekha;
 
   // QUERY FILTERS
   const status = req.query.status || "all";
@@ -502,23 +510,73 @@ exports.getPetrolApprovals = (req, res) => {
     SELECT
       pc.req_no,
       pc.remarks,
-      LOWER(MAX(pa.status)) AS my_status,
+      LOWER(COALESCE(MAX(pa.status), pc.status)) AS my_status,
       LOWER(pc.status) AS final_status,
       pc.created_at,
       CONCAT(e.first_name, ' ', e.last_name) AS requester_name
     FROM petrol_claim pc
-    JOIN petrol_approvals pa ON pc.req_no = pa.req_no
+    LEFT JOIN petrol_approvals pa ON pc.req_no = pa.req_no
     JOIN employees e ON pc.requester_id = e.id
-    WHERE pa.approver_id = ?
+    WHERE 1=1
   `;
 
-  const params = [approverId];
+  const params = [];
+
+  // if (!isAdminOrSuperAdmin) {
+  //   sql += ` AND pa.approver_id = ? `;
+  //   params.push(approverId);
+  // }
+
+  if (!canViewAll) {
+    sql += ` AND pa.approver_id = ? `;
+    params.push(approverId);
+  }
+
 
   // STATUS FILTER
   if (status !== "all") {
-    sql += ` AND LOWER(pa.status) = LOWER(?)`;
+    if (isAdminOrSuperAdmin) {
+      sql += ` AND LOWER(pc.status) = LOWER(?)`;
+    } else {
+      sql += ` AND LOWER(pa.status) = LOWER(?)`;
+    }
     params.push(status);
   }
+
+
+
+
+  // const approverId = req.session.user.user_id;
+
+  // // QUERY FILTERS
+  // const status = req.query.status || "all";
+  // const search = req.query.search || "";
+  // const startDate = req.query.start_date || "";
+  // const endDate = req.query.end_date || "";
+  // const isReport = req.query.report === "1";
+
+  // // BASE QUERY
+  // let sql = `
+  //   SELECT
+  //     pc.req_no,
+  //     pc.remarks,
+  //     LOWER(MAX(pa.status)) AS my_status,
+  //     LOWER(pc.status) AS final_status,
+  //     pc.created_at,
+  //     CONCAT(e.first_name, ' ', e.last_name) AS requester_name
+  //   FROM petrol_claim pc
+  //   JOIN petrol_approvals pa ON pc.req_no = pa.req_no
+  //   JOIN employees e ON pc.requester_id = e.id
+  //   WHERE pa.approver_id = ?
+  // `;
+
+  // const params = [approverId];
+
+  // // STATUS FILTER
+  // if (status !== "all") {
+  //   sql += ` AND LOWER(pa.status) = LOWER(?)`;
+  //   params.push(status);
+  // }
 
   // SEARCH FILTER (NAME)
   if (search) {

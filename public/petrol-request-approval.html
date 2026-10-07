@@ -1240,6 +1240,15 @@
 
                     sessionStorage.setItem("user_id", data.user.user_id);
 
+
+                    // If user is Chandralekha (3854), hide Approve and Reject buttons (View Only)
+                    if (data.user.employee_id === "3854") {
+                        const approveBtn = document.getElementById("approveBtn");
+                        const rejectBtn = document.getElementById("rejectBtn");
+                        if (approveBtn) approveBtn.style.display = "none";
+                        if (rejectBtn) rejectBtn.style.display = "none";
+                    }
+
                     const panel = document.querySelector(".left-panel");
 
                     // Employee

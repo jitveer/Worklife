@@ -422,12 +422,21 @@ exports.getCertificateList = (req, res) => {
         return res.status(403).json({ message: "Unauthorized" });
     }
 
-    const roleId = req.session.user.roleId;
+    // const roleId = req.session.user.roleId;
 
-    // 🔒 HARD BLOCK — ONLY HR
-    if (roleId !== 3) {
+    // // 🔒 HARD BLOCK — ONLY HR
+    // if (roleId !== 3) {
+    //     return res.status(403).json({
+    //         message: "Access denied. HR only."
+    //     });
+    // }
+
+
+    const roleId = Number(req.session.user.roleId);
+    // Allow Super Admin (1), Admin (2), and HR (3)
+    if (![1, 2, 3].includes(roleId)) {
         return res.status(403).json({
-            message: "Access denied. HR only."
+            message: "Access denied. Admin or HR only."
         });
     }
 

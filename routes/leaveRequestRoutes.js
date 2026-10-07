@@ -100,7 +100,9 @@ router.post('/assign-leave-task', (req, res) => {
 
 
 
-// approver own table with filtration
+// // approver own table with filtration
+
+
 router.get("/", (req, res) => {
   const approverUserId = req.session.user?.user_id;
 
@@ -108,30 +110,42 @@ router.get("/", (req, res) => {
     return res.status(401).json({ message: "Not logged in" });
   }
 
+  const roleId = Number(req.session.user?.roleId || req.query.role);
+  const isAdminOrSuperAdmin = roleId === 1 || roleId === 2;
 
-  // ⭐ IMPORTANT: Add this!
   const isReport = req.query.report === "1";
-
-  // NEW FILTERS COMING FROM FRONTEND
   const status = req.query.status || "all";
   const search = req.query.search || "";
   const startDate = req.query.start_date || "";
   const endDate = req.query.end_date || "";
   const requesterEmail = req.query.requester_email || null;
 
-  // BASE QUERY
-  let sql = `
-    SELECT 
-      lr.*,
-      lra.status AS approver_status,
-      lra.level AS approver_level
-    FROM leave_requests lr
-    JOIN leave_request_approvals lra 
-      ON lr.id = lra.leave_request_id
-    WHERE lra.approver_user_id = ?
-  `;
+  let sql = "";
+  const params = [];
 
-  const params = [approverUserId];
+  if (isAdminOrSuperAdmin) {
+    // Admin / Super Admin view all leave requests directly
+    sql = `
+      SELECT 
+        lr.*,
+        lr.status AS approver_status
+      FROM leave_requests lr
+      WHERE 1=1
+    `;
+  } else {
+    // Normal Approver view only their assigned requests
+    sql = `
+      SELECT 
+        lr.*,
+        lra.status AS approver_status,
+        lra.level AS approver_level
+      FROM leave_requests lr
+      JOIN leave_request_approvals lra 
+        ON lr.id = lra.leave_request_id
+      WHERE lra.approver_user_id = ?
+    `;
+    params.push(approverUserId);
+  }
 
   // ⭐ FILTER 1: STATUS
   if (status !== "all") {
@@ -163,20 +177,100 @@ router.get("/", (req, res) => {
     params.push(requesterEmail);
   }
 
-  // FINAL RULE (same as your existing one)
-  sql += `
-      AND lra.status IN ('pending','approved','cancelled')
-      AND (
-        lra.status != 'pending'
-        OR NOT EXISTS (
-          SELECT 1 FROM leave_request_approvals 
-          WHERE leave_request_id = lr.id 
-            AND level < lra.level 
-            AND status != 'approved'
+  // Approver stage rules (only apply to normal approvers, not admin)
+  if (!isAdminOrSuperAdmin) {
+    sql += `
+        AND lra.status IN ('pending','approved','cancelled')
+        AND (
+          lra.status != 'pending'
+          OR NOT EXISTS (
+            SELECT 1 FROM leave_request_approvals 
+            WHERE leave_request_id = lr.id 
+              AND level < lra.level 
+              AND status != 'approved'
+          )
         )
-      )
-    ORDER BY lr.created_at DESC
-  `;
+    `;
+  }
+
+  sql += ` ORDER BY lr.created_at DESC `;
+
+  // router.get("/", (req, res) => {
+  //   const approverUserId = req.session.user?.user_id;
+
+  //   if (!approverUserId) {
+  //     return res.status(401).json({ message: "Not logged in" });
+  //   }
+
+
+  //   // ⭐ IMPORTANT: Add this!
+  //   const isReport = req.query.report === "1";
+
+  //   // NEW FILTERS COMING FROM FRONTEND
+  //   const status = req.query.status || "all";
+  //   const search = req.query.search || "";
+  //   const startDate = req.query.start_date || "";
+  //   const endDate = req.query.end_date || "";
+  //   const requesterEmail = req.query.requester_email || null;
+
+  //   // BASE QUERY
+  //   let sql = `
+  //     SELECT 
+  //       lr.*,
+  //       lra.status AS approver_status,
+  //       lra.level AS approver_level
+  //     FROM leave_requests lr
+  //     JOIN leave_request_approvals lra 
+  //       ON lr.id = lra.leave_request_id
+  //     WHERE lra.approver_user_id = ?
+  //   `;
+
+  //   const params = [approverUserId];
+
+  //   // ⭐ FILTER 1: STATUS
+  //   if (status !== "all") {
+  //     sql += " AND lr.status = ? ";
+  //     params.push(status);
+  //   }
+
+  //   // ⭐ FILTER 2: SEARCH BY REQUESTER NAME
+  //   if (search.trim() !== "") {
+  //     sql += " AND lr.requester_name LIKE ? ";
+  //     params.push(`%${search}%`);
+  //   }
+
+  //   // ⭐ FILTER 3: DATE RANGE
+  //   if (startDate && endDate) {
+  //     sql += " AND DATE(lr.created_at) BETWEEN ? AND ? ";
+  //     params.push(startDate, endDate);
+  //   } else if (startDate) {
+  //     sql += " AND DATE(lr.created_at) >= ? ";
+  //     params.push(startDate);
+  //   } else if (endDate) {
+  //     sql += " AND DATE(lr.created_at) <= ? ";
+  //     params.push(endDate);
+  //   }
+
+  //   // ⭐ FILTER 4: MY REQUESTS
+  //   if (requesterEmail) {
+  //     sql += " AND lr.requester_email = ? ";
+  //     params.push(requesterEmail);
+  //   }
+
+  //   // FINAL RULE (same as your existing one)
+  //   sql += `
+  //       AND lra.status IN ('pending','approved','cancelled')
+  //       AND (
+  //         lra.status != 'pending'
+  //         OR NOT EXISTS (
+  //           SELECT 1 FROM leave_request_approvals 
+  //           WHERE leave_request_id = lr.id 
+  //             AND level < lra.level 
+  //             AND status != 'approved'
+  //         )
+  //       )
+  //     ORDER BY lr.created_at DESC
+  //   `;
 
   db.query(sql, params, (err, rows) => {
     if (err) {

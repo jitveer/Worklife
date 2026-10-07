@@ -899,7 +899,12 @@ exports.getSalesList = (req, res) => {
     return res.status(403).json({ success: false, message: "Not authorized" });
   }
 
+
+
+
   const approverId = req.session.user.user_id;
+  const roleId = Number(req.session.user.roleId);
+  const isAdminOrSuperAdmin = roleId === 1 || roleId === 2;
 
   // Filters
   const status = req.query.status || "all";
@@ -914,25 +919,65 @@ exports.getSalesList = (req, res) => {
       s.id AS sale_id,
       s.req_no,
       CONCAT(e.first_name, ' ', e.last_name) AS requester_name,
-      sa.status AS approver_status,
+      COALESCE(sa.status, s.status) AS approver_status,
       s.status AS final_status,
       s.created_at
     FROM sales s
-    JOIN sales_approval sa 
+    LEFT JOIN sales_approval sa 
         ON sa.req_no = s.req_no 
-        AND sa.approver_id = ?
+        ${isAdminOrSuperAdmin ? "" : "AND sa.approver_id = ?"}
     JOIN employees e 
         ON s.requester_id = e.id
     WHERE 1=1
   `;
 
-  const params = [approverId];
+  const params = isAdminOrSuperAdmin ? [] : [approverId];
 
-  // Status filter (my status)
+  // Status filter
   if (status !== "all") {
-    sql += " AND LOWER(sa.status) = LOWER(?) ";
+    if (isAdminOrSuperAdmin) {
+      sql += " AND LOWER(s.status) = LOWER(?) ";
+    } else {
+      sql += " AND LOWER(sa.status) = LOWER(?) ";
+    }
     params.push(status);
   }
+
+
+  // const approverId = req.session.user.user_id;
+
+  // // Filters
+  // const status = req.query.status || "all";
+  // const search = req.query.name || "";
+  // const startDate = req.query.start || "";
+  // const endDate = req.query.end || "";
+  // const isReport = req.query.report === "1";
+
+  // // Base query
+  // let sql = `
+  //   SELECT
+  //     s.id AS sale_id,
+  //     s.req_no,
+  //     CONCAT(e.first_name, ' ', e.last_name) AS requester_name,
+  //     sa.status AS approver_status,
+  //     s.status AS final_status,
+  //     s.created_at
+  //   FROM sales s
+  //   JOIN sales_approval sa 
+  //       ON sa.req_no = s.req_no 
+  //       AND sa.approver_id = ?
+  //   JOIN employees e 
+  //       ON s.requester_id = e.id
+  //   WHERE 1=1
+  // `;
+
+  // const params = [approverId];
+
+  // // Status filter (my status)
+  // if (status !== "all") {
+  //   sql += " AND LOWER(sa.status) = LOWER(?) ";
+  //   params.push(status);
+  // }
 
   // Search filter
   if (search) {
