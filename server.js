@@ -125,7 +125,7 @@ app.use(
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ Rate Limiting: Prevent brute-force/DDoS attacks on API/attendance endpoints
+// ✅ Rate Limiting: Prevent brute-force/DDoS attacks on API endpoints
 const apiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 100, // Limit each IP to 100 requests per windowMs
@@ -134,6 +134,18 @@ const apiLimiter = rateLimit({
   message: {
     success: false,
     message: "Too many requests from this IP. Please try again after a minute."
+  }
+});
+
+// ✅ High-capacity Attendance Limiter: Supports bulk simultaneous logins from shared office Wi-Fi IP
+const attendanceLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 1000, // 1,000 requests per minute so all employees can clock in simultaneously without choke
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Server is handling heavy attendance traffic. Please try again in a few seconds."
   }
 });
 
@@ -188,7 +200,7 @@ app.use("/attendance", (req, res, next) => {
 
 // ✅ Apply Rate Limiter to API and Attendance routes
 app.use('/api', apiLimiter);
-app.use('/attendance', apiLimiter);
+app.use('/attendance', attendanceLimiter);
 
 // ✅ Apply central authentication middleware to API and Attendance routes
 app.use('/api', checkAuth);

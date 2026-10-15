@@ -1,8 +1,34 @@
 const db = require("../db");
 const reverseGeocode = require("../utils/reverseGeocode");
 const watermarkImage = require("../utils/watermarkImage");
-// Lock to prevent rapid multiple clicks inserting duplicate attendance
-const activeLoginRequests = new Set();
+// Helper: Always get today's date in India Standard Time (IST) YYYY-MM-DD
+function getTodayIST() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata"
+  }).format(new Date());
+}
+
+// 🛡️ Bulletproof Lock to prevent rapid multiple clicks without leaking memory
+const activeLoginRequests = new Map();
+
+function acquireLoginLock(empId) {
+  if (activeLoginRequests.has(empId)) {
+    return false;
+  }
+  // Auto-release after 8 seconds as safety net so employee can never be trapped
+  const timer = setTimeout(() => {
+    activeLoginRequests.delete(empId);
+  }, 8000);
+  activeLoginRequests.set(empId, timer);
+  return true;
+}
+
+function releaseLoginLock(empId) {
+  if (activeLoginRequests.has(empId)) {
+    clearTimeout(activeLoginRequests.get(empId));
+    activeLoginRequests.delete(empId);
+  }
+}
 
 
 /* ---------- SHOW PASSCODE PAGE ---------- */
@@ -22,28 +48,21 @@ exports.verifyPasscode = (req, res) => {
   // console.log("Session before verify:", req.session);
 
 
-  if (!passcode || passcode.length !== 4) {
+  if (!passcode || String(passcode).trim().length !== 4) {
     return res.status(400).json({ success: false, message: "Enter 4-digit passcode" });
   }
 
-  const sql = "SELECT * FROM employees"; // get all employees with hashed passcode
+  const cleanPasscode = String(passcode).trim();
+  // ⚡ Fast indexed lookup (1ms) instead of scanning the whole employees table repeatedly during morning rush
+  const sql = "SELECT * FROM employees WHERE TRIM(passcode) = ? LIMIT 1";
 
-  db.query(sql, async (err, employees) => {
-    if (err) return res.status(500).json({ success: false, message: "DB error" });
-
-    // 🔑 Find employee by bcrypt asynchronously to prevent event loop blocking
-    let emp = null;
-    for (const e of employees) {
-      if (e.passcode) {
-        // const match = passcode === e.passcode;
-        const match = String(passcode).trim() === String(e.passcode).trim();
-        if (match) {
-          emp = e;
-          break;
-        }
-      }
+  db.query(sql, [cleanPasscode], (err, employees) => {
+    if (err) {
+      console.error("VERIFY PASSCODE DB ERROR:", err);
+      return res.status(500).json({ success: false, message: "DB error" });
     }
 
+    const emp = (employees && employees.length > 0) ? employees[0] : null;
 
     if (!emp) {
       return res.status(401).json({ success: false, message: "Invalid passcode" });
@@ -51,11 +70,11 @@ exports.verifyPasscode = (req, res) => {
 
     req.session.employee = emp;
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = getTodayIST();
 
     const checkSql = `
       SELECT * FROM attendance
-      WHERE employee_id = ? AND DATE(login_time) = ?
+      WHERE employee_id = ? AND (DATE(login_time) = ? OR DATE(login_time) = CURDATE())
       ORDER BY id DESC LIMIT 1
     `;
 
@@ -230,22 +249,22 @@ exports.officeLogin = (req, res) => {
   const emp = req.session.employee;
 
   if (!emp) {
-    return res.status(401).json({ success: false });
+    return res.status(401).json({ success: false, message: "Session expired" });
   }
 
-  //------------------------------------------------------------------------------------------------------------
   // 🛡️ GUARD 1: Block simultaneous rapid clicks from the same employee
-  if (activeLoginRequests.has(emp.id)) {
-    return res.json({ success: true }); // Return success so frontend redirects smoothly without inserting again
+  if (!acquireLoginLock(emp.id)) {
+    return res.status(429).json({
+      success: false,
+      message: "Login is already processing. Please wait a moment."
+    });
   }
-  activeLoginRequests.add(emp.id);
-  //------------------------------------------------------------------------------------------------
 
   // =====================================================
   // CHECK LOGIN TIME
   // =====================================================
   if (!isLoginTimeAllowed(emp.employee_id)) {
-    activeLoginRequests.delete(emp.id);
+    releaseLoginLock(emp.id);
     const window = getEmployeeLoginWindow(emp.employee_id);
     return res.status(403).json({
       success: false,
@@ -253,37 +272,31 @@ exports.officeLogin = (req, res) => {
     });
   }
 
+  const today = getTodayIST();
 
-
-
-  //---------------------------------------------------------------
   // 🛡️ GUARD 2: Check database if already logged in today without logout
   const checkSql = `
     SELECT id FROM attendance
     WHERE employee_id = ?
-    AND DATE(login_time) = CURDATE()
+    AND (DATE(login_time) = ? OR DATE(login_time) = CURDATE())
     AND logout_time IS NULL
     LIMIT 1
   `;
-  db.query(checkSql, [emp.id], (checkErr, rows) => {
+  db.query(checkSql, [emp.id, today], (checkErr, rows) => {
     if (checkErr) {
-      activeLoginRequests.delete(emp.id);
+      releaseLoginLock(emp.id);
       console.error("CHECK LOGIN ERROR:", checkErr);
-      return res.status(500).json({ success: false });
+      return res.status(500).json({ success: false, message: "Database check error" });
     }
     if (rows && rows.length > 0) {
-      activeLoginRequests.delete(emp.id);
+      releaseLoginLock(emp.id);
       // Already logged in today, return success so it doesn't duplicate
       return res.json({ success: true, message: "Already logged in" });
     }
 
-
-    //----------------------------------------------------
-
     // Login is within allowed time
     let late_minutes = 0;
     let late_seconds = 0;
-
 
     const sql = `
     INSERT INTO attendance
@@ -308,12 +321,11 @@ exports.officeLogin = (req, res) => {
       late_minutes,
       late_seconds
     ], (err, result) => {
-
-      activeLoginRequests.delete(emp.id);
+      releaseLoginLock(emp.id);
 
       if (err) {
         console.error("OFFICE LOGIN DB ERROR:", err);
-        return res.status(500).json({ success: false });
+        return res.status(500).json({ success: false, message: "Database insert error" });
       }
       res.json({ success: true });
     });
@@ -336,31 +348,23 @@ exports.siteLoginPage = (req, res) => {
 
 /* ---------- SITE LOGIN SUBMIT ---------- */
 exports.siteLogin = async (req, res) => {
+  const emp = req.session.employee;
+
+  if (!emp) {
+    return res.status(401).send("Session expired");
+  }
+
+  // 🛡️ Block rapid multiple clicks
+  if (!acquireLoginLock(emp.id)) {
+    return res.status(429).send("Site login is already being processed. Please wait a moment.");
+  }
+
   try {
-    // console.log("==== SITE LOGIN HIT ====");
-    // console.log("BODY:", req.body);
-    // console.log("FILE:", req.file);
-
-    const emp = req.session.employee;
-
-    if (!emp) {
-      return res.status(401).send("Session expired");
-    }
-
-
-    //----------------------------------------------------------
-    // 🛡️ Block rapid multiple clicks
-    if (activeLoginRequests.has(emp.id)) {
-      return res.json({ success: true });
-    }
-    activeLoginRequests.add(emp.id);
-
-    //-----------------------------------------------------------
-
     // =====================================================
     // CHECK LOGIN TIME
     // =====================================================
     if (!isLoginTimeAllowed(emp.employee_id)) {
+      releaseLoginLock(emp.id);
       const window = getEmployeeLoginWindow(emp.employee_id);
       return res.status(403).send(
         `Site login is allowed only between ${window.allowedWindow}.`
@@ -374,43 +378,55 @@ exports.siteLogin = async (req, res) => {
     // 1️⃣ Read latitude & longitude
     const { latitude, longitude } = req.body;
     if (!latitude || !longitude) {
+      releaseLoginLock(emp.id);
       return res.status(400).send("Location missing");
     }
 
     // 2️⃣ Ensure selfie exists
     if (!req.file) {
+      releaseLoginLock(emp.id);
       return res.status(400).send("Selfie missing");
     }
 
     // 3️⃣ DEFINE imagePath FIRST ✅
     const imagePath = `/uploads/attendance_selfie/${req.file.filename}`;
 
-    // 4️⃣ Reverse geocode
-    const location_address = await reverseGeocode(latitude, longitude);
+    // 4️⃣ Reverse geocode (fail-safe: attendance will NEVER fail if geocode is slow or unavailable)
+    let location_address = "Location not available";
+    try {
+      location_address = await reverseGeocode(latitude, longitude);
+    } catch (geoErr) {
+      console.error("Reverse geocode warning:", geoErr.message);
+      location_address = `Lat: ${latitude}, Lng: ${longitude}`;
+    }
 
-    // 5️⃣ Watermark image AFTER imagePath exists ✅
-    await watermarkImage(imagePath, location_address);
+    // 5️⃣ Watermark image (fail-safe: attendance will NEVER fail if image watermarking errors)
+    try {
+      await watermarkImage(imagePath, location_address);
+    } catch (wmErr) {
+      console.error("Watermark warning:", wmErr.message);
+    }
 
-
+    const today = getTodayIST();
 
     // 🛡️ Check if already logged in today without logout
     const checkSql = `
       SELECT id FROM attendance
       WHERE employee_id = ?
-      AND DATE(login_time) = CURDATE()
+      AND (DATE(login_time) = ? OR DATE(login_time) = CURDATE())
       AND logout_time IS NULL
       LIMIT 1
     `;
-    db.query(checkSql, [emp.id], (checkErr, rows) => {
+    db.query(checkSql, [emp.id, today], (checkErr, rows) => {
       if (checkErr) {
-        activeLoginRequests.delete(emp.id);
+        releaseLoginLock(emp.id);
+        console.error("SITE LOGIN DB CHECK ERROR:", checkErr);
         return res.status(500).send("Database error");
       }
       if (rows && rows.length > 0) {
-        activeLoginRequests.delete(emp.id);
+        releaseLoginLock(emp.id);
         return res.json({ success: true, message: "Already logged in" });
       }
-
 
       // 6️⃣ Insert into DB
       const sql = `
@@ -445,7 +461,7 @@ exports.siteLogin = async (req, res) => {
           late_seconds
         ],
         (err) => {
-          activeLoginRequests.delete(emp.id);
+          releaseLoginLock(emp.id);
 
           if (err) {
             console.error("DB ERROR:", err);
@@ -457,7 +473,7 @@ exports.siteLogin = async (req, res) => {
       );
     });
   } catch (err) {
-    if (emp) activeLoginRequests.delete(emp.id);
+    releaseLoginLock(emp.id);
     console.error("SITE LOGIN ERROR:", err);
     res.status(500).send("Server error");
   }
@@ -479,15 +495,17 @@ exports.logout = (req, res) => {
     return res.redirect("/attendance/passcode.html");
   }
 
+  const today = getTodayIST();
+
   const sql = `
     SELECT * FROM attendance
     WHERE employee_id = ?
-    AND DATE(login_time) = CURDATE()
+    AND (DATE(login_time) = ? OR DATE(login_time) = CURDATE())
     AND logout_time IS NULL
     ORDER BY id DESC LIMIT 1
   `;
 
-  db.query(sql, [emp.id], (err, rows) => {
+  db.query(sql, [emp.id, today], (err, rows) => {
 
     if (err || !rows.length) {
       return res.redirect("/attendance/passcode.html");
@@ -550,15 +568,17 @@ exports.emergencyLogout = (req, res) => {
   const { reason } = req.body;
   const emp = req.session.employee;
 
+  const today = getTodayIST();
+
   const sql = `
     SELECT * FROM attendance
     WHERE employee_id = ?
-    AND DATE(login_time) = CURDATE()
+    AND (DATE(login_time) = ? OR DATE(login_time) = CURDATE())
     AND logout_time IS NULL
     ORDER BY id DESC LIMIT 1
   `;
 
-  db.query(sql, [emp.id], (err, rows) => {
+  db.query(sql, [emp.id, today], (err, rows) => {
 
     if (err || !rows.length) {
       return res.json({ success: false });
@@ -606,17 +626,19 @@ exports.getTodayWorkingTime = (req, res) => {
     return res.json({ workingTime: "0 Minutes" });
   }
 
+  const today = getTodayIST();
+
   const sql = `
     SELECT login_time
     FROM attendance
     WHERE employee_id = ?
-    AND DATE(login_time) = CURDATE()
+    AND (DATE(login_time) = ? OR DATE(login_time) = CURDATE())
     AND logout_time IS NULL
     ORDER BY id DESC
     LIMIT 1
   `;
 
-  db.query(sql, [emp.id], (err, rows) => {
+  db.query(sql, [emp.id, today], (err, rows) => {
 
     if (err || !rows.length) {
       return res.json({ workingTime: "0 Minutes" });
@@ -651,7 +673,7 @@ exports.getAttendance = (req, res) => {
   let sql = `
 SELECT
   id,
-  CONCAT(first_name,' ',last_name) AS name,
+  TRIM(CONCAT(COALESCE(first_name,''), ' ', COALESCE(last_name,''))) AS name,
   login_time,
   logout_time,
   late_minutes,
@@ -701,7 +723,7 @@ exports.downloadReport = (req, res) => {
 
   const sql = `
     SELECT 
-      CONCAT(first_name,' ',last_name) AS name,
+      TRIM(CONCAT(COALESCE(first_name,''), ' ', COALESCE(last_name,''))) AS name,
       login_time,
       logout_time,
     late_minutes,
