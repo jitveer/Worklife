@@ -1086,10 +1086,10 @@
                         row.querySelector(".representative")?.value || "";
 
                     const clientName =
-                        row.querySelector(".client-name")?.value || "";
+                        row.querySelector(".client-name, .client_name")?.value?.trim() || "";
 
                     const flatNo =
-                        row.querySelector(".flat-no")?.value || "";
+                        row.querySelector(".flat-no, .flat_no")?.value?.trim() || "";
 
                     const project =
                         row.querySelector(".project")?.value || "";
@@ -1602,11 +1602,11 @@
         </td>
 
         <td data-label="*Client Name">
-            <input type="text" class="form-control client_name" placeholder="">
+            <input type="text" class="form-control client-name client_name" placeholder="">
         </td>
 
         <td data-label="*Flat No">
-            <input type="text" class="form-control flat_no" placeholder="">
+            <input type="text" class="form-control flat-no flat_no" placeholder="">
         </td>
 
         <td data-label="*Project">
