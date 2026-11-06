@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Show Petrol Approval link for Chandralekha (3854)
   if (data.user.employee_id === "3854") {
-    document.querySelectorAll(".chandralekha-petrol").forEach(link => {
+    document.querySelectorAll(".chandralekha-petrol, .chandralekha-sales").forEach(link => {
       link.style.display = "flex";
     });
   }

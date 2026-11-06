@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
@@ -368,6 +369,7 @@
             display: flex;
             align-items: center;
             margin: 12px 0;
+            gap: 6px;
         }
 
         .sales-actions-top p {
@@ -406,8 +408,8 @@
 
 
 
-        /* 📱 Mobile Layout Styling */
-        @media(max-width: 768px) {
+        /* 📱 Mobile Layout Styling (Screen only, never leak into Print) */
+        @media screen and (max-width: 768px) {
 
             .header {
                 max-width: 400px;
@@ -696,6 +698,406 @@
             }
 
         }
+
+        @media screen {
+            .print-text-val {
+                display: none !important;
+            }
+        }
+
+        /* 🖨️ Clean Print / Save-as-PDF Styling - Exact UI Match, Zero Cutoff */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 6mm;
+            }
+
+            /* 🚫 Completely eliminate any browser scrollbar or ghost lines */
+            html,
+            body {
+                overflow: visible !important;
+                height: auto !important;
+                min-height: auto !important;
+                max-height: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+
+            * {
+                scrollbar-width: none !important;
+                -ms-overflow-style: none !important;
+            }
+
+            ::-webkit-scrollbar {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+            }
+
+            /* Hide website navigation, sidebars, action buttons, delete buttons, and form inputs in print */
+            header,
+            .left-panel,
+            .sales-actions-top,
+            #approveBtn,
+            #rejectBtn,
+            #approvalMessage,
+            .delete-row,
+            #salesItemsTable th:last-child,
+            #salesItemsTable td:last-child,
+            #salesItemsTable input,
+            #salesItemsTable select,
+            #salesApprovalHistory input {
+                display: none !important;
+            }
+
+            /* Clean readable wrapping text for print */
+            .print-text-val {
+                display: block !important;
+                font-size: 8.5px !important;
+                line-height: 1.25 !important;
+                white-space: normal !important;
+                word-break: break-word !important;
+                overflow-wrap: break-word !important;
+                text-align: center !important;
+                color: #111 !important;
+                font-weight: 500 !important;
+                padding: 1px !important;
+            }
+
+            body {
+                background: white !important;
+                color: #222 !important;
+                font-family: 'Roboto', sans-serif !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .main-container {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                gap: 10px !important;
+            }
+
+            /* Personal info block at top in neat 3-column grid */
+            .personal-info {
+                order: -1 !important;
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 6px !important;
+                width: 100% !important;
+                box-shadow: none !important;
+                border: 1px solid #4aa382 !important;
+                border-radius: 4px !important;
+                padding: 8px 12px !important;
+                margin: 0 0 8px 0 !important;
+                background: #f4fbf8 !important;
+                page-break-inside: avoid !important;
+            }
+
+            .info-heading {
+                grid-column: 1 / -1 !important;
+                font-size: 13px !important;
+                font-weight: bold !important;
+                margin-bottom: 4px !important;
+                color: #165c42 !important;
+            }
+
+            .info-block {
+                padding: 4px 8px !important;
+                font-size: 11px !important;
+                background: #e5f6ef !important;
+                border: 1px solid #b3ddcc !important;
+                border-radius: 3px !important;
+                margin: 0 !important;
+            }
+
+            .info-block .label {
+                font-weight: bold !important;
+                color: #165c42 !important;
+                margin-bottom: 2px !important;
+            }
+
+            .sales-form-section {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .sales-form-section h5 {
+                font-size: 14px !important;
+                font-weight: bold !important;
+                color: #165c42 !important;
+                margin-bottom: 6px !important;
+            }
+
+            /* FORCE EXACT DESKTOP HORIZONTAL TABLE - NO CUTOFF */
+            #salesItemsTable {
+                display: table !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                border-collapse: collapse !important;
+                table-layout: fixed !important;
+                margin-bottom: 6px !important;
+            }
+
+            #salesItemsTable thead {
+                display: table-header-group !important;
+            }
+
+            #salesItemsTable thead tr {
+                display: table-row !important;
+                background: #4aa382 !important;
+                color: white !important;
+            }
+
+            #salesItemsTable thead th {
+                display: table-cell !important;
+                background: #4aa382 !important;
+                color: white !important;
+                font-size: 8.5px !important;
+                font-weight: bold !important;
+                padding: 4px 1px !important;
+                text-align: center !important;
+                border: 1px solid #3d8c72 !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+                word-break: break-word !important;
+                vertical-align: middle !important;
+            }
+
+            /* Optimized proportional widths for all 13 columns (Sum = 100%) */
+            #salesItemsTable th:nth-child(1) {
+                width: 7%;
+            }
+
+            #salesItemsTable th:nth-child(2) {
+                width: 7%;
+            }
+
+            #salesItemsTable th:nth-child(3) {
+                width: 10%;
+            }
+
+            #salesItemsTable th:nth-child(4) {
+                width: 9%;
+            }
+
+            #salesItemsTable th:nth-child(5) {
+                width: 5%;
+            }
+
+            #salesItemsTable th:nth-child(6) {
+                width: 9%;
+            }
+
+            #salesItemsTable th:nth-child(7) {
+                width: 6%;
+            }
+
+            #salesItemsTable th:nth-child(8) {
+                width: 10%;
+            }
+
+            #salesItemsTable th:nth-child(9) {
+                width: 6%;
+            }
+
+            #salesItemsTable th:nth-child(10) {
+                width: 7%;
+            }
+
+            #salesItemsTable th:nth-child(11) {
+                width: 8%;
+            }
+
+            #salesItemsTable th:nth-child(12) {
+                width: 8%;
+            }
+
+            #salesItemsTable th:nth-child(13) {
+                width: 8%;
+            }
+
+            #salesItemsTable tbody {
+                display: table-row-group !important;
+            }
+
+            #salesItemsTable tbody tr {
+                display: table-row !important;
+                background: white !important;
+                page-break-inside: avoid !important;
+            }
+
+            #salesItemsTable tbody td {
+                display: table-cell !important;
+                padding: 3px 1px !important;
+                font-size: 8.5px !important;
+                border: 1px solid #b3ddcc !important;
+                text-align: center !important;
+                vertical-align: middle !important;
+                background: white !important;
+                overflow: hidden !important;
+                word-break: break-word !important;
+            }
+
+            /* Hide calendar indicator in print */
+            input[type="date"]::-webkit-calendar-picker-indicator {
+                display: none !important;
+            }
+
+            input[type="date"]::-webkit-inner-spin-button {
+                display: none !important;
+            }
+
+            /* 🔥 CRITICAL: REMOVE MOBILE LABELS IN PRINT */
+            #salesItemsTable td::before {
+                display: none !important;
+                content: "" !important;
+            }
+
+            /* FOOTER SUMMARY TOTAL ROW */
+            #salesItemsTable tfoot {
+                display: table-footer-group !important;
+            }
+
+            #salesItemsTable tfoot tr {
+                display: table-row !important;
+                background-color: #d1e7dd !important;
+                page-break-inside: avoid !important;
+            }
+
+            #salesItemsTable tfoot td {
+                display: table-cell !important;
+                padding: 4px 2px !important;
+                font-size: 8.5px !important;
+                font-weight: bold !important;
+                border: 1px solid #3d8c72 !important;
+                text-align: center !important;
+                color: #165c42 !important;
+                background-color: #d1e7dd !important;
+            }
+
+            #salesItemsTable tfoot td.text-end {
+                text-align: right !important;
+                padding-right: 4px !important;
+            }
+
+            /* Requester comments section */
+            .requester-comments-section {
+                margin-top: 6px !important;
+                page-break-inside: avoid !important;
+            }
+
+            .requester-comments-section label {
+                font-size: 11px !important;
+                font-weight: bold !important;
+                color: #165c42 !important;
+            }
+
+            .requester-comments-section textarea {
+                border: 1px solid #bbb !important;
+                background: #fafafa !important;
+                font-size: 10px !important;
+                height: auto !important;
+                min-height: 35px !important;
+                padding: 4px 6px !important;
+                resize: none !important;
+            }
+
+            /* Approval history table */
+            #salesApprovalHistory {
+                margin-top: 8px !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                page-break-inside: avoid !important;
+            }
+
+            #salesApprovalHistory .section-title {
+                font-size: 12px !important;
+                font-weight: bold !important;
+                color: #165c42 !important;
+                margin-bottom: 4px !important;
+            }
+
+            .sales-approval-table {
+                display: table !important;
+                width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+            }
+
+            .sales-approval-table thead {
+                display: table-header-group !important;
+            }
+
+            .sales-approval-table thead tr {
+                display: table-row !important;
+                background: #eaf7f2 !important;
+            }
+
+            .sales-approval-table thead th {
+                display: table-cell !important;
+                padding: 4px 6px !important;
+                font-size: 9.5px !important;
+                border: 1px solid #b3ddcc !important;
+                background: #eaf7f2 !important;
+                color: #165c42 !important;
+                text-align: center !important;
+            }
+
+            .sales-approval-table tbody {
+                display: table-row-group !important;
+            }
+
+            .sales-approval-table tbody tr {
+                display: table-row !important;
+                background: white !important;
+            }
+
+            .sales-approval-table tbody td {
+                display: table-cell !important;
+                padding: 4px 6px !important;
+                font-size: 9.5px !important;
+                border: 1px solid #b3ddcc !important;
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
+
+            .sales-approval-table th:nth-child(1),
+            .sales-approval-table td:nth-child(1) {
+                width: 22%;
+            }
+
+            .sales-approval-table th:nth-child(2),
+            .sales-approval-table td:nth-child(2) {
+                width: 33%;
+            }
+
+            .sales-approval-table th:nth-child(3),
+            .sales-approval-table td:nth-child(3) {
+                width: 20%;
+            }
+
+            .sales-approval-table th:nth-child(4),
+            .sales-approval-table td:nth-child(4) {
+                width: 25%;
+            }
+
+            .sales-approval-table td::before {
+                display: none !important;
+                content: "" !important;
+            }
+        }
     </style>
 </head>
 
@@ -789,6 +1191,7 @@
                         <th>*Individual / Sharing</th>
                         <th>*Earned Incentive Amount</th>
                         <th>*Total Incentive Payable</th>
+                        <th>Remarks</th>
                         <th>Delete</th>
                     </tr>
                 </thead>
@@ -848,6 +1251,10 @@
 
                         <td data-label="*Total Incentive Payable">
                             <input type="text" class="form-control total_incentive" placeholder="ex: 2,00,000">
+                        </td>
+
+                        <td data-label="Remarks">
+                            <input type="text" class="form-control item_remarks" placeholder="Remarks">
                         </td>
 
                         <td data-label="Delete" class="text-center">
@@ -912,6 +1319,10 @@
                             <input type="text" class="form-control total_incentive" placeholder="ex: 2,00,000">
                         </td>
 
+                        <td data-label="Remarks">
+                            <input type="text" class="form-control item_remarks" placeholder="Remarks">
+                        </td>
+
                         <td data-label="Delete" class="text-center">
                             <button class="btn btn-sm btn-danger delete-row">
                                 <i class="fa-solid fa-trash"></i>
@@ -919,6 +1330,24 @@
                         </td>
                     </tr>
                 </tbody>
+
+                <!-- ⭐ Automatic total calculations  -->
+                <tfoot style="background-color: #d1e7dd; font-weight: bold; border-top: 2px solid #165c42;">
+                    <tr id="salesTotalRow">
+                        <td colspan="8" data-label="Summary" class="text-end" style="font-size: 14px; color: #165c42;">
+                            Total:
+                        </td>
+                        <td data-label="Total Dimension (Sq-ft)" id="totalDimension" style="color: #165c42;">0</td>
+                        <td data-label="" class="d-none d-md-table-cell"></td>
+                        <td data-label="Total Earned Incentive" id="totalEarnedIncentive" style="color: #165c42;">0.00
+                        </td>
+                        <td data-label="Total Incentive Payable" id="totalIncentivePayable" style="color: #165c42;">0.00
+                        </td>
+                        <td data-label="" class="d-none d-md-table-cell"></td>
+                        <td data-label="" class="d-none d-md-table-cell"></td>
+                    </tr>
+                </tfoot>
+
             </table>
 
             <div class="sales-actions-top">
@@ -933,6 +1362,10 @@
 
                 <button type="button" class="view-files-btn" id="replaceAttachmentBtn" style="display:none;">
                     Attach
+                </button>
+
+                <button type="button" class="view-files-btn" id="printBtn">
+                    <i class="fa-solid fa-print"></i> Print
                 </button>
 
                 <input type="file" id="replacementAttachment" accept=".png,.jpg,.jpeg,.pdf,.xls,.xlsx"
@@ -1202,7 +1635,12 @@
                                 
                                 <td data-label="*Total Incentive Payable">
                                     <input type="text" class="form-control total_incentive" value="${item.total_incentive || ''}">
-                        </td>
+                                    
+                                </td>
+
+                                <td data-label="Remarks">
+                                    <input type="text" class="form-control item_remarks" value="${item.remarks || ''}" placeholder="Remarks">
+                                </td>
 
                         <td class="text-center">
                             <button class="btn btn-sm btn-danger delete-row">
@@ -1220,6 +1658,7 @@
                         populateDropdown(".project", window.dropdownData.projects);
                         populateDropdown(".typo", window.dropdownData.typos);
                         populateDropdown(".status", window.dropdownData.statuses);
+                        calculateTotals();
 
 
                         // ⭐⭐ disable approve or reject even after refresh ⭐⭐
@@ -1259,10 +1698,10 @@
                                 historyRows.forEach(row => {
                                     const approverType = row.querySelector("td:nth-child(1)").innerText.trim();
 
-                                    if (approverType === entry.approver_type) {
+                                    if (approverType === entry.approver_type && entry.approver_name && entry.approver_name.trim()) {
                                         row.querySelector("td:nth-child(2) input").value = entry.approver_name || "";
                                         row.querySelector("td:nth-child(3) input").value =
-                                            entry.approval_date && entry.approval_date !== "0000-00-00"
+                                            entry.approval_date && entry.approval_date !== "0000-00-00" && !entry.approval_date.startsWith("1899")
                                                 ? entry.approval_date.split("T")[0]
                                                 : "";
                                         row.querySelector("td:nth-child(4) input").value = entry.remarks || "";
@@ -1398,6 +1837,10 @@
                 <input type="text" class="form-control total_incentive">
             </td>
 
+            <td data-label="Remarks">
+                <input type="text" class="form-control item_remarks" placeholder="Remarks">
+            </td>
+
             <td data-label="Delete" class="text-center">
                 <button class="btn btn-sm btn-danger delete-row">X</button>
             </td>
@@ -1410,6 +1853,7 @@
             populateDropdown(newRow.querySelector(".project"), window.dropdownData.projects);
             populateDropdown(newRow.querySelector(".typo"), window.dropdownData.typos);
             populateDropdown(newRow.querySelector(".status"), window.dropdownData.statuses);
+            calculateTotals();
         });
 
 
@@ -1423,6 +1867,7 @@
 
                 if (!item_id) {
                     row.remove();
+                    calculateTotals();
                     return;
                 }
 
@@ -1434,9 +1879,49 @@
 
                 if (data.success) {
                     row.remove();
+                    calculateTotals();
                 } else {
                     alert("Delete failed");
                 }
+            }
+        });
+
+
+        // ==========================================
+        // 🧮 CALCULATE DOWN TOTALS
+        // ==========================================
+        function calculateTotals() {
+            let sumDimension = 0;
+            let sumEarned = 0;
+            let sumTotal = 0;
+
+            document.querySelectorAll("#salesItemsBody tr").forEach(row => {
+                const dimStr = row.querySelector(".dimension")?.value || "";
+                const earnedStr = row.querySelector(".earned_incentive")?.value || "";
+                const totalStr = row.querySelector(".total_incentive")?.value || "";
+
+                const dimVal = parseFloat(dimStr.replace(/,/g, "")) || 0;
+                const earnedVal = parseFloat(earnedStr.replace(/,/g, "")) || 0;
+                const totalVal = parseFloat(totalStr.replace(/,/g, "")) || 0;
+
+                sumDimension += dimVal;
+                sumEarned += earnedVal;
+                sumTotal += totalVal;
+            });
+
+            const totalDimElem = document.getElementById("totalDimension");
+            const totalEarnedElem = document.getElementById("totalEarnedIncentive");
+            const totalPayableElem = document.getElementById("totalIncentivePayable");
+
+            if (totalDimElem) totalDimElem.textContent = sumDimension ? sumDimension.toLocaleString('en-IN') : "0";
+            if (totalEarnedElem) totalEarnedElem.textContent = sumEarned ? sumEarned.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00";
+            if (totalPayableElem) totalPayableElem.textContent = sumTotal ? sumTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00";
+        }
+
+        // Live calculation as numbers are typed
+        document.getElementById("salesItemsTable")?.addEventListener("input", (e) => {
+            if (e.target.matches(".dimension, .earned_incentive, .total_incentive")) {
+                calculateTotals();
             }
         });
 
@@ -1473,7 +1958,9 @@
                     dimension_sqft: row.querySelector(".dimension").value,
                     incentive_type: row.querySelector(".incentive_type").value,
                     earned_incentive: row.querySelector(".earned_incentive").value,
-                    total_incentive: row.querySelector(".total_incentive").value
+                    total_incentive: row.querySelector(".total_incentive").value,
+                    remarks: row.querySelector(".item_remarks")?.value || ""
+
                 });
             });
 
@@ -1534,10 +2021,9 @@
                             newStatus === "approved" ? "Approved!" : "Rejected!",
                             data.message,
                             "success"
-                        );
-
-                        // loadSalesRequests();   // reload table if exists
-                        viewSales(currentSalesRequestId); // refresh details
+                        ).then(() => {
+                            window.location.reload();
+                        });
                     })
                     .catch(err => {
                         console.error("Approval error:", err);
@@ -1562,7 +2048,7 @@
                 });
             }
 
-            // APPROVAL CONFIRMATION
+            // APPROVAL CONFIRMATION (Simple confirmation prompt - restored to original)
             else {
                 Swal.fire({
                     title: "Approve Sales Request?",
@@ -1571,8 +2057,155 @@
                     showCancelButton: true,
                     confirmButtonText: "Approve"
                 }).then(result => {
-                    if (result.isConfirmed) handleFetch();
+                    if (result.isConfirmed) {
+                        handleFetch("Approved");
+                    }
                 });
+            }
+        }
+
+
+        // ==========================================
+        // 🖨️ PRINT & EXCEL EXPORT HANDLER
+        // ==========================================
+        function prepareForPrint() {
+            document.querySelectorAll("#salesItemsTable tbody tr, #salesApprovalHistory tbody tr").forEach(row => {
+                row.querySelectorAll("td").forEach(td => {
+                    const select = td.querySelector("select");
+                    const input = td.querySelector("input");
+                    let text = "";
+                    if (select) {
+                        text = select.options[select.selectedIndex]?.text || "";
+                        if (text === "Select" || !text.trim()) text = "-";
+                    } else if (input) {
+                        if (input.type === "date" && input.value) {
+                            const parts = input.value.split("-");
+                            text = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : input.value;
+                        } else {
+                            text = (input.value && input.value.trim()) ? input.value.trim() : (input.placeholder === "Pending" ? "Pending" : "-");
+                        }
+                    }
+                    if (select || input) {
+                        let printSpan = td.querySelector(".print-text-val");
+                        if (!printSpan) {
+                            printSpan = document.createElement("span");
+                            printSpan.className = "print-text-val";
+                            td.appendChild(printSpan);
+                        }
+                        printSpan.textContent = text;
+                    }
+                });
+            });
+        }
+
+        window.addEventListener("beforeprint", prepareForPrint);
+
+        function handlePrintOptions() {
+            Swal.fire({
+                title: "Print / Export Option",
+                text: "Select your preferred format:",
+                icon: "question",
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: '<i class="fa-solid fa-file-pdf"></i> PDF / Print',
+                confirmButtonColor: "#dc3545",
+                denyButtonText: '<i class="fa-solid fa-file-excel"></i> Excel Sheet',
+                denyButtonColor: "#198754",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    prepareForPrint();
+                    window.print();
+                } else if (result.isDenied) {
+                    exportSalesToExcel();
+                }
+            });
+        }
+
+        function exportSalesToExcel() {
+            const reqNo = currentSalesRequestId || window.salesPersonalInfo?.request_number || "Request";
+
+            // 1. Gather Personal Information
+            const empId = document.getElementById("info-employee-id")?.textContent.trim() || "-";
+            const empName = document.getElementById("info-name")?.textContent.trim() || "-";
+            const dept = document.getElementById("info-department")?.textContent.trim() || "-";
+            const desig = document.getElementById("info-designation")?.textContent.trim() || "-";
+            const manager = document.getElementById("info-line-manager")?.textContent.trim() || "-";
+            const joinDate = document.getElementById("info-joining-date")?.textContent.trim() || "-";
+
+            // 2. Gather Rows from Table
+            const rows = [];
+            document.querySelectorAll("#salesItemsBody tr").forEach((row, idx) => {
+                const repSelect = row.querySelector(".representative");
+                const repName = repSelect?.options[repSelect.selectedIndex]?.text || "";
+
+                const projSelect = row.querySelector(".project");
+                const projName = projSelect?.options[projSelect.selectedIndex]?.text || "";
+
+                const typoSelect = row.querySelector(".typo");
+                const typoName = typoSelect?.options[typoSelect.selectedIndex]?.text || "";
+
+                const statusSelect = row.querySelector(".status");
+                const statusName = statusSelect?.options[statusSelect.selectedIndex]?.text || "";
+
+                const incTypeSelect = row.querySelector(".incentive_type");
+                const incType = incTypeSelect?.options[incTypeSelect.selectedIndex]?.text || "";
+
+                rows.push([
+                    idx + 1,
+                    row.querySelector(".applied_date")?.value || "",
+                    row.querySelector(".booking_date")?.value || "",
+                    repName !== "Select" ? repName : "",
+                    row.querySelector(".client_name")?.value || "",
+                    row.querySelector(".flat_no")?.value || "",
+                    projName !== "Select" ? projName : "",
+                    typoName !== "Select" ? typoName : "",
+                    statusName !== "Select" ? statusName : "",
+                    row.querySelector(".dimension")?.value || "",
+                    incType !== "Select" ? incType : "",
+                    row.querySelector(".earned_incentive")?.value || "",
+                    row.querySelector(".total_incentive")?.value || "",
+                    row.querySelector(".item_remarks")?.value || ""
+                ]);
+            });
+
+            // 3. Totals
+            const totalDim = document.getElementById("totalDimension")?.textContent || "0";
+            const totalEarned = document.getElementById("totalEarnedIncentive")?.textContent || "0.00";
+            const totalPayable = document.getElementById("totalIncentivePayable")?.textContent || "0.00";
+
+            // 4. Build Excel Sheet Content
+            const excelData = [
+                ["WORKLIFE EMS - INCENTIVES REQUEST DETAILS"],
+                [],
+                ["Request Number:", reqNo],
+                ["Employee ID:", empId, "", "Designation:", desig],
+                ["Employee Name:", empName, "", "Line Manager:", manager],
+                ["Department:", dept, "", "Joining Date:", joinDate],
+                [],
+                [
+                    "Sl No", "Applied Date", "Booking Date", "Representative Name",
+                    "Client Name", "Flat No", "Project", "Typo", "Status",
+                    "Dimension (Sq-ft)", "Individual/Sharing", "Earned Incentive",
+                    "Total Incentive Payable", "Remarks"
+                ],
+                ...rows,
+                [
+                    "Total", "", "", "", "", "", "", "", "",
+                    totalDim, "", totalEarned, totalPayable, ""
+                ],
+                [],
+                ["Requester Comments:", document.getElementById("remarks")?.value || ""]
+            ];
+
+            // 5. Generate and Download Workbook
+            if (typeof XLSX !== "undefined") {
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(excelData);
+                XLSX.utils.book_append_sheet(wb, ws, "Incentive Request");
+                XLSX.writeFile(wb, `Incentive_Request_${reqNo}.xlsx`);
+            } else {
+                alert("Excel library is loading, please try again in a moment.");
             }
         }
 
@@ -1606,9 +2239,10 @@
             });
 
             // ==========================
-            // DOWNLOAD
+            // DOWNLOAD & PRINT
             // ==========================
             document.getElementById("downloadBtn")?.addEventListener("click", downloadIncentiveFiles);
+            document.getElementById("printBtn")?.addEventListener("click", handlePrintOptions);
 
             // ==========================
             // APPROVE / REJECT
@@ -1647,7 +2281,19 @@
                         document.getElementById("userName").textContent = data.user.name;
                         sessionStorage.setItem("user_id", data.user.user_id);
 
-                        loadPerformancePersonalInfo();
+                        // 👇 ADD THIS HERE (View Only for Chandralekha)
+                        if (data.user.employee_id === "3854") {
+                            const approveBtn = document.getElementById("approveBtn");
+                            const rejectBtn = document.getElementById("rejectBtn");
+                            if (approveBtn) approveBtn.style.display = "none";
+                            if (rejectBtn) rejectBtn.style.display = "none";
+                        }
+
+                        // Only load own personal info if not viewing a specific request
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (!urlParams.get("reqNo")) {
+                            loadPerformancePersonalInfo();
+                        }
 
                     } else {
                         //  Not logged in → redirect

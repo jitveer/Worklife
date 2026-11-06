@@ -250,9 +250,9 @@ exports.updateSalesApproval = (req, res) => {
           if (!item.id || item.id === "" || item.id === null) {
             db.query(`
         INSERT INTO sales_items 
-          (sale_id, applied_date, date_of_booking, representative_id, client_name, flat_no, project_id, typo_id, status_id, dimension_sqft, incentive_type, earned_incentive, total_incentive, created_at)
+          (sale_id, applied_date, date_of_booking, representative_id, client_name, flat_no, project_id, typo_id, status_id, dimension_sqft, incentive_type, earned_incentive, total_incentive, remarks, created_at)
         VALUES
-          ((SELECT id FROM sales WHERE req_no=?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+          ((SELECT id FROM sales WHERE req_no=?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
           `,
               [
                 req.body.req_no,                   // sale_id (via req_no)
@@ -267,7 +267,8 @@ exports.updateSalesApproval = (req, res) => {
                 item.dimension_sqft,
                 item.incentive_type,
                 item.earned_incentive,
-                item.total_incentive
+                item.total_incentive,
+                item.remarks || null
               ]);
           }
 
@@ -287,6 +288,7 @@ exports.updateSalesApproval = (req, res) => {
             incentive_type = ?,
             earned_incentive = ?,
             total_incentive = ?,
+            remarks = ?,
             updated_at = NOW()
             WHERE id = ?
             `,
@@ -303,6 +305,7 @@ exports.updateSalesApproval = (req, res) => {
                 item.incentive_type,
                 item.earned_incentive,
                 item.total_incentive,
+                item.remarks || null,
                 item.id
               ]);
           }
@@ -310,30 +313,85 @@ exports.updateSalesApproval = (req, res) => {
         });
       }
 
-      // ⭐ INSERT APPROVAL HISTORY ROWS
+      // ⭐ MANUAL APPROVAL HISTORY ENTRIES (IF ENTERED BY USER)
       if (req.body.approvalHistory && Array.isArray(req.body.approvalHistory)) {
         req.body.approvalHistory.forEach(entry => {
-          db.query(`
-            INSERT INTO sales_approval_history
+          if (entry.approver_name && entry.approver_name.trim() && entry.approver_name.trim().toLowerCase() !== "pending") {
+            const hDate = (entry.approval_date && entry.approval_date.trim() && !entry.approval_date.startsWith("1899"))
+              ? entry.approval_date
+              : null;
+            db.query(`
+              INSERT INTO sales_approval_history
+                (sale_id, approver_type, approver_name, approval_date, remarks)
+              VALUES (
+                (SELECT id FROM sales WHERE req_no = ?),
+                ?, ?, COALESCE(?, CURDATE()), ?
+              )
+              ON DUPLICATE KEY UPDATE
+                approver_name = VALUES(approver_name),
+                approval_date = COALESCE(VALUES(approval_date), approval_date),
+                remarks = VALUES(remarks)
+            `, [req_no, entry.approver_type, entry.approver_name.trim(), hDate, entry.remarks || "Approved"]);
+          }
+        });
+      }
+
+      // ⭐ AUTOMATIC APPROVAL HISTORY ENTRY FOR LOGGED-IN APPROVER
+      const approverQuery = `
+        SELECT 
+          sa.level,
+          CONCAT(u.first_name, ' ', u.last_name) AS approver_full_name,
+          u.role_id
+        FROM users u
+        LEFT JOIN sales_approval sa ON sa.req_no = ? AND sa.approver_id = u.id
+        WHERE u.id = ?
+      `;
+
+      db.query(approverQuery, [req_no, approver_id], (errApp, appRows) => {
+        let approverType = "HR Approval";
+        let approverName = req.session.user?.name || "Approver";
+
+        if (appRows && appRows.length > 0) {
+          if (appRows[0].approver_full_name && appRows[0].approver_full_name.trim()) {
+            approverName = appRows[0].approver_full_name.trim();
+          }
+
+          const lvl = appRows[0].level;
+          const roleId = appRows[0].role_id;
+
+          if (lvl === 1) approverType = "HR Approval";
+          else if (lvl === 2) approverType = "Head of Sales";
+          else if (lvl === 3) approverType = "Head of Finance";
+          else if (lvl === 4) approverType = "Chairman";
+          else {
+            if (roleId === 1 || approver_id == 11) approverType = "Chairman";
+            else if (roleId === 2 || approver_id == 12) approverType = "Head of Sales";
+            else if (approver_id == 33) approverType = "Head of Finance";
+            else approverType = "HR Approval";
+          }
+        }
+
+        const approverRemarks = (comments && comments.trim())
+          ? comments.trim()
+          : (status === "approved" ? "Approved" : "Rejected");
+
+        const historySql = `
+          INSERT INTO sales_approval_history
             (sale_id, approver_type, approver_name, approval_date, remarks)
-            VALUES (
-            (SELECT id FROM sales WHERE req_no=?),
-            ?, ?, ?, ?
-            )
-            ON DUPLICATE KEY UPDATE
+          VALUES (
+            (SELECT id FROM sales WHERE req_no = ?),
+            ?, ?, CURDATE(), ?
+          )
+          ON DUPLICATE KEY UPDATE
             approver_name = VALUES(approver_name),
             approval_date = VALUES(approval_date),
             remarks = VALUES(remarks)
-            `,
-            [
-              req.body.req_no,
-              entry.approver_type,
-              entry.approver_name,
-              entry.approval_date,
-              entry.remarks
-            ]);
+        `;
+
+        db.query(historySql, [req_no, approverType, approverName, approverRemarks], (histErr) => {
+          if (histErr) console.error("Error saving sales approval history:", histErr);
         });
-      }
+      });
 
       if (newAttachments) {
         db.query(
@@ -702,6 +760,7 @@ exports.getSalesByReqNo = (req, res) => {
         si.incentive_type,
         si.earned_incentive,
         si.total_incentive,
+        si.remarks,
 
         CONCAT(rep.first_name, ' ', rep.last_name) AS representative_name,
         p.project_name,
@@ -721,7 +780,7 @@ exports.getSalesByReqNo = (req, res) => {
 
       // ⭐ 3️⃣ APPROVAL HISTORY QUERY (ADD THIS)
       const historySql = `
-          SELECT approver_type, approver_name, approval_date, remarks
+          SELECT approver_type, approver_name, DATE_FORMAT(approval_date, '%Y-%m-%d') AS approval_date, remarks
           FROM sales_approval_history
           WHERE sale_id = ?
       `;
@@ -905,6 +964,8 @@ exports.getSalesList = (req, res) => {
   const approverId = req.session.user.user_id;
   const roleId = Number(req.session.user.roleId);
   const isAdminOrSuperAdmin = roleId === 1 || roleId === 2;
+  const isChandralekha = req.session.user.employee_id === "3854";
+  const canViewAll = isAdminOrSuperAdmin || isChandralekha;
 
   // Filters
   const status = req.query.status || "all";
@@ -925,17 +986,17 @@ exports.getSalesList = (req, res) => {
     FROM sales s
     LEFT JOIN sales_approval sa 
         ON sa.req_no = s.req_no 
-        ${isAdminOrSuperAdmin ? "" : "AND sa.approver_id = ?"}
+        ${canViewAll ? "" : "AND sa.approver_id = ?"}
     JOIN employees e 
         ON s.requester_id = e.id
     WHERE 1=1
   `;
 
-  const params = isAdminOrSuperAdmin ? [] : [approverId];
+  const params = canViewAll ? [] : [approverId];
 
   // Status filter
   if (status !== "all") {
-    if (isAdminOrSuperAdmin) {
+    if (canViewAll) {
       sql += " AND LOWER(s.status) = LOWER(?) ";
     } else {
       sql += " AND LOWER(sa.status) = LOWER(?) ";
