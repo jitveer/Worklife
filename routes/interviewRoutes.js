@@ -6,6 +6,7 @@ const {
   getRoles,
   getInterviewList,
   startExam,
+  beginExam,
   submitExam,
   viewInterview,
   updateDecision,
@@ -22,8 +23,9 @@ router.post("/delete", deleteInterview);
 // view button to see completed question paper 
 router.get("/interview/view/:invite_id", viewInterview);
 
-// Candidate APIs
+// Candidate APIs (Publicly accessible in authMiddleware)
 router.get("/exam/start", startExam);
+router.post("/exam/start", beginExam);
 router.post("/exam/submit", submitExam);
 
 module.exports = router;

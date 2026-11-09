@@ -109,44 +109,43 @@ exports.sendInterviewInviteEmail = (to, examLink, roleName) => {
   const mailOptions = {
     from: `WorkLife HR<${process.env.MAIL_FROM}>`,
     to: to,
-    subject: "Invitation to 2nd Round Interview",
+    subject: "Invitation to 1st Round Interview",
     html: `
-<p>Hello,</p>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+      <h2 style="color: #0f172a; margin-top: 0;">Online Interview Assessment</h2>
+      <p>Hello,</p>
+      <p>
+        You have been invited for the <b>1st Round Online Assessment</b> for the role of <b>${roleName}</b> at <b>MNM Reality Pvt Ltd</b>.
+      </p>
 
-    <p>
-      You are invited for the <b>2nd Round Interview</b>
-      for the role of <b>${roleName}</b>.
-    </p>
+      <div style="background-color: #f8fafc; border-left: 4px solid #00357a; padding: 12px 16px; margin: 16px 0;">
+        <h4 style="margin: 0 0 8px 0; color: #00357a;">📌 Strict Examination Guidelines:</h4>
+        <ul style="margin: 0; padding-left: 20px; color: #334155; font-size: 14px; line-height: 1.6;">
+          <li><b>Duration:</b> Exactly <b>5 Minutes</b> once started.</li>
+          <li><b>Camera Proctoring:</b> A working webcam is <b>mandatory</b> throughout the entire exam.</li>
+          <li><b>Zero Tab-Switching:</b> You are strictly not allowed to switch tabs, minimize the browser, or open other windows. You will receive <b>only 1 warning</b>; a 2nd infraction will immediately terminate and submit your exam.</li>
+          <li><b>Copy/Paste & Right-Click Disabled:</b> Unfair means are automatically blocked.</li>
+        </ul>
+      </div>
 
-    <p>
-      Please click the button below to open the exam page.
-      You will see instructions and a <b>Start Exam</b> button.
-    </p>
+      <p style="margin: 25px 0;">
+        <a href="${examLink}" style="
+          display: inline-block;
+          padding: 12px 28px;
+          background: #00357a;
+          color: #ffffff;
+          text-decoration: none;
+          font-weight: bold;
+          border-radius: 6px;
+        ">
+          Proceed to Assessment
+        </a>
+      </p>
 
-    <p><b>Important:</b></p>
-    <ul>
-      <li>This link is valid for <b>5 minutes</b></li>
-      <li>The timer will start only after clicking <b>Start Exam</b></li>
-      <li>Please do not refresh or close the browser during the exam</li>
-    </ul>
-
-    <p style="margin:20px 0;">
-      <a href="${examLink}" style="
-        display:inline-block;
-        padding:12px 24px;
-        background:#00357a;
-        color:#fff;
-        text-decoration:none;
-        font-weight:bold;
-        border-radius:4px;
-      ">
-        Open Exam Page
-      </a>
-    </p>
-
-    <p style="font-size:12px;color:gray">
-      This is a test email (Ethereal).
-    </p>
+      <p style="font-size: 12px; color: #64748b; margin-top: 30px;">
+        Please make sure you are in a quiet, well-lit environment with your camera ready before starting.
+      </p>
+    </div>
     `
   };
 

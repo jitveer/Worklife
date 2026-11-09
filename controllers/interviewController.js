@@ -1,5 +1,7 @@
 const db = require("../db");
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 const { sendInterviewInviteEmail } = require("../services/mailer.js");
 /* ======================
    GET ROLES
@@ -25,16 +27,18 @@ exports.sendInvite = (req, res) => {
 
     const token = crypto.randomBytes(16).toString("hex");
 
+    // Link valid for 24 hours to begin exam; once started, duration is strictly 5 minutes
     const query = `
     INSERT INTO interview_invites
     (candidate_email, role_id, token, expires_at, status)
-    VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE), 'Pending')
+    VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 24 HOUR), 'Pending')
   `;
 
     db.query(query, [email, role_id, token], (err) => {
         if (err) return res.status(500).json(err);
 
-        const examLink = `${process.env.BASE_URL}/questions.html?token=${token}`;
+        const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get("host")}`;
+        const examLink = `${baseUrl}/questions.html?token=${token}`;
 
         // Get role name
         db.query(
@@ -43,12 +47,9 @@ exports.sendInvite = (req, res) => {
             (err, result) => {
                 const roleName = result?.[0]?.role_name || "Selected Role";
 
-                // SEND TEST EMAIL (ETHEREAL)
                 sendInterviewInviteEmail(email, examLink, roleName);
             }
         );
-
-        // console.log("Exam Link:", examLink);
 
         res.json({ message: "Invite sent" });
     });
@@ -67,7 +68,10 @@ exports.getInterviewList = (req, res) => {
       r.role_name,
       ii.score,
       ii.status,
-      ii.decision
+      ii.violation_reason,
+      ii.decision,
+      ii.created_at,
+      ii.started_at
     FROM interview_invites ii
     JOIN roles r ON ii.role_id = r.role_id
     ORDER BY ii.created_at DESC
@@ -80,13 +84,19 @@ exports.getInterviewList = (req, res) => {
 };
 
 /* ======================
-   START EXAM (CANDIDATE)
+   START EXAM (CANDIDATE INFO & PRE-FLIGHT)
 ====================== */
 exports.startExam = (req, res) => {
     const { token } = req.query;
 
     const inviteQuery = `
-    SELECT ii.candidate_email, ii.role_id
+    SELECT 
+      ii.invite_id,
+      ii.candidate_email, 
+      ii.role_id,
+      ii.started_at,
+      ii.status,
+      TIMESTAMPDIFF(SECOND, ii.started_at, NOW()) AS elapsed_seconds
     FROM interview_invites ii
     WHERE ii.token = ?
       AND ii.expires_at > NOW()
@@ -96,30 +106,84 @@ exports.startExam = (req, res) => {
     db.query(inviteQuery, [token], (err, result) => {
         if (err) return res.status(500).json(err);
         if (!result.length)
-            return res.status(403).json({ message: "Link expired" });
+            return res.status(403).json({ message: "Link expired or already submitted" });
 
-        const { candidate_email, role_id } = result[0];
+        const { candidate_email, role_id, started_at, elapsed_seconds } = result[0];
+        const TOTAL_DURATION_SECONDS = 300; // STRICT 5 MINUTES
+
+        // If candidate previously clicked Start and reloads/refreshes:
+        let remainingSeconds = TOTAL_DURATION_SECONDS;
+        let hasStarted = false;
+
+        if (started_at) {
+            hasStarted = true;
+            remainingSeconds = TOTAL_DURATION_SECONDS - (elapsed_seconds || 0);
+
+            if (remainingSeconds <= 0) {
+                // Time ran out while page was closed
+                db.query(
+                    `UPDATE interview_invites 
+                     SET status = 'Completed', score = 0, violation_reason = 'Time Expired (Closed/Away)' 
+                     WHERE token = ?`,
+                    [token]
+                );
+                return res.status(403).json({ message: "Exam time has expired" });
+            }
+        }
 
         db.query(
             "SELECT paper_content FROM question_papers WHERE role_id = ?",
             [role_id],
             (err, paper) => {
                 if (err) return res.status(500).json(err);
+                if (!paper.length || !paper[0].paper_content) {
+                    return res.status(404).json({ message: "No question paper configured for this role. Please contact HR." });
+                }
 
-                const questions = JSON.parse(paper[0].paper_content).map(q => ({
-                    section: q.section,
-                    question: q.question,
-                    options: q.options
-                }));
+                try {
+                    const questions = JSON.parse(paper[0].paper_content).map(q => ({
+                        section: q.section,
+                        question: q.question,
+                        options: q.options
+                    }));
 
-                res.json({
-                    company: "MNM REALITY PVT LTD.",
-                    email: candidate_email,
-                    duration: 600,
-                    paper: questions
-                });
+                    res.json({
+                        company: "MNM REALITY PVT LTD.",
+                        email: candidate_email,
+                        duration: remainingSeconds,
+                        hasStarted: hasStarted,
+                        totalDuration: TOTAL_DURATION_SECONDS,
+                        paper: questions
+                    });
+                } catch (parseErr) {
+                    return res.status(500).json({ message: "Error parsing question paper." });
+                }
             }
         );
+    });
+};
+
+/* ======================
+   BEGIN EXAM (CANDIDATE CLICKS "START EXAM")
+====================== */
+exports.beginExam = (req, res) => {
+    const { token } = req.body;
+
+    if (!token) return res.status(400).json({ message: "Token missing" });
+
+    const query = `
+      UPDATE interview_invites
+      SET started_at = COALESCE(started_at, NOW())
+      WHERE token = ? AND status = 'Pending' AND expires_at > NOW()
+    `;
+
+    db.query(query, [token], (err, result) => {
+        if (err) return res.status(500).json(err);
+        if (result.affectedRows === 0) {
+            return res.status(403).json({ message: "Cannot begin exam (invalid or expired token)" });
+        }
+
+        res.json({ success: true, message: "Exam begun", duration: 300 });
     });
 };
 
@@ -127,7 +191,7 @@ exports.startExam = (req, res) => {
    SUBMIT EXAM
 ====================== */
 exports.submitExam = (req, res) => {
-    const { token, answers } = req.body;
+    const { token, answers, photos, violation_reason } = req.body;
 
     const inviteQuery = `
     SELECT invite_id, role_id
@@ -138,42 +202,90 @@ exports.submitExam = (req, res) => {
     db.query(inviteQuery, [token], (err, invite) => {
         if (err) return res.status(500).json(err);
         if (!invite.length)
-            return res.status(403).json({ message: "Already submitted" });
+            return res.status(403).json({ message: "Already submitted or invalid token" });
 
         const { invite_id, role_id } = invite[0];
+
+        // Process & Save Proctoring Photos (Option A)
+        let savedPhotoPaths = [];
+        if (photos && Array.isArray(photos)) {
+            const uploadDir = path.join(__dirname, "../uploads/proctoring");
+            if (!fs.existsSync(uploadDir)) {
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+
+            photos.forEach((photoObj, idx) => {
+                try {
+                    const base64Data = typeof photoObj === "string" ? photoObj : photoObj.data;
+                    const type = (photoObj && photoObj.type) ? photoObj.type : `snap_${idx}`;
+                    const timestamp = (photoObj && photoObj.timestamp) ? photoObj.timestamp : new Date().toISOString();
+
+                    if (base64Data && base64Data.includes("base64,")) {
+                        const cleanBase64 = base64Data.replace(/^data:image\/\w+;base64,/, "");
+                        const filename = `snap_${invite_id}_${idx}_${Date.now()}.jpg`;
+                        const fullPath = path.join(uploadDir, filename);
+
+                        fs.writeFileSync(fullPath, Buffer.from(cleanBase64, "base64"));
+                        savedPhotoPaths.push({
+                            path: `/uploads/proctoring/${filename}`,
+                            type: type,
+                            timestamp: timestamp
+                        });
+                    }
+                } catch (pErr) {
+                    console.error("Error saving proctoring photo:", pErr);
+                }
+            });
+        }
 
         db.query(
             "SELECT paper_content FROM question_papers WHERE role_id = ?",
             [role_id],
             (err, paper) => {
+                if (err || !paper.length) return res.status(500).json({ message: "Paper load error" });
+
                 const questions = JSON.parse(paper[0].paper_content);
 
                 let score = 0;
-                questions.forEach((q, i) => {
-                    if (parseInt(answers[i]) === q.answer) score++;
-                });
+                if (answers && Array.isArray(answers)) {
+                    questions.forEach((q, i) => {
+                        if (answers[i] !== null && answers[i] !== undefined && parseInt(answers[i]) === q.answer) {
+                            score++;
+                        }
+                    });
+                }
+
+                const finalStatus = violation_reason ? "Terminated" : "Completed";
 
                 db.query(
                     `UPDATE interview_invites
-     SET score = ?,
-         answers = ?,
-         status = 'Completed'
-     WHERE invite_id = ?`,
-                    [score, JSON.stringify(answers), invite_id],
-                    (updateErr, result) => {
-
+                     SET score = ?,
+                         answers = ?,
+                         proctoring_photos = ?,
+                         violation_reason = ?,
+                         status = ?
+                     WHERE invite_id = ?`,
+                    [
+                        score, 
+                        JSON.stringify(answers || []), 
+                        JSON.stringify(savedPhotoPaths),
+                        violation_reason || null,
+                        finalStatus, 
+                        invite_id
+                    ],
+                    (updateErr) => {
                         if (updateErr) {
                             console.error("❌ INTERVIEW UPDATE ERROR:", updateErr);
-
                             return res.status(500).json({
                                 success: false,
                                 message: "Failed to save exam result"
                             });
                         }
                         return res.json({
-                            message: "Exam submitted",
+                            message: violation_reason ? "Exam terminated due to security violation" : "Exam submitted",
                             score,
-                            total: questions.length
+                            total: questions.length,
+                            violation: violation_reason || null
                         });
                     }
                 );
@@ -203,6 +315,8 @@ exports.viewInterview = (req, res) => {
             ii.score,
             ii.status,
             ii.answers,
+            ii.proctoring_photos,
+            ii.violation_reason,
             r.role_name,
             qp.paper_content
         FROM interview_invites ii
@@ -231,8 +345,8 @@ exports.viewInterview = (req, res) => {
 
         const row = rows[0];
 
-        // Only completed interviews can be viewed
-        if (row.status !== "Completed") {
+        // Allow viewing if Completed or Terminated
+        if (row.status !== "Completed" && row.status !== "Terminated") {
             return res.status(403).json({
                 message: "Interview is not completed yet"
             });
@@ -258,13 +372,25 @@ exports.viewInterview = (req, res) => {
             }
         }
 
+        let photos = [];
+        if (row.proctoring_photos) {
+            try {
+                photos = typeof row.proctoring_photos === "string" ? JSON.parse(row.proctoring_photos) : row.proctoring_photos;
+            } catch (pErr) {
+                photos = [];
+            }
+        }
+
         return res.json({
             invite_id: row.invite_id,
             candidate_email: row.candidate_email,
             role_name: row.role_name,
             score: row.score,
+            status: row.status,
+            violation_reason: row.violation_reason,
             questions: questions,
-            answers: answers
+            answers: answers,
+            photos: photos
         });
     });
 };

@@ -453,6 +453,30 @@
                 <p><b>Requester Name:</b> <span id="modalRequesterName"></span></p>
                 <p><b>Request No:</b> <span id="modalReqNo"></span></p>
 
+                <!-- Payment Summary for Employee -->
+                <div id="modalPaymentInfo" style="margin: 14px 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: 700; color: #165c42; font-size: 13px;">
+                            <i class="fa-solid fa-receipt"></i> Payment & Carry-Forward Status
+                        </span>
+                        <span id="modalPaymentStatusTag" class="status-box small" style="background:#64748b; color:#fff;">Unpaid</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 13px;">
+                        <div>
+                            <span style="color: #64748b; font-size: 11px; display:block;">Total Approved:</span>
+                            <div id="modalTotalApproved" style="font-weight: 700; color: #1e293b;">₹ 0.00</div>
+                        </div>
+                        <div>
+                            <span style="color: #166534; font-size: 11px; display:block;">Paid Amount:</span>
+                            <div id="modalPaidAmount" style="font-weight: 700; color: #16a34a;">₹ 0.00</div>
+                        </div>
+                        <div>
+                            <span style="color: #92400e; font-size: 11px; display:block;">Carried Balance:</span>
+                            <div id="modalBalanceAmount" style="font-weight: 700; color: #d97706;">₹ 0.00</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Rejection Section (hidden until rejected) -->
                 <div id="rejectSection" style="display:none; margin-top:10px;">
                     <p><b>Rejected By:</b> <span id="modalRejectedBy"></span></p>
@@ -550,6 +574,28 @@
                         const statusTag = document.getElementById("salesStatusTag");
                         statusTag.textContent = status;
                         statusTag.className = `status-box small ${status.toLowerCase()}`;
+
+                        // Payment info
+                        const grandTotal = parseFloat(data.sale.grand_total || data.sale.total_payable || 0);
+                        const paidAmount = parseFloat(data.sale.paid_amount || 0);
+                        const balanceAmount = parseFloat(data.sale.balance_amount || 0);
+                        const paymentStatus = data.sale.payment_status || "Unpaid";
+
+                        document.getElementById("modalTotalApproved").textContent = "₹ " + grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+                        document.getElementById("modalPaidAmount").textContent = "₹ " + paidAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+                        document.getElementById("modalBalanceAmount").textContent = "₹ " + balanceAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+                        const payTag = document.getElementById("modalPaymentStatusTag");
+                        if (payTag) {
+                            payTag.textContent = paymentStatus;
+                            if (paymentStatus === "Fully Paid") {
+                                payTag.style.backgroundColor = "#28a745";
+                            } else if (paymentStatus === "Partially Paid") {
+                                payTag.style.backgroundColor = "#fd7e14";
+                            } else {
+                                payTag.style.backgroundColor = "#64748b";
+                            }
+                        }
 
                         // Correct rejection section ID
                         const rejectSection = document.getElementById("rejectSection");

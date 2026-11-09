@@ -1346,6 +1346,22 @@
                         <td data-label="" class="d-none d-md-table-cell"></td>
                         <td data-label="" class="d-none d-md-table-cell"></td>
                     </tr>
+                    <tr id="carriedBalanceRow" style="display:none; background-color: #e8f5e9; font-size: 13px;">
+                        <td colspan="8" class="text-end" style="color: #1b5e20;">
+                            <i class="fa-solid fa-arrow-turn-down"></i> Carried-Forward Balance from Previous Request:
+                        </td>
+                        <td colspan="6" class="text-start" style="color: #1b5e20; font-weight: bold; padding-left: 15px;" id="carriedBalanceAmountDisplay">
+                            ₹ 0.00
+                        </td>
+                    </tr>
+                    <tr id="grandTotalPayableRow" style="display:none; background-color: #c8e6c9; font-size: 14px; font-weight: bold;">
+                        <td colspan="8" class="text-end" style="color: #0f3d17;">
+                            Grand Total Payable (Incentive + Carried Balance):
+                        </td>
+                        <td colspan="6" class="text-start" style="color: #0f3d17; padding-left: 15px;" id="grandTotalPayableDisplay">
+                            ₹ 0.00
+                        </td>
+                    </tr>
                 </tfoot>
 
             </table>
@@ -1392,7 +1408,61 @@
 
             <p id="approvalMessage" style="display:none; font-weight:bold; margin-top:8px;"></p>
 
+            <!-- ⭐ ACCOUNTS PAYMENT & CARRY-FORWARD LEDGER -->
+            <div id="accountsPaymentSection" style="margin-top: 25px; margin-bottom: 25px; background: #ffffff; border: 1px solid #c3e2d1; border-top: 4px solid #165c42; border-radius: 8px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                    <h4 style="margin: 0; color: #165c42; font-size: 16px; font-weight: 700;">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Accounts Disbursement & Carry-Forward
+                    </h4>
+                    <span id="paymentStatusBadge" class="status-box small" style="background-color: #6c757d; font-size: 12px; padding: 4px 10px;">Unpaid</span>
+                </div>
 
+                <!-- 4 Summary KPI Mini-cards -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px;">
+                        <span style="font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase;">Incentive Payable</span>
+                        <div id="cardIncentivePayable" style="font-size: 17px; font-weight: 700; color: #1e293b; margin-top: 2px;">₹ 0.00</div>
+                    </div>
+                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px 12px;">
+                        <span style="font-size: 11px; color: #166534; font-weight: 600; text-transform: uppercase;">Carried Balance</span>
+                        <div id="cardCarriedBalance" style="font-size: 17px; font-weight: 700; color: #15803d; margin-top: 2px;">₹ 0.00</div>
+                    </div>
+                    <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 12px;">
+                        <span style="font-size: 11px; color: #334155; font-weight: 600; text-transform: uppercase;">Grand Total</span>
+                        <div id="cardGrandTotal" style="font-size: 17px; font-weight: 700; color: #0f172a; margin-top: 2px;">₹ 0.00</div>
+                    </div>
+                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 12px;">
+                        <span style="font-size: 11px; color: #92400e; font-weight: 600; text-transform: uppercase;">Remaining Balance</span>
+                        <div id="cardBalanceAmount" style="font-size: 17px; font-weight: 700; color: #b45309; margin-top: 2px;">₹ 0.00</div>
+                    </div>
+                </div>
+
+                <!-- Input Row for Accounts -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+                    <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end;">
+                        <div style="flex: 1; min-width: 160px;">
+                            <label style="font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 4px; display: block;">
+                                Paid Amount (₹) <span style="color: #dc2626;">*</span>
+                            </label>
+                            <input type="number" step="0.01" id="accountsPaidInput" class="form-control" placeholder="e.g. 250" style="background: #fff; font-size: 14px; height: 38px;">
+                        </div>
+                        <div style="flex: 2; min-width: 220px;">
+                            <label style="font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 4px; display: block;">
+                                Payment Reference / UTR / Remarks
+                            </label>
+                            <input type="text" id="accountsRemarksInput" class="form-control" placeholder="e.g. Paid via NEFT / Cheque UTR1234..." style="background: #fff; font-size: 14px; height: 38px;">
+                        </div>
+                        <div>
+                            <button type="button" id="saveAccountsPaymentBtn" class="btn btn-success btn-sm" style="background-color: #165c42; border-color: #165c42; font-weight: 600; height: 38px; padding: 0 18px; font-size: 13px;">
+                                <i class="fa-solid fa-check"></i> Record Payment
+                            </button>
+                        </div>
+                    </div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 8px;">
+                        <i class="fa-solid fa-circle-info"></i> <em>If full amount is not paid now, the remaining balance will automatically carry forward to this employee's next incentive application.</em>
+                    </div>
+                </div>
+            </div>
 
             <!-- Approver History -->
             <div id="salesApprovalHistory" class="approval-wrapper">
@@ -1554,6 +1624,25 @@
                         // console.log("sale.attachments:", data.sale.attachments);
 
                         const sale = data.sale;
+
+                        // Save payment & carry-forward state
+                        window.currentSale = sale;
+                        window.currentCarriedBalance = parseFloat(sale.carried_balance) || 0;
+                        window.currentPaidAmount = parseFloat(sale.paid_amount) || 0;
+                        window.currentBalanceAmount = parseFloat(sale.balance_amount) || 0;
+                        window.currentPaymentStatus = sale.payment_status || "Unpaid";
+                        window.currentPaymentRemarks = sale.payment_remarks || "";
+
+                        // Populate Accounts input fields
+                        const paidInputElem = document.getElementById("accountsPaidInput");
+                        const remarksInputElem = document.getElementById("accountsRemarksInput");
+                        if (paidInputElem) {
+                            paidInputElem.value = window.currentPaidAmount > 0 ? window.currentPaidAmount : "";
+                        }
+                        if (remarksInputElem) {
+                            remarksInputElem.value = window.currentPaymentRemarks || "";
+                        }
+                        updatePaymentStatusBadge(window.currentPaymentStatus);
 
                         const attachBtn = document.getElementById("replaceAttachmentBtn");
                         // Temporary testing
@@ -1887,6 +1976,23 @@
         });
 
 
+        // Payment Status Badge Helper
+        function updatePaymentStatusBadge(status) {
+            const badge = document.getElementById("paymentStatusBadge");
+            if (!badge) return;
+            badge.textContent = status || "Unpaid";
+            if (status === "Fully Paid") {
+                badge.style.backgroundColor = "#16a34a"; // Green
+                badge.style.color = "#ffffff";
+            } else if (status === "Partially Paid") {
+                badge.style.backgroundColor = "#f59e0b"; // Amber / Orange
+                badge.style.color = "#ffffff";
+            } else {
+                badge.style.backgroundColor = "#64748b"; // Slate / Gray
+                badge.style.color = "#ffffff";
+            }
+        }
+
         // ==========================================
         // 🧮 CALCULATE DOWN TOTALS
         // ==========================================
@@ -1916,13 +2022,137 @@
             if (totalDimElem) totalDimElem.textContent = sumDimension ? sumDimension.toLocaleString('en-IN') : "0";
             if (totalEarnedElem) totalEarnedElem.textContent = sumEarned ? sumEarned.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00";
             if (totalPayableElem) totalPayableElem.textContent = sumTotal ? sumTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00";
+
+            // ⭐ CARRY-FORWARD & ACCOUNTS LEDGER DISPLAY
+            const carried = parseFloat(window.currentCarriedBalance) || 0;
+            const grandTotal = sumTotal + carried;
+
+            const carriedRow = document.getElementById("carriedBalanceRow");
+            const carriedDisplay = document.getElementById("carriedBalanceAmountDisplay");
+            const grandTotalRow = document.getElementById("grandTotalPayableRow");
+            const grandTotalDisplay = document.getElementById("grandTotalPayableDisplay");
+
+            if (carried > 0) {
+                if (carriedRow) carriedRow.style.display = "";
+                if (carriedDisplay) carriedDisplay.textContent = "₹ " + carried.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                if (grandTotalRow) grandTotalRow.style.display = "";
+                if (grandTotalDisplay) grandTotalDisplay.textContent = "₹ " + grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            } else {
+                if (carriedRow) carriedRow.style.display = "none";
+                if (grandTotalRow) grandTotalRow.style.display = "none";
+            }
+
+            // Update Accounts KPI cards
+            const cardIncentive = document.getElementById("cardIncentivePayable");
+            const cardCarried = document.getElementById("cardCarriedBalance");
+            const cardGrand = document.getElementById("cardGrandTotal");
+            const cardBalance = document.getElementById("cardBalanceAmount");
+
+            if (cardIncentive) cardIncentive.textContent = "₹ " + sumTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (cardCarried) cardCarried.textContent = "₹ " + carried.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (cardGrand) cardGrand.textContent = "₹ " + grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Determine paid amount: read from input if user typed, else from window.currentPaidAmount
+            const paidInput = document.getElementById("accountsPaidInput");
+            const paidVal = (paidInput && paidInput.value !== "") ? parseFloat(paidInput.value) || 0 : (window.currentPaidAmount || 0);
+            const remBalance = Math.max(0, grandTotal - paidVal);
+
+            if (cardBalance) cardBalance.textContent = "₹ " + remBalance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        // Live calculation as numbers are typed
+        // Live calculation as numbers are typed in table or accounts paid input
         document.getElementById("salesItemsTable")?.addEventListener("input", (e) => {
             if (e.target.matches(".dimension, .earned_incentive, .total_incentive")) {
                 calculateTotals();
             }
+        });
+
+        document.getElementById("accountsPaidInput")?.addEventListener("input", () => {
+            calculateTotals();
+        });
+
+        // ⭐ SAVE ACCOUNTS PAYMENT HANDLER
+        document.getElementById("saveAccountsPaymentBtn")?.addEventListener("click", () => {
+            const paidInput = document.getElementById("accountsPaidInput");
+            const remarksInput = document.getElementById("accountsRemarksInput");
+
+            if (!paidInput || paidInput.value === "" || isNaN(paidInput.value)) {
+                Swal.fire("Required", "Please enter the amount paid (e.g. 250).", "warning");
+                return;
+            }
+
+            const paidVal = parseFloat(paidInput.value);
+            const remarksVal = remarksInput ? remarksInput.value.trim() : "";
+            const reqNo = new URLSearchParams(window.location.search).get("reqNo") || currentSalesRequestId;
+
+            if (!reqNo) {
+                Swal.fire("Error", "Request number is missing", "error");
+                return;
+            }
+
+            // Calculate current total_payable from the screen rows and collect rows
+            let currentTotalPayable = 0;
+            let updatedItems = [];
+            document.querySelectorAll("#salesItemsBody tr").forEach(row => {
+                const totalVal = parseFloat((row.querySelector(".total_incentive")?.value || "").replace(/,/g, "")) || 0;
+                currentTotalPayable += totalVal;
+                updatedItems.push({
+                    id: row.dataset.itemId || "",
+                    applied_date: row.querySelector(".applied_date")?.value || "",
+                    date_of_booking: row.querySelector(".booking_date")?.value || "",
+                    representative_id: row.querySelector(".representative")?.value || "",
+                    client_name: row.querySelector(".client_name")?.value || "",
+                    flat_no: row.querySelector(".flat_no")?.value || "",
+                    project_id: row.querySelector(".project")?.value || "",
+                    typo_id: row.querySelector(".typo")?.value || "",
+                    status_id: row.querySelector(".status")?.value || "",
+                    dimension_sqft: row.querySelector(".dimension")?.value || "",
+                    incentive_type: row.querySelector(".incentive_type")?.value || "",
+                    earned_incentive: row.querySelector(".earned_incentive")?.value || "",
+                    total_incentive: row.querySelector(".total_incentive")?.value || "",
+                    remarks: row.querySelector(".item_remarks")?.value || ""
+                });
+            });
+
+            Swal.fire({
+                title: "Record Payment?",
+                text: `Confirm recording payment of ₹${paidVal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}?`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Record",
+                confirmButtonColor: "#165c42"
+            }).then(result => {
+                if (result.isConfirmed) {
+                    fetch("/api/sales/record-payment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            req_no: reqNo,
+                            total_payable: currentTotalPayable,
+                            paid_amount: paidVal,
+                            payment_remarks: remarksVal,
+                            updatedItems: updatedItems
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(resData => {
+                        if (resData.success) {
+                            Swal.fire("Payment Saved", resData.message, "success");
+                            window.currentPaidAmount = resData.data.paid_amount;
+                            window.currentBalanceAmount = resData.data.balance_amount;
+                            window.currentPaymentStatus = resData.data.payment_status;
+                            updatePaymentStatusBadge(resData.data.payment_status);
+                            calculateTotals();
+                        } else {
+                            Swal.fire("Error", resData.message || "Failed to save payment", "error");
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Payment save error:", err);
+                        Swal.fire("Error", "Failed to connect to server", "error");
+                    });
+                }
+            });
         });
 
 

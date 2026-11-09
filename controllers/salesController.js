@@ -88,115 +88,141 @@ exports.submitSalesRequest = (req, res) => {
 
     const requester_id = empRes[0].id;
 
-    // 2️⃣ Insert into sales (same as petrol_claim)
-    const insertSalesSql = `
-      INSERT INTO sales (req_no, requester_id, status, attachments, remarks, created_at, updated_at)
-      VALUES (?, ?, 'Pending', ?, ?, NOW(), NOW())
+    // 1.5️⃣ Check for pending carried-over balance from previous requests (not settled, not rejected)
+    const carrySql = `
+      SELECT id, balance_amount 
+      FROM sales 
+      WHERE requester_id = ? 
+        AND balance_amount > 0 
+        AND LOWER(status) != 'rejected' 
+        AND is_settled = 0
     `;
-    db.query(insertSalesSql, [req_no, requester_id, JSON.stringify(attachments), remarks], (err1, result) => {
-      if (err1) return res.status(500).send({ error: err1.message });
+    db.query(carrySql, [requester_id], (carryErr, carryRows) => {
+      let carried_balance = 0;
+      let prevIds = [];
+      if (!carryErr && carryRows && carryRows.length > 0) {
+        carryRows.forEach(r => {
+          carried_balance += parseFloat(r.balance_amount || 0);
+          prevIds.push(r.id);
+        });
+      }
 
-      const sale_id = result.insertId;
+      // 2️⃣ Insert into sales
+      const insertSalesSql = `
+        INSERT INTO sales 
+        (req_no, requester_id, status, attachments, remarks, carried_balance, grand_total, balance_amount, created_at, updated_at)
+        VALUES (?, ?, 'Pending', ?, ?, ?, ?, ?, NOW(), NOW())
+      `;
+      db.query(insertSalesSql, [req_no, requester_id, JSON.stringify(attachments), remarks, carried_balance, carried_balance, carried_balance], (err1, result) => {
+        if (err1) return res.status(500).send({ error: err1.message });
 
-      // 3️⃣ Insert sales_items (same style as petrol_items)
-      const itemSql = `
+        const sale_id = result.insertId;
+
+        // Mark carried-over previous requests as settled so they aren't carried twice
+        if (prevIds.length > 0) {
+          db.query(`UPDATE sales SET is_settled = 1 WHERE id IN (?)`, [prevIds]);
+        }
+
+        // 3️⃣ Insert sales_items (same style as petrol_items)
+        const itemSql = `
         INSERT INTO sales_items 
         (sale_id, applied_date, date_of_booking, representative_id, client_name, flat_no, project_id, typo_id, status_id, dimension_sqft)
         VALUES ?
       `;
 
-      const itemValues = items.map(i => [
-        sale_id,
-        i.applied_date,
-        i.date_of_booking,
-        i.representative_id,
-        i.client_name,
-        i.flat_no,
-        i.project_id,
-        i.typo_id,
-        i.status_id,
-        i.dimension_sqft,
-      ]);
+        const itemValues = items.map(i => [
+          sale_id,
+          i.applied_date,
+          i.date_of_booking,
+          i.representative_id,
+          i.client_name,
+          i.flat_no,
+          i.project_id,
+          i.typo_id,
+          i.status_id,
+          i.dimension_sqft,
+        ]);
 
-      db.query(itemSql, [itemValues], err2 => {
-        if (err2) return res.status(500).send({ error: err2.message });
+        db.query(itemSql, [itemValues], err2 => {
+          if (err2) return res.status(500).send({ error: err2.message });
 
-        // 4️⃣ Read approvers from sales_flow (same as petrol_matrix)
-        const matrixSql = `
+          // 4️⃣ Read approvers from sales_flow (same as petrol_matrix)
+          const matrixSql = `
           SELECT * FROM sales_flow
           WHERE request_type='sales_incentive'
           ORDER BY level ASC
         `;
-        db.query(matrixSql, (err3, approvers) => {
-          if (err3) return res.status(500).send({ error: err3.message });
+          db.query(matrixSql, (err3, approvers) => {
+            if (err3) return res.status(500).send({ error: err3.message });
 
-          // Level-1 approvers
-          const level1 = approvers.filter(a => a.level === 1);
-          if (!level1.length)
-            return res.status(500).send({ error: "No level-1 approver found" });
+            // Level-1 approvers
+            const level1 = approvers.filter(a => a.level === 1);
+            if (!level1.length)
+              return res.status(500).send({ error: "No level-1 approver found" });
 
-          // 5️⃣ Insert approval rows into sales_approval
-          const approvalSql = `
+            // 5️⃣ Insert approval rows into sales_approval
+            const approvalSql = `
             INSERT INTO sales_approval (req_no, approver_id, level, status)
             VALUES (?, ?, ?, 'Pending')
           `;
-          level1.forEach(a => {
-            db.query(approvalSql, [req_no, a.approver_user_id, a.level]);
-          });
+            level1.forEach(a => {
+              db.query(approvalSql, [req_no, a.approver_user_id, a.level]);
+            });
 
-          // 6️⃣ Notify requester (same petrol logic)
-          const getEmailSql = `
+            // 6️⃣ Notify requester (same petrol logic)
+            const getEmailSql = `
             SELECT u.email, CONCAT(e.first_name,' ',e.last_name) AS full_name
             FROM users u
             JOIN employees e ON u.email=e.email
             WHERE e.id=?
           `;
-          db.query(getEmailSql, [requester_id], (err4, reqInfo) => {
-            if (err4 || !reqInfo.length)
-              return res.status(500).send({ error: "Requester not found" });
+            db.query(getEmailSql, [requester_id], (err4, reqInfo) => {
+              if (err4 || !reqInfo.length)
+                return res.status(500).send({ error: "Requester not found" });
 
-            const requesterEmail = reqInfo[0].email;
-            const requesterName = reqInfo[0].full_name;
+              const requesterEmail = reqInfo[0].email;
+              const requesterName = reqInfo[0].full_name;
 
-            const requesterMsg = `You submitted a Sales Incentive Request`;
-            const requesterLink = `/my-sales.html?reqNo=${req_no}`;
+              const requesterMsg = `You submitted a Sales Incentive Request`;
+              const requesterLink = `/my-sales.html?reqNo=${req_no}`;
 
-            db.query(`
+              db.query(`
               INSERT INTO notifications (email, message, link, status, created_at, updated_at)
               VALUES (?, ?, ?, 'unread', NOW(), NOW())
             `, [requesterEmail, requesterMsg, requesterLink], (err) => {
-              if (!err) {
-                sendNotificationToUser(
-                  requesterEmail,
-                  requesterMsg,
-                  requesterLink
-                );
-              }
-            });
+                if (!err) {
+                  sendNotificationToUser(
+                    requesterEmail,
+                    requesterMsg,
+                    requesterLink
+                  );
+                }
+              });
 
-            // 7️⃣ Notify approvers
-            level1.forEach(a => {
-              db.query(`SELECT email FROM users WHERE id=?`, [a.approver_user_id], (err5, emailRes) => {
-                if (emailRes?.length) {
-                  const email = emailRes[0].email;
-                  const msg = `${requesterName} submitted Sales Incentive ${req_no} for your approval`;
-                  const link = `/sales-approver.html?reqNo=${req_no}`;
-                  db.query(`
+              // 7️⃣ Notify approvers
+              level1.forEach(a => {
+                db.query(`SELECT email FROM users WHERE id=?`, [a.approver_user_id], (err5, emailRes) => {
+                  if (emailRes?.length) {
+                    const email = emailRes[0].email;
+                    const msg = `${requesterName} submitted Sales Incentive ${req_no} for your approval`;
+                    const link = `/sales-approver.html?reqNo=${req_no}`;
+                    db.query(`
                     INSERT INTO notifications (email, message, link, status, created_at, updated_at)
                     VALUES (?, ?, ?, 'unread', NOW(), NOW())
                   `, [email, msg, link], (err) => {
-                    if (!err) {
-                      sendNotificationToUser(email, msg, link);
-                    }
-                  });
-                }
+                      if (!err) {
+                        sendNotificationToUser(email, msg, link);
+                      }
+                    });
+                  }
+                });
               });
-            });
 
-            return res.send({
-              success: true,
-              req_no,
-              message: `Sales Incentive Request ${req_no} submitted successfully`
+              return res.send({
+                success: true,
+                req_no,
+                message: `Sales Incentive Request ${req_no} submitted successfully`
+              });
             });
           });
         });
@@ -311,6 +337,24 @@ exports.updateSalesApproval = (req, res) => {
           }
 
         });
+
+        // Recompute total_payable, grand_total, and balance_amount for this sale
+        setTimeout(() => {
+          db.query(`
+            UPDATE sales s
+            SET 
+              s.total_payable = (
+                SELECT COALESCE(SUM(CAST(REPLACE(REPLACE(si.total_incentive, ',', ''), ' ', '') AS DECIMAL(12,2))), 0)
+                FROM sales_items si
+                WHERE si.sale_id = s.id
+              ),
+              s.grand_total = s.total_payable + COALESCE(s.carried_balance, 0),
+              s.balance_amount = GREATEST(0, (s.total_payable + COALESCE(s.carried_balance, 0)) - COALESCE(s.paid_amount, 0))
+            WHERE s.req_no = ?
+          `, [req_no], (updErr) => {
+            if (updErr) console.error("Error updating sales totals:", updErr);
+          });
+        }, 300);
       }
 
       // ⭐ MANUAL APPROVAL HISTORY ENTRIES (IF ENTERED BY USER)
@@ -708,6 +752,15 @@ exports.getSalesByReqNo = (req, res) => {
             s.status,
             s.attachments,
             s.remarks,
+            s.total_payable,
+            s.carried_balance,
+            s.grand_total,
+            s.paid_amount,
+            s.balance_amount,
+            s.payment_status,
+            s.payment_remarks,
+            s.paid_at,
+            s.is_settled,
             s.rejection_reason,
             s.rejected_by,
             CONCAT(u2.first_name, ' ', u2.last_name) AS rejected_by_name,
@@ -982,6 +1035,11 @@ exports.getSalesList = (req, res) => {
       CONCAT(e.first_name, ' ', e.last_name) AS requester_name,
       COALESCE(sa.status, s.status) AS approver_status,
       s.status AS final_status,
+      COALESCE(s.grand_total, s.total_payable, 0) AS grand_total,
+      COALESCE(s.paid_amount, 0) AS paid_amount,
+      COALESCE(s.balance_amount, 0) AS balance_amount,
+      COALESCE(s.payment_status, 'Unpaid') AS payment_status,
+      s.payment_remarks,
       s.created_at
     FROM sales s
     LEFT JOIN sales_approval sa 
@@ -1102,7 +1160,11 @@ exports.getMySalesRequests = (req, res) => {
             s.id,
             s.req_no,
             DATE(s.created_at) AS created_date,
-            s.status AS final_status
+            s.status AS final_status,
+            COALESCE(s.grand_total, s.total_payable, 0) AS grand_total,
+            COALESCE(s.paid_amount, 0) AS paid_amount,
+            COALESCE(s.balance_amount, 0) AS balance_amount,
+            COALESCE(s.payment_status, 'Unpaid') AS payment_status
         FROM sales s
         JOIN employees e ON s.requester_id = e.id
         WHERE e.employee_id = ?
@@ -1154,6 +1216,160 @@ exports.trackSalesApproval = (req, res) => {
       return res.status(500).json({ success: false });
     }
     res.json(results);
+  });
+};
+
+
+// ===============================================
+// RECORD ACCOUNTS PAYMENT & CARRY-FORWARD
+// ===============================================
+exports.recordAccountsPayment = (req, res) => {
+  if (!req.session.user || !req.session.user.user_id) {
+    return res.status(401).json({ success: false, message: "Not logged in" });
+  }
+
+  const { req_no, paid_amount, payment_remarks, total_payable, updatedItems } = req.body;
+  if (!req_no) {
+    return res.status(400).json({ success: false, message: "Missing req_no" });
+  }
+
+  const newPaid = Math.max(0, parseFloat(paid_amount) || 0);
+  const userId = req.session.user.user_id;
+
+  // 1️⃣ If updatedItems passed from screen, update sales_items first so DB is never out-of-sync
+  if (Array.isArray(updatedItems) && updatedItems.length > 0) {
+    updatedItems.forEach(item => {
+      if (item.id) {
+        db.query(`
+          UPDATE sales_items SET
+            incentive_type = COALESCE(?, incentive_type),
+            earned_incentive = COALESCE(?, earned_incentive),
+            total_incentive = COALESCE(?, total_incentive),
+            remarks = COALESCE(?, remarks),
+            updated_at = NOW()
+          WHERE id = ?
+        `, [item.incentive_type, item.earned_incentive, item.total_incentive, item.remarks, item.id]);
+      }
+    });
+  }
+
+  // 2️⃣ Fetch sale to get carried_balance and calculate grand_total
+  db.query(
+    `SELECT 
+       s.id, 
+       s.total_payable, 
+       COALESCE(s.carried_balance, 0) AS carried_balance, 
+       s.grand_total,
+       (
+         SELECT COALESCE(SUM(CAST(REPLACE(REPLACE(si.total_incentive, ',', ''), ' ', '') AS DECIMAL(12,2))), 0)
+         FROM sales_items si
+         WHERE si.sale_id = s.id
+       ) AS items_total
+     FROM sales s 
+     WHERE s.req_no = ?`,
+    [req_no],
+    (err, rows) => {
+      if (err) return res.status(500).json({ success: false, error: err.message });
+      if (!rows.length) return res.status(404).json({ success: false, message: "Request not found" });
+
+      const sale = rows[0];
+
+      // Priority for items total: passed from screen > items_total from DB > total_payable in sale
+      let itemsTotal = 0;
+      if (total_payable !== undefined && total_payable !== null && !isNaN(total_payable) && parseFloat(total_payable) > 0) {
+        itemsTotal = parseFloat(total_payable);
+      } else if (parseFloat(sale.items_total) > 0) {
+        itemsTotal = parseFloat(sale.items_total);
+      } else {
+        itemsTotal = parseFloat(sale.total_payable) || 0;
+      }
+
+      const carriedBalance = parseFloat(sale.carried_balance) || 0;
+      const grandTotal = itemsTotal + carriedBalance;
+      const balance = Math.max(0, grandTotal - newPaid);
+
+      let paymentStatus = "Unpaid";
+      if (newPaid >= grandTotal && grandTotal > 0) {
+        paymentStatus = "Fully Paid";
+      } else if (newPaid > 0) {
+        paymentStatus = "Partially Paid";
+      }
+
+      const updateSql = `
+        UPDATE sales
+        SET 
+          total_payable = ?,
+          grand_total = ?,
+          paid_amount = ?,
+          balance_amount = ?,
+          payment_status = ?,
+          payment_remarks = ?,
+          paid_by = ?,
+          paid_at = NOW(),
+          updated_at = NOW()
+        WHERE req_no = ?
+      `;
+
+      db.query(
+        updateSql,
+        [itemsTotal, grandTotal, newPaid, balance, paymentStatus, payment_remarks || null, userId, req_no],
+        (updErr) => {
+          if (updErr) return res.status(500).json({ success: false, error: updErr.message });
+
+          res.json({
+            success: true,
+            message: `Payment updated: ₹${newPaid.toLocaleString('en-IN', { minimumFractionDigits: 2 })} paid. Remaining Balance: ₹${balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`,
+            data: {
+              req_no,
+              total_payable: itemsTotal,
+              carried_balance: carriedBalance,
+              grand_total: grandTotal,
+              paid_amount: newPaid,
+              balance_amount: balance,
+              payment_status: paymentStatus
+            }
+          });
+        }
+      );
+    }
+  );
+};
+
+
+// ===============================================
+// GET EMPLOYEE CARRIED BALANCE
+// ===============================================
+exports.getEmployeeCarriedBalance = (req, res) => {
+  const empCode = req.session.user?.employee_id;
+  const userEmail = req.session.user?.email;
+
+  if (!empCode && !userEmail) {
+    return res.status(401).json({ success: false, message: "Not logged in" });
+  }
+
+  const sql = `
+    SELECT s.id, s.req_no, s.balance_amount, s.created_at
+    FROM sales s
+    JOIN employees e ON s.requester_id = e.id
+    WHERE (e.employee_id = ? OR e.email = ?)
+      AND s.balance_amount > 0
+      AND LOWER(s.status) != 'rejected'
+      AND s.is_settled = 0
+    ORDER BY s.id ASC
+  `;
+
+  db.query(sql, [empCode, userEmail], (err, rows) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+
+    const totalBalance = rows.reduce((acc, r) => acc + parseFloat(r.balance_amount || 0), 0);
+    const reqNos = rows.map(r => r.req_no);
+
+    res.json({
+      success: true,
+      hasBalance: totalBalance > 0,
+      carried_balance: totalBalance,
+      pendingRequests: reqNos
+    });
   });
 };
 

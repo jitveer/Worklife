@@ -3,21 +3,36 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Online Exam</title>
+  <title>Online Interview Assessment</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f1f5f9;
       margin: 0;
+      color: #1e293b;
+    }
+
+    body.candidate-active {
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -moz-user-select: none !important;
+      -ms-user-select: none !important;
     }
 
     .exam-container {
       max-width: 900px;
       margin: 20px auto;
       background: #fff;
-      border: 1px solid #ccc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
     }
 
     /* HEADER */
@@ -25,246 +40,465 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 20px;
-      background: #000;
+      padding: 15px 24px;
+      background: #0f172a;
       color: #fff;
     }
 
     .company-info {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .company-info img {
-      width: 55px;
-      height: 55px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       background: #fff;
+      object-fit: contain;
     }
 
     .company-info h2 {
       margin: 0;
-      font-size: 22px;
+      font-size: 20px;
+      font-weight: 700;
     }
 
     .company-info p {
-      margin: 0;
-      font-size: 14px;
-      color: #ddd;
-      gap: 3px;
+      margin: 3px 0 0 0;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .timer-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #334155;
+    }
+
+    .timer-badge.urgent {
+      background: #7f1d1d !important;
+      border-color: #ef4444 !important;
+      animation: pulse 1s infinite;
     }
 
     .timer {
-      font-size: 19px;
-      font-weight: bold;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #f8fafc;
     }
 
-    /* EMAIL */
+    /* EMAIL & SCORE BAR */
     .candidate-email {
-      padding: 10px 20px;
-      border-bottom: 1px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
     }
 
     .candidate-email input {
-      width: 25%;
-      padding: 8px;
-      border: 1px solid #aaa;
+      width: 280px;
+      padding: 6px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 14px;
+      background: #fff;
+      color: #334155;
+    }
+
+    /* FLOATING WEBCAM PIP */
+    #proctoringPip {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      width: 170px;
+      background: #090d16;
+      border: 2px solid #ef4444;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    #proctoringPip video {
+      width: 100%;
+      height: 125px;
+      object-fit: cover;
+      display: block;
+      transform: scaleX(-1); /* mirror preview */
+    }
+
+    .pip-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 8px;
+      background: #0f172a;
+      color: #fff;
+      font-size: 10px;
+    }
+
+    .pip-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 700;
+      color: #ef4444;
+    }
+
+    .pip-dot {
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    /* PRE-EXAM INSTRUCTIONS & CAMERA CHECK OVERLAY */
+    #preExamOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .pre-exam-card {
+      background: #fff;
+      max-width: 600px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      padding: 28px;
+      text-align: center;
+    }
+
+    .pre-exam-card h2 {
+      margin: 0 0 6px 0;
+      color: #0f172a;
+      font-size: 22px;
+    }
+
+    .pre-exam-card p.subtitle {
+      margin: 0 0 20px 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .guidelines-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #2563eb;
+      padding: 14px 18px;
+      border-radius: 6px;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .guidelines-box h4 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #1e293b;
+    }
+
+    .guidelines-box ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.6;
+    }
+
+    .camera-setup-area {
+      background: #f1f5f9;
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #previewVideo {
+      width: 220px;
+      height: 160px;
+      background: #000;
+      border-radius: 6px;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    .btn-camera {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-camera:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-start {
+      background: #16a34a;
+      color: #fff;
+      border: none;
+      padding: 12px 32px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .btn-start:disabled {
+      background: #cbd5e1 !important;
+      cursor: not-allowed;
+      color: #64748b;
+    }
+
+    .btn-start:hover:not(:disabled) {
+      background: #15803d;
+      transform: translateY(-1px);
     }
 
     /* QUESTIONS */
     .questions {
-      padding: 20px;
+      padding: 24px;
     }
 
     .section-title {
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 16px;
+      color: #0f172a;
+      background: #f1f5f9;
+      padding: 8px 14px;
+      border-radius: 4px;
       margin-top: 25px;
+      border-left: 4px solid #0f172a;
     }
 
     .question {
-      margin: 15px 0;
+      margin: 18px 0;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+
+    .question:last-child {
+      border-bottom: none;
     }
 
     .question p {
-      margin-bottom: 8px;
+      margin: 0 0 10px 0;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 1.5;
     }
 
     .options label {
-      display: block;
-      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.15s;
+    }
+
+    .options label:hover {
+      background: #f8fafc;
+    }
+
+    .options input[type="radio"] {
+      width: 16px;
+      height: 16px;
       cursor: pointer;
     }
 
-    /* SUBMIT */
+    /* SUBMIT AREA */
     .submit-area {
       text-align: center;
       padding: 20px;
-      border-top: 1px solid #ccc;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
     }
 
     .submit-area button {
-      background: #000;
+      background: #0f172a;
       color: #fff;
       border: none;
-      padding: 10px 30px;
+      padding: 12px 36px;
       font-size: 15px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .submit-area button:hover {
+      background: #1e293b;
+    }
+
+    /* PROCTORING REVIEW (HR VIEW ONLY) */
+    .hr-proctoring-section {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      margin: 20px 24px 0 24px;
+      padding: 16px;
+    }
+
+    .hr-proctoring-header {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hr-photo-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hr-photo-card {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #fff;
+      padding: 4px;
+      width: 130px;
+      text-align: center;
+    }
+
+    .hr-photo-card img {
+      width: 100%;
+      height: 95px;
+      object-fit: cover;
+      border-radius: 4px;
       cursor: pointer;
     }
 
-    .selected-answer {
-      font-weight: bold;
+    .hr-photo-card span {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      color: #475569;
+      margin-top: 4px;
+      text-transform: capitalize;
+    }
+
+    .violation-alert-banner {
+      background: #fee2e2;
+      border-left: 4px solid #dc2626;
+      color: #991b1b;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 4px;
+      margin-bottom: 14px;
+    }
+
+    /* RESULT SCREEN */
+    #resultScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0f172a;
+      color: white;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+    }
+
+    .result-card {
+      background: #1e293b;
+      padding: 36px;
+      border-radius: 12px;
+      text-align: center;
+      width: 350px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     }
 
     .correct-answer {
-      color: green;
-      font-weight: bold;
+      color: #16a34a !important;
+      font-weight: 700 !important;
     }
 
     .wrong-answer {
-      color: red;
+      color: #dc2626 !important;
+      font-weight: 600;
     }
-
-    #candidateScore {
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    /* =========================
-   PRINT STYLING inside print also same UI has to come 
-========================= */
 
     @media print {
-
-      /* Hide buttons and timer */
       #submitExamBtn,
       #printExamBtn,
       #timer,
-      .submit-area {
+      .submit-area,
+      #proctoringPip,
+      #preExamOverlay {
         display: none !important;
       }
 
-      /* Keep the normal page UI/layout */
       .exam-container {
-        margin: 20px auto;
-        box-shadow: none;
-      }
-
-      /* Don't split a question between pages */
-      .question {
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-
-      /* Selected answer */
-      .selected-answer {
-        font-weight: bold !important;
-      }
-
-      /* Correct answer */
-      .correct-answer {
-        color: green !important;
-        font-weight: bold !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      /* Wrong selected answer */
-      .wrong-answer {
-        color: red !important;
-        font-weight: bold !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      #candidateScore {
-        display: inline !important;
-        font-weight: bold !important;
-        margin-left: 25px !important;
-      }
-
-    }
-
-
-
-    /* ================= MOBILE RESPONSIVE ================= */
-    @media (max-width: 768px) {
-
-      /* Container */
-      .exam-container {
-        max-width: 100%;
         margin: 0;
         border: none;
+        box-shadow: none;
       }
+    }
 
-      /* Header stack */
+    @media (max-width: 768px) {
       .exam-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 10px;
-        padding: 12px;
+        gap: 12px;
       }
-
-      .company-info {
-        gap: 10px;
+      .candidate-email {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
       }
-
-      .company-info img {
-        width: 40px;
-        height: 40px;
-      }
-
-      .company-info h2 {
-        font-size: 16px;
-      }
-
-      .company-info p {
-        font-size: 12px;
-      }
-
-      .timer {
-        font-size: 16px;
-        align-self: flex-end;
-      }
-
-      /* Email input full width */
       .candidate-email input {
-        width: 60%;
-        font-size: 14px;
-      }
-
-      /* Questions padding */
-      .questions {
-        padding: 12px;
-      }
-
-      .section-title {
-        font-size: 14px;
-        margin-top: 18px;
-      }
-
-      /* Question text */
-      .question p {
-        font-size: 14px;
-        line-height: 1.4;
-      }
-
-      /* Options */
-      .options label {
-        font-size: 14px;
-        padding: 6px 0;
-      }
-
-      /* Submit button */
-      .submit-area button {
         width: 100%;
-        font-size: 16px;
-        padding: 12px;
       }
-
-      /* Result screen center fix */
-      #resultScreen {
-        padding: 20px;
+      #proctoringPip {
+        width: 130px;
+        top: 10px;
+        right: 10px;
+      }
+      #proctoringPip video {
+        height: 95px;
       }
     }
   </style>
@@ -272,28 +506,96 @@
 
 <body>
 
-  <div class="exam-container">
+  <!-- PRE-EXAM INSTRUCTIONS & CAMERA VERIFICATION OVERLAY (CANDIDATE ONLY) -->
+  <div id="preExamOverlay" style="display: none;">
+    <div class="pre-exam-card">
+      <h2>Online Interview Assessment</h2>
+      <p class="subtitle" id="roleSubtitle">MNM Reality Pvt Ltd • 1st Round Interview</p>
+
+      <div class="guidelines-box">
+        <h4>📌 Mandatory Examination Rules:</h4>
+        <ul>
+          <li><b>Strict 5 Minutes Duration:</b> The timer will begin immediately when you click Start Exam.</li>
+          <li><b>Webcam Proctoring:</b> Camera permission is <b>mandatory</b>. Your webcam must remain active throughout the assessment.</li>
+          <li><b>Zero Tab-Switching:</b> You are <b>not allowed to switch tabs, minimize windows, or click outside</b>. You will receive <b>only 1 warning</b>; a 2nd infraction will immediately terminate and submit your assessment.</li>
+          <li><b>Copy/Paste Blocked:</b> Copying, right-clicking, and text selection are strictly disabled.</li>
+        </ul>
+      </div>
+
+      <!-- CAMERA VERIFICATION AREA -->
+      <div class="camera-setup-area">
+        <video id="previewVideo" autoplay playsinline muted></video>
+        <button type="button" class="btn-camera" id="enableCameraBtn">
+          📹 Connect Camera
+        </button>
+        <span id="cameraStatusText" style="font-size: 12px; font-weight: 600; color: #dc2626;">
+          ⚠️ Camera not connected. Click above to enable.
+        </span>
+      </div>
+
+      <button type="button" class="btn-start" id="startExamBtn" disabled>
+        Start Exam (Strict 5 Minutes)
+      </button>
+    </div>
+  </div>
+
+  <!-- FLOATING PROCTORING WEBCAM PREVIEW (ACTIVE EXAM ONLY) -->
+  <div id="proctoringPip" style="display: none;">
+    <video id="proctoringVideo" autoplay playsinline muted></video>
+    <div class="pip-status">
+      <div class="pip-indicator">
+        <span class="pip-dot"></span>
+        <span>REC</span>
+      </div>
+      <div>
+        <span>Strikes: </span>
+        <span id="violationBadge" style="color: #fbbf24; font-weight: 700;">0/2</span>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="snapshotCanvas" style="display: none;"></canvas>
+
+  <!-- MAIN EXAM CONTAINER -->
+  <div class="exam-container" id="mainExamContainer" style="display: none;">
 
     <!-- HEADER -->
     <div class="exam-header">
       <div class="company-info">
-        <img src="images/mnmlogo.jpg" alt="Logo">
+        <img src="images/mnmlogo.jpg" alt="Logo" onerror="this.style.display='none'">
         <div>
           <h2 id="companyName">MNM REALITY PVT LTD.</h2>
-          <p>2nd Round Interview</p>
+          <p id="examSubtitle">1st Round Interview Assessment</p>
         </div>
       </div>
-      <div class="timer" id="timer">5:00</div>
+
+      <div class="timer-badge" id="timerBadge">
+        <span style="font-size: 14px;">⏳</span>
+        <div class="timer" id="timer">5:00</div>
+      </div>
     </div>
 
-    <!-- EMAIL -->
+    <!-- PROCTORING REVIEW SECTION (HR VIEW ONLY) -->
+    <div id="hrProctoringSection" class="hr-proctoring-section" style="display: none;">
+      <div id="hrViolationAlert" class="violation-alert-banner" style="display: none;"></div>
+      <div class="hr-proctoring-header">
+        <span>📸 Candidate Proctoring Snapshots:</span>
+        <span id="hrPhotoCount" style="font-weight: normal; color: #64748b; font-size: 12px;"></span>
+      </div>
+      <div class="hr-photo-grid" id="hrPhotoGrid">
+        <!-- Snapshots injected dynamically -->
+      </div>
+    </div>
+
+    <!-- CANDIDATE EMAIL & SCORE -->
     <div class="candidate-email">
+      <div>
+        <label style="font-size: 13px; font-weight: 600; color: #475569; margin-right: 6px;">Candidate:</label>
+        <input type="text" id="candidateEmail" readonly>
+      </div>
 
-      <input type="text" id="candidateEmail" readonly>
-
-      <span id="candidateScore" style="display:none; margin-left:20px; font-weight:bold;">
+      <span id="candidateScore" style="display:none; font-weight: 700; color: #16a34a; font-size: 15px;">
       </span>
-
     </div>
 
     <!-- QUESTIONS -->
@@ -303,397 +605,547 @@
 
     <!-- SUBMIT -->
     <div class="submit-area">
-
-      <button id="submitExamBtn">
-        Submit Exam
+      <button type="button" id="submitExamBtn">
+        Submit Assessment
       </button>
 
-      <button id="printExamBtn" style="display: none;">
-        🖨 Print
+      <button type="button" id="printExamBtn" style="display: none;">
+        🖨 Print Results
       </button>
-
     </div>
 
+  </div>
 
-    <!-- RESULT SCREEN -->
-    <div id="resultScreen" style="
-  display:none;
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:#0f172a;
-  color:white;
-  align-items:center;
-  justify-content:center;
-  font-family:Arial;
-">
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen">
+    <div class="result-card">
+      <h2 id="resultTitle" style="font-size: 22px; margin-bottom: 8px;">✅ Exam Completed</h2>
+      <p id="resultSubtitle" style="color: #94a3b8; font-size: 13px; margin-bottom: 20px;">
+        Your performance summary
+      </p>
 
-      <div style="
-    background:#111827;
-    padding:40px;
-    border-radius:12px;
-    text-align:center;
-    width:320px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.4);
-  ">
-        <h2 style="font-size:22px;margin-bottom:10px;">✅ Exam Completed</h2>
-
-        <p style="color:#9ca3af;margin-bottom:20px;">
-          Your performance summary
-        </p>
-
-        <div style="
-      font-size:42px;
-      font-weight:bold;
-      color:#22c55e;
-      margin-bottom:10px;
-    " id="finalScore">
-          0 / 0
-        </div>
-
-        <p style="color:#9ca3af;font-size:14px;">
-          Thank you for attending the interview.<br>
-          HR will contact you soon.
-        </p>
+      <div style="font-size: 42px; font-weight: bold; color: #22c55e; margin-bottom: 12px;" id="finalScore">
+        0 / 0
       </div>
+
+      <p id="resultMsg" style="color: #94a3b8; font-size: 13px; line-height: 1.5;">
+        Thank you for completing the assessment.<br>
+        Our HR team will review your proctoring logs and responses.
+      </p>
     </div>
+  </div>
 
 
-    <script>
+  <!-- ================= SCRIPTS ================= -->
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const viewId = params.get("view");
 
-      // 1. Read parameters from URL
-      const params = new URLSearchParams(window.location.search);
+    const isViewMode = !!viewId;
+    let examLoaded = false;
+    let examStarted = false;
+    let examSubmitted = false;
+    let timerInterval = null;
 
-      const token = params.get("token");
-      const viewId = params.get("view");
+    // Proctoring & Anti-Cheat State
+    let cameraStream = null;
+    let capturedPhotos = [];
+    let warningCount = 0;
+    let isTerminated = false;
 
-      let examLoaded = false;
-      let examSubmitted = false;
+    // ==========================================
+    // INITIALIZATION
+    // ==========================================
+    if (isViewMode) {
+      document.body.classList.add("view-mode");
+      loadHRView(viewId);
+    } else if (!token) {
+      alert("Invalid or missing assessment token.");
+      throw new Error("Token missing");
+    } else {
+      document.body.classList.add("candidate-active");
+      initCandidateExam(token);
+    }
 
-      // Check whether this is HR View mode
-      const isViewMode = !!viewId;
-
-      if (isViewMode) {
-
-        document.body.classList.add("view-mode");
-
-      } else if (!token) {
-
-        alert("Invalid exam link");
-        throw new Error("Token missing");
-
-      }
-      // 2. Fetch exam data from backend
-      // 2. Load exam data
-
-      if (isViewMode) {
-
-        // =========================
-        // HR VIEW MODE
-        // =========================
-
-        fetch(`/api/interview/view/${viewId}`, {
-          method: "GET",
-          credentials: "include"
+    // ==========================================
+    // CANDIDATE EXAM FLOW
+    // ==========================================
+    function initCandidateExam(token) {
+      fetch(`/api/exam/start?token=${token}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Link expired or invalid");
+          return res.json();
         })
-          .then(res => {
+        .then(data => {
+          examLoaded = true;
+          document.getElementById("companyName").innerText = data.company || "MNM REALITY PVT LTD.";
+          document.getElementById("candidateEmail").value = data.email || "";
 
-            if (!res.ok) {
-              throw new Error("Failed to load interview");
-            }
+          // Render Questions
+          renderQuestions(data.paper);
 
-            return res.json();
-          })
-          .then(data => {
-
-            // Fill company name
-            document.getElementById("companyName").innerText =
-              "MNM REALITY PVT LTD.";
-
-            // Fill candidate email
-            document.getElementById("candidateEmail").value =
-              data.candidate_email;
-
-
-            // Show score
-            const scoreElement =
-              document.getElementById("candidateScore");
-
-            scoreElement.innerText =
-              `Score: ${data.score} / ${data.questions.length}`;
-
-            scoreElement.style.display = "inline";
-
-
-
-            // Render question paper
-            renderQuestions(
-              data.questions,
-              data.answers
-            );
-
-            // No timer in HR view
-            document.getElementById("timer").style.display = "none";
-            // Hide Submit button in HR view
-            document.getElementById("submitExamBtn").style.display = "none";
-            // Show Print button in HR view
-            document.getElementById("printExamBtn").style.display = "inline-block";
-
-          })
-          .catch(err => {
-
-            console.error("View interview error:", err);
-
-            alert("Unable to load interview question paper");
-
-          });
-
-      } else {
-
-        // =========================
-        // CANDIDATE MODE
-        // =========================
-
-        fetch(`/api/exam/start?token=${token}`)
-          .then(res => res.json())
-          .then(data => {
-
-            // Fill header + email
-            document.getElementById("companyName").innerText =
-              data.company;
-
-            document.getElementById("candidateEmail").value =
-              data.email;
-
-            // Render questions
-            renderQuestions(data.paper);
-
-            // Mark exam as loaded
-            examLoaded = true;
-
-            // Start timer
-            startTimer(data.duration);
-
-          })
-          .catch(() => {
-
-            alert("Exam link expired or invalid");
-
-          });
-
-      }
-
-
-      // 3. Render questions dynamically
-      function renderQuestions(paper, savedAnswers = null) {
-        const container = document.getElementById("questionsContainer");
-        container.innerHTML = "";
-
-        let currentSection = "";
-
-        paper.forEach((q, index) => {
-
-          if (q.section !== currentSection) {
-            currentSection = q.section;
-            container.innerHTML += `
-        <div class="section-title">${q.section}</div>
-      `;
+          // CASE A: Candidate already began and reloaded/refreshed
+          if (data.hasStarted) {
+            // Re-acquire camera silently or immediately resume
+            startCameraStream((success) => {
+              launchActiveExam(data.duration);
+            });
+          } 
+          // CASE B: First time opening - show Pre-Exam Instructions & Camera Check
+          else {
+            document.getElementById("preExamOverlay").style.display = "flex";
+            setupCameraCheck();
           }
-
-          const optionsHtml = q.options.map((opt, i) => {
-
-            const isSelected =
-              savedAnswers &&
-              String(savedAnswers[index]) === String(i);
-
-            const isCorrect =
-              isViewMode &&
-              Number(q.answer) === i;
-
-            const isWrongSelected =
-              isViewMode &&
-              isSelected &&
-              !isCorrect;
-
-            let answerClass = "";
-
-            if (isCorrect) {
-              answerClass = "correct-answer";
-            }
-            else if (isWrongSelected) {
-              answerClass = "wrong-answer";
-            }
-
-            return `
-    <label class="${answerClass}">
-
-      <input
-        type="radio"
-        name="q${index}"
-        value="${i}"
-        ${isSelected ? "checked" : ""}
-        ${isViewMode ? "disabled" : ""}
-      >
-
-      ${String.fromCharCode(65 + i)}) ${opt}
-
-    </label>
-  `;
-
-          }).join("");
-
-
-
-          container.innerHTML += `
-      <div class="question">
-        <p>${index + 1}. ${q.question}</p>
-        <div class="options">${optionsHtml}</div>
-      </div>
-    `;
+        })
+        .catch(err => {
+          console.error(err);
+          alert("This exam link is expired, invalid, or has already been completed.");
+          window.location.href = "index.html";
         });
-      }
+    }
 
+    // 1. Setup Camera Verification
+    function setupCameraCheck() {
+      const enableBtn = document.getElementById("enableCameraBtn");
+      const startBtn = document.getElementById("startExamBtn");
 
-      // 4. Timer
-      function startTimer(seconds) {
+      enableBtn.addEventListener("click", () => {
+        startCameraStream((success) => {
+          if (success) {
+            enableBtn.style.background = "#16a34a";
+            enableBtn.innerHTML = "✅ Camera Connected";
+            enableBtn.disabled = true;
 
-        // Safety check
-        if (!seconds || seconds <= 0) {
-          console.error("Invalid exam duration:", seconds);
-          return; // ❌ stop auto submit
-        }
+            const status = document.getElementById("cameraStatusText");
+            status.style.color = "#16a34a";
+            status.innerText = "Camera ready. Click below to begin.";
 
-        let time = seconds;
-
-        const interval = setInterval(() => {
-          let min = Math.floor(time / 60);
-          let sec = time % 60;
-
-          document.getElementById("timer").innerText =
-            `${min}:${sec.toString().padStart(2, '0')}`;
-
-          time--;
-
-          // Auto submit only when exam is really loaded
-          if (time < 0 && examLoaded && !examSubmitted) {
-            clearInterval(interval);
-            submitExam();
+            startBtn.disabled = false;
           }
-        }, 1000);
-      }
-
-
-      // pressing back not allowed admin its allowed 
-      // Back navigation restriction only for candidate exam
-
-      if (!isViewMode) {
-
-        history.pushState(null, null, location.href);
-
-        window.onpopstate = function () {
-
-          history.pushState(null, null, location.href);
-
-          alert("❌ Back navigation is not allowed during the exam.");
-
-        };
-
-      }
-
-
-
-
-
-      // onclick submit
-      document.addEventListener("DOMContentLoaded", () => {
-
-        document.getElementById("submitExamBtn")
-          ?.addEventListener("click", submitExam);
-
-        // print button 
-        document.getElementById("printExamBtn")
-          ?.addEventListener("click", () => {
-
-            window.print();
-
-          });
-
+        });
       });
 
-
-
-
-
-
-
-
-      // 5. Submit exam
-      function submitExam() {
-
-        if (examSubmitted) return;
-        examSubmitted = true;
-
-        const answers = [];
-
-        document.querySelectorAll(".question").forEach((q, index) => {
-          const selected = document.querySelector(
-            `input[name="q${index}"]:checked`
-          );
-          answers.push(selected ? selected.value : null);
-        });
-
-        fetch("/api/exam/submit", {
+      startBtn.addEventListener("click", () => {
+        // Begin Exam on backend (records started_at)
+        fetch("/api/exam/start", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token, answers })
+          body: JSON.stringify({ token })
         })
-          .then(res => {
-            if (res.status === 403) {
-              alert("Exam already submitted or link expired");
-              return;
-            }
-            return res.json();
-          })
+          .then(res => res.json())
           .then(data => {
-            if (!data) return;
-
-            // Hide only exam content
-            document.querySelector(".exam-header").style.display = "none";
-            document.querySelector(".candidate-email").style.display = "none";
-            document.querySelector(".questions").style.display = "none";
-            document.querySelector(".submit-area").style.display = "none";
-
-            // Show result screen
-            document.getElementById("resultScreen").style.display = "flex";
-
-            // Display score
-            document.getElementById("finalScore").innerText =
-              `${data.score} / ${data.total}`;
-
-            // 🎉 Celebration for high scores
-            if (data.score >= 8) {
-              blastConfetti();
-              alert("🎉 Congratulations! You have done very well.");
-            }
+            document.getElementById("preExamOverlay").style.display = "none";
+            launchActiveExam(data.duration || 300);
           })
           .catch(err => {
-            console.error("Submit error:", err);
-            alert("Submission failed");
+            console.error("Begin exam error:", err);
+            document.getElementById("preExamOverlay").style.display = "none";
+            launchActiveExam(300);
           });
+      });
+    }
+
+    // 2. Start Camera Helper
+    function startCameraStream(callback) {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Webcam is not supported or allowed in this browser.");
+        if (callback) callback(false);
+        return;
       }
 
+      navigator.mediaDevices.getUserMedia({ 
+        video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" }, 
+        audio: false 
+      })
+        .then(stream => {
+          cameraStream = stream;
 
-      // color paper blast 
-      function blastConfetti() {
-        confetti({
-          particleCount: 200,
-          spread: 100,
-          origin: { y: 0.6 }
+          // Wire preview in setup modal
+          const previewVid = document.getElementById("previewVideo");
+          if (previewVid) previewVid.srcObject = stream;
+
+          // Wire floating PIP
+          const pipVid = document.getElementById("proctoringVideo");
+          if (pipVid) pipVid.srcObject = stream;
+
+          if (callback) callback(true);
+        })
+        .catch(err => {
+          console.error("Camera access error:", err);
+          alert("Camera access is mandatory to take this exam. Please click 'Allow' in your browser settings to proceed.");
+          if (callback) callback(false);
         });
-      }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    }
 
+    // 3. Launch Active Exam Screen
+    function launchActiveExam(seconds) {
+      examStarted = true;
+      document.getElementById("mainExamContainer").style.display = "block";
+      document.getElementById("proctoringPip").style.display = "block";
+
+      // Enter Fullscreen if supported
+      try {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } catch (e) {}
+
+      // Initial Photo at Start
+      setTimeout(() => captureSnapshot("start"), 1000);
+
+      // Mid-exam Photo at 2.5 minutes
+      setTimeout(() => captureSnapshot("periodic_mid"), 150000);
+
+      // Start 5-Minute Timer
+      startTimer(seconds);
+
+      // Activate Strict Anti-Cheat Listeners
+      enableStrictProctoring();
+    }
+
+    // 4. Capture Proctoring Snapshot (Option A)
+    function captureSnapshot(type) {
+      if (!cameraStream) return;
+
+      try {
+        const video = document.getElementById("proctoringVideo");
+        if (!video || !video.videoWidth) return;
+
+        const canvas = document.getElementById("snapshotCanvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+        
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.6);
+
+        capturedPhotos.push({
+          type: type,
+          timestamp: new Date().toISOString(),
+          data: dataUrl
+        });
+      } catch (e) {
+        console.error("Snapshot capture error:", e);
+      }
+    }
+
+    // ==========================================
+    // STRICT ANTI-CHEATING SYSTEM
+    // ==========================================
+    function enableStrictProctoring() {
+      // 1. Tab Switching & Window Blur Detection
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          handleSecurityViolation("Tab switching / minimizing detected");
+        }
+      });
+
+      window.addEventListener("blur", () => {
+        handleSecurityViolation("Lost window focus");
+      });
+
+      // 2. Block Copy, Paste, Cut
+      ["copy", "paste", "cut"].forEach(evtName => {
+        document.addEventListener(evtName, (e) => {
+          e.preventDefault();
+          return false;
+        });
+      });
+
+      // 3. Block Right Click
+      document.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        return false;
+      });
+
+      // 4. Block DevTools & Inspection Shortcuts
+      document.addEventListener("keydown", (e) => {
+        if (
+          e.key === "F12" ||
+          (e.ctrlKey && (e.key === "u" || e.key === "U" || e.key === "c" || e.key === "C" || e.key === "v" || e.key === "V")) ||
+          (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i" || e.key === "J" || e.key === "j" || e.key === "C" || e.key === "c"))
+        ) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // 5. Back Navigation Restriction
+      history.pushState(null, null, location.href);
+      window.onpopstate = function () {
+        history.pushState(null, null, location.href);
+        handleSecurityViolation("Attempted back navigation");
+      };
+
+      // 6. Before Unload Warning
+      window.addEventListener("beforeunload", (e) => {
+        if (!examSubmitted && examStarted) {
+          e.preventDefault();
+          e.returnValue = "Leaving will submit and terminate your exam!";
+        }
+      });
+    }
+
+    function handleSecurityViolation(reason) {
+      if (!examStarted || examSubmitted || isTerminated) return;
+
+      warningCount++;
+      captureSnapshot(`violation_${warningCount}`);
+
+      const badge = document.getElementById("violationBadge");
+      if (badge) badge.innerText = `${warningCount}/2`;
+
+      // 1ST INFRACTION: STRICT WARNING POPUP
+      if (warningCount === 1) {
+        Swal.fire({
+          icon: "warning",
+          title: "⚠️ Warning (1/2): Security Violation!",
+          html: `
+            <div style="text-align: left; font-size: 14px;">
+              <p style="color: #b45309; font-weight: 700; margin-bottom: 8px;">
+                ${reason}!
+              </p>
+              <p style="color: #334155; margin-bottom: 8px;">
+                You are strictly not allowed to leave or switch tabs during this assessment.
+              </p>
+              <p style="color: #b91c1c; font-weight: 700; margin-bottom: 0;">
+                ⚠️ One more violation will immediately terminate and submit your exam!
+              </p>
+            </div>
+          `,
+          confirmButtonText: "I Understand & Resume Exam",
+          confirmButtonColor: "#d97706",
+          allowOutsideClick: false,
+          allowEscapeKey: false
+        });
+      } 
+      // 2ND INFRACTION: TERMINATE EXAM IMMEDIATELY
+      else if (warningCount >= 2) {
+        isTerminated = true;
+        submitExam("Terminated: Repeated Tab-Switching Security Violation");
+      }
+    }
+
+    // ==========================================
+    // TIMER ENGINE (STRICT 5 MINUTES)
+    // ==========================================
+    function startTimer(seconds) {
+      if (!seconds || seconds <= 0) {
+        submitExam("Time Expired");
+        return;
+      }
+
+      let time = Math.floor(seconds);
+      updateTimerDisplay(time);
+
+      timerInterval = setInterval(() => {
+        time--;
+        updateTimerDisplay(time);
+
+        // Urgent color when under 60 seconds
+        if (time <= 60) {
+          document.getElementById("timerBadge")?.classList.add("urgent");
+        }
+
+        if (time <= 0) {
+          clearInterval(timerInterval);
+          submitExam("Time Expired");
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(time) {
+      let min = Math.floor(time / 60);
+      let sec = time % 60;
+      const el = document.getElementById("timer");
+      if (el) el.innerText = `${min}:${sec.toString().padStart(2, "0")}`;
+    }
+
+    // ==========================================
+    // RENDER QUESTIONS
+    // ==========================================
+    function renderQuestions(paper, savedAnswers = null) {
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = "";
+
+      let currentSection = "";
+
+      paper.forEach((q, index) => {
+        if (q.section && q.section !== currentSection) {
+          currentSection = q.section;
+          container.innerHTML += `<div class="section-title">${q.section}</div>`;
+        }
+
+        const optionsHtml = q.options.map((opt, i) => {
+          const isSelected = savedAnswers && String(savedAnswers[index]) === String(i);
+          const isCorrect = isViewMode && Number(q.answer) === i;
+          const isWrongSelected = isViewMode && isSelected && !isCorrect;
+
+          let answerClass = "";
+          if (isCorrect) answerClass = "correct-answer";
+          else if (isWrongSelected) answerClass = "wrong-answer";
+
+          return `
+            <label class="${answerClass}">
+              <input
+                type="radio"
+                name="q${index}"
+                value="${i}"
+                ${isSelected ? "checked" : ""}
+                ${isViewMode ? "disabled" : ""}
+              >
+              ${String.fromCharCode(65 + i)}) ${opt}
+            </label>
+          `;
+        }).join("");
+
+        container.innerHTML += `
+          <div class="question">
+            <p>${index + 1}. ${q.question}</p>
+            <div class="options">${optionsHtml}</div>
+          </div>
+        `;
+      });
+    }
+
+    // ==========================================
+    // SUBMIT EXAM
+    // ==========================================
+    function submitExam(violationReason = null) {
+      if (examSubmitted) return;
+      examSubmitted = true;
+      if (timerInterval) clearInterval(timerInterval);
+
+      // Final photo on submission
+      captureSnapshot("final");
+
+      // Stop Camera
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+      document.getElementById("proctoringPip").style.display = "none";
+
+      const answers = [];
+      document.querySelectorAll(".question").forEach((q, index) => {
+        const selected = document.querySelector(`input[name="q${index}"]:checked`);
+        answers.push(selected ? selected.value : null);
+      });
+
+      fetch("/api/exam/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          token, 
+          answers, 
+          photos: capturedPhotos, 
+          violation_reason: violationReason 
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          // Hide exam container
+          document.getElementById("mainExamContainer").style.display = "none";
+
+          // Show Result Screen
+          const resultScreen = document.getElementById("resultScreen");
+          resultScreen.style.display = "flex";
+
+          if (violationReason) {
+            document.getElementById("resultTitle").innerHTML = "❌ Assessment Terminated";
+            document.getElementById("resultSubtitle").innerText = violationReason;
+            document.getElementById("finalScore").style.color = "#ef4444";
+            document.getElementById("finalScore").innerText = `${data.score} / ${data.total}`;
+            document.getElementById("resultMsg").innerHTML = "Due to security violations (tab switching), your exam was terminated early.<br>Your proctoring logs have been submitted to HR.";
+          } else {
+            document.getElementById("finalScore").innerText = `${data.score} / ${data.total}`;
+          }
+        })
+        .catch(err => {
+          console.error("Submit error:", err);
+          alert("Assessment submitted.");
+        });
+    }
+
+    // ==========================================
+    // HR VIEW MODE (PROCTORING LOGS & PAPER)
+    // ==========================================
+    function loadHRView(inviteId) {
+      fetch(`/api/interview/view/${inviteId}`, {
+        method: "GET",
+        credentials: "include"
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to load interview");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById("mainExamContainer").style.display = "block";
+          document.getElementById("companyName").innerText = "MNM REALITY PVT LTD.";
+          document.getElementById("examSubtitle").innerText = `Candidate Interview Review: ${data.role_name || "Applicant"}`;
+          document.getElementById("candidateEmail").value = data.candidate_email;
+
+          // Score Badge
+          const scoreEl = document.getElementById("candidateScore");
+          scoreEl.innerText = `Score: ${data.score} / ${data.questions.length}`;
+          scoreEl.style.display = "inline";
+
+          // Hide Candidate Controls
+          document.getElementById("timerBadge").style.display = "none";
+          document.getElementById("submitExamBtn").style.display = "none";
+          document.getElementById("printExamBtn").style.display = "inline-block";
+
+          // Render Proctoring Photos
+          const hrSection = document.getElementById("hrProctoringSection");
+          const photoGrid = document.getElementById("hrPhotoGrid");
+          const violationAlert = document.getElementById("hrViolationAlert");
+
+          hrSection.style.display = "block";
+
+          if (data.status === "Terminated" || data.violation_reason) {
+            violationAlert.style.display = "block";
+            violationAlert.innerText = `⚠️ Security Violation Detected: ${data.violation_reason || "Tab switching limit exceeded"}`;
+          }
+
+          if (data.photos && data.photos.length > 0) {
+            document.getElementById("hrPhotoCount").innerText = `(${data.photos.length} captured)`;
+            photoGrid.innerHTML = data.photos.map(p => `
+              <div class="hr-photo-card">
+                <img src="${p.path}" alt="${p.type}" onclick="window.open('${p.path}', '_blank')" title="Click to view full size">
+                <span>${p.type.replace(/_/g, " ")}</span>
+              </div>
+            `).join("");
+          } else {
+            photoGrid.innerHTML = `<span style="font-size:12px; color:#64748b;">No proctoring photos available.</span>`;
+          }
+
+          // Render Questions with Answers
+          renderQuestions(data.questions, data.answers);
+        })
+        .catch(err => {
+          console.error("View error:", err);
+          alert("Unable to load interview assessment details.");
+        });
+    }
+
+    // Listeners
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("submitExamBtn")?.addEventListener("click", () => {
+        Swal.fire({
+          title: "Submit Assessment?",
+          text: "Are you sure you want to finish and submit your answers?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Yes, Submit",
+          confirmButtonColor: "#0f172a"
+        }).then(result => {
+          if (result.isConfirmed) submitExam();
+        });
+      });
+
+      document.getElementById("printExamBtn")?.addEventListener("click", () => window.print());
+    });
+  </script>
 </body>
 
 </html>

@@ -20,6 +20,8 @@ router.get("/sales-list", controller.getSalesList);
 // employee sales table 
 router.get("/my-sales", controller.getMySalesRequests);
 router.get("/track/:reqNo", controller.trackSalesApproval);
+router.get("/carried-balance", controller.getEmployeeCarriedBalance);
+router.post("/record-payment", controller.recordAccountsPayment);
 
 
 // upload files

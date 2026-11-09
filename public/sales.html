@@ -806,6 +806,26 @@
         <div class="sales-form-section">
             <h5><i class="fa-solid fa-pen-to-square"></i> Incentives Request Form</h5>
 
+            <!-- ⭐ CARRIED FORWARD BALANCE NOTICE -->
+            <div id="carriedBalanceNotice" style="display: none; background: #ecfdf5; border: 1px solid #a7f3d0; border-left: 4px solid #165c42; border-radius: 6px; padding: 12px 16px; margin-bottom: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-circle-check" style="color: #165c42; font-size: 18px;"></i>
+                        <div>
+                            <span style="color: #065f46; font-size: 13px; font-weight: 700; display: block;">
+                                Carried-Forward Pending Balance: <span id="noticeCarriedAmount" style="color: #165c42; font-size: 15px;">₹ 0.00</span>
+                            </span>
+                            <span style="color: #047857; font-size: 12px;">
+                                You have an unpaid incentive balance from your previous approved claim that will automatically be added to this request.
+                            </span>
+                        </div>
+                    </div>
+                    <span style="font-size: 11px; background: #165c42; color: #ffffff; padding: 3px 10px; border-radius: 12px; font-weight: 600;">
+                        Auto Carried
+                    </span>
+                </div>
+            </div>
+
             <table class="table table-bordered" id="salesItemsTable">
                 <thead class="table-light">
                     <tr>
@@ -1722,6 +1742,40 @@
                 window.salesPersonalInfo = data;
             })
             .catch(err => console.error("Personal info error:", err));
+
+        // 📌 CHECK CARRIED-FORWARD PENDING BALANCE
+        fetch("/api/sales/carried-balance")
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.hasBalance) {
+                    const notice = document.getElementById("carriedBalanceNotice");
+                    const amtSpan = document.getElementById("noticeCarriedAmount");
+                    const formattedAmt = "₹ " + parseFloat(data.carried_balance).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+                    if (notice && amtSpan) {
+                        amtSpan.textContent = formattedAmt;
+                        notice.style.display = "block";
+                    }
+
+                    // ⭐ Popup notification for employee so they immediately see the pending balance
+                    Swal.fire({
+                        icon: "info",
+                        title: "Carried-Forward Balance",
+                        html: `
+                            <div style="text-align: left; font-size: 14px;">
+                                <p style="margin-bottom: 8px;">You have an unpaid incentive balance from previous request(s): <b>${data.pendingRequests.join(", ")}</b></p>
+                                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; padding: 12px; border-radius: 6px; color: #065f46; font-size: 18px; font-weight: 700; text-align: center; margin: 10px 0;">
+                                    Pending Balance: ${formattedAmt}
+                                </div>
+                                <p style="margin-bottom: 0; font-size: 12px; color: #64748b;">This balance will automatically carry forward and be added to your new incentive request.</p>
+                            </div>
+                        `,
+                        confirmButtonText: "I Understand",
+                        confirmButtonColor: "#165c42"
+                    });
+                }
+            })
+            .catch(err => console.error("Carried balance check error:", err));
 
 
         // 🔐 SESSION CHECK

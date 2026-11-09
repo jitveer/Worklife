@@ -465,6 +465,10 @@
                         <th>Sl-no</th>
                         <th>Date</th>
                         <th>Name</th>
+                        <th>Total (₹)</th>
+                        <th>Paid (₹)</th>
+                        <th>Balance (₹)</th>
+                        <th>Payment</th>
                         <th>My Status</th>
                         <th>Final Status</th>
                         <th>Actions</th>
@@ -510,16 +514,36 @@
                         tbody.innerHTML = "";
 
                         if (data.data.length === 0) {
-                            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No records found</td></tr>`;
+                            tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;">No records found</td></tr>`;
                             return;
                         }
 
                         data.data.forEach((row, index) => {
+                            const grandTotal = parseFloat(row.grand_total) || 0;
+                            const paidAmount = parseFloat(row.paid_amount) || 0;
+                            const balanceAmount = parseFloat(row.balance_amount) || 0;
+                            const paymentStatus = row.payment_status || "Unpaid";
+
+                            let payStatusStyle = "background-color: #64748b; color: white;";
+                            if (paymentStatus === "Fully Paid") {
+                                payStatusStyle = "background-color: #28a745; color: white;";
+                            } else if (paymentStatus === "Partially Paid") {
+                                payStatusStyle = "background-color: #fd7e14; color: white;";
+                            }
+
                             const tr = `
                     <tr>
                         <td>${index + 1}</td>
                         <td>${new Date(row.created_at).toLocaleDateString('en-GB')}</td>
                         <td>${row.requester_name || "-"}</td>
+                        <td style="font-weight: 600;">₹ ${grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td style="color: #28a745; font-weight: 600;">₹ ${paidAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td style="color: ${balanceAmount > 0 ? '#d97706' : '#64748b'}; font-weight: bold;">₹ ${balanceAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td>
+                            <span class="status-box small" style="${payStatusStyle}">
+                                ${paymentStatus}
+                            </span>
+                        </td>
                         <td>
                             <span class="status-box ${row.approver_status ? row.approver_status.toLowerCase() : ''}">
                                 ${row.approver_status || "-"}
@@ -532,13 +556,13 @@
                         </td>
                         <td>
                             <div class="action-icons">
-            <div class="icon-box view" data-req="${row.req_no}">
-                <i class="fa-solid fa-eye"></i>
-            </div>
-            <div class="icon-box delete" data-id="${row.sale_id}">
-                <i class="fa-solid fa-trash"></i>
-            </div>
-        </div>
+                                <div class="icon-box view" data-req="${row.req_no}" title="View & Process Payment">
+                                    <i class="fa-solid fa-eye"></i>
+                                </div>
+                                <div class="icon-box delete" data-id="${row.sale_id}" title="Delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 `;
